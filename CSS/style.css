@@ -1308,9 +1308,6 @@ body.parallax-active::before {
     margin: 0;
     width: 100%;
 }
-.parking-outdoor-figure {
-    max-width: 860px;
-}
 .parking-figure img {
     display: block;
     width: 100%;
@@ -1323,6 +1320,33 @@ body.parallax-active::before {
     color: var(--secondary-color);
     font-size: 0.9rem;
     text-align: center;
+}
+.overflow-parking-guide {
+    width: 100%;
+    margin-top: 8px;
+    padding: 26px;
+    background: #f5f9ff;
+    border: 2px solid var(--accent-color);
+    border-radius: 10px;
+}
+.overflow-parking-guide h4 {
+    margin-bottom: 12px;
+    color: var(--primary-color);
+    font-family: var(--font-family-heading);
+    font-size: 1.3rem;
+}
+.overflow-parking-guide h4 i,
+.parking-ticket-note i {
+    margin-right: 8px;
+    color: #0b4da2;
+}
+.parking-ticket-note {
+    margin: 14px 0 20px;
+    padding: 12px 14px;
+    background: var(--white-color);
+    border-left: 4px solid #0b4da2;
+    border-radius: 6px;
+    font-weight: 700;
 }
 .large-map iframe {
     width: 100%;
@@ -1339,6 +1363,9 @@ body.parallax-active::before {
     }
     .parking-summary {
         grid-template-columns: 1fr;
+    }
+    .overflow-parking-guide {
+        padding: 18px;
     }
 }
 
