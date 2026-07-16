@@ -1256,6 +1256,9 @@ body.parallax-active::before {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
+.access-block-wide {
+    grid-column: 1 / -1;
+}
 .access-block h3 {
     font-family: var(--font-family-heading);
     color: var(--primary-color);
@@ -1274,6 +1277,53 @@ body.parallax-active::before {
     margin-right: 8px;
     width: 20px; /* Align icons */
 }
+.parking-access-block {
+    padding: 30px;
+}
+.parking-lead {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+.parking-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 20px 0 28px;
+}
+.parking-summary li {
+    background: var(--light-bg);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 6px;
+    padding: 14px 16px;
+    line-height: 1.7;
+}
+.parking-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+}
+.parking-figure {
+    margin: 0;
+    width: 100%;
+}
+.parking-outdoor-figure {
+    max-width: 860px;
+}
+.parking-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+.parking-figure figcaption {
+    margin-top: 8px;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    text-align: center;
+}
 .large-map iframe {
     width: 100%;
     height: 450px; /* Larger map on access page */
@@ -1281,6 +1331,15 @@ body.parallax-active::before {
     border-radius: var(--border-radius);
     margin-top: 30px;
     box-shadow: var(--box-shadow);
+}
+
+@media (max-width: 768px) {
+    .parking-access-block {
+        padding: 20px;
+    }
+    .parking-summary {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* --- Contact Page (contact.html) --- */
