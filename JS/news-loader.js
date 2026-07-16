@@ -104,13 +104,18 @@ function loadAllNews() {
 
 // ページ読み込み時に実行
 document.addEventListener('DOMContentLoaded', function() {
-    // 現在のページを判定
-    const currentPage = window.location.pathname;
-    
-    if (currentPage.includes('index.html') || currentPage.endsWith('/')) {
+    // 公開環境では /news.html が /news のような拡張子なしURLになるため、
+    // 最後のパス名から .html を除いてページを判定する
+    const pageName = window.location.pathname
+        .replace(/\/$/, '')
+        .split('/')
+        .pop()
+        .replace(/\.html$/, '');
+
+    if (pageName === '' || pageName === 'index') {
         // ホームページの場合
         loadNewsDigest();
-    } else if (currentPage.includes('news.html')) {
+    } else if (pageName === 'news') {
         // お知らせページの場合
         loadAllNews();
     }
