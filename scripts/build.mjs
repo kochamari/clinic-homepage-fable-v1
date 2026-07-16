@@ -4,7 +4,10 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
-const staticDir = path.join(dist, "static");
+// Codex Sites reads the Cloudflare Vite client output from dist/client.
+// Keeping the files under dist/static produced a successful deployment whose
+// ASSETS binding was empty, so every request returned 404 in production.
+const clientDir = path.join(dist, "client");
 
 const files = [
   "index.html",
@@ -20,14 +23,14 @@ const directories = ["CSS", "JS", "images", "PDF"];
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(path.join(dist, "server"), { recursive: true });
-await mkdir(staticDir, { recursive: true });
+await mkdir(clientDir, { recursive: true });
 
 for (const file of files) {
-  await cp(path.join(root, file), path.join(staticDir, file));
+  await cp(path.join(root, file), path.join(clientDir, file));
 }
 
 for (const directory of directories) {
-  await cp(path.join(root, directory), path.join(staticDir, directory), {
+  await cp(path.join(root, directory), path.join(clientDir, directory), {
     recursive: true,
   });
 }
@@ -86,4 +89,20 @@ export default {
 `;
 
 await writeFile(path.join(dist, "server", "index.js"), worker);
+await writeFile(
+  path.join(dist, "server", "wrangler.json"),
+  JSON.stringify(
+    {
+      main: "index.js",
+      compatibility_date: "2026-07-16",
+      assets: {
+        directory: "../client",
+        binding: "ASSETS",
+        run_worker_first: true,
+      },
+    },
+    null,
+    2,
+  ),
+);
 console.log("Codex Sites用の公開ファイルを dist に作成しました。");
