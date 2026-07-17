@@ -1,6 +1,7 @@
 // お知らせデータを読み込んで表示する機能
+// データは JS/news-data.js の newsData から読み込みます（編集方法は「お知らせ編集方法.txt」参照）
 
-// 日付を日本語形式に変換
+// 日付を「2025.06.06」形式に変換
 function formatDate(dateString) {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -9,101 +10,82 @@ function formatDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
-// お知らせをHTMLに変換（ホームページ用）
+// カテゴリに応じたラベルの色分けクラス
+function categoryClass(category) {
+    if (category === '重要') return 'news-chip news-chip--important';
+    if (category === 'ワクチン') return 'news-chip news-chip--vaccine';
+    return 'news-chip';
+}
+
+// お知らせ1件分のHTML（ホームのダイジェスト用）
 function createNewsItemHTML(item) {
     return `
-        <article class="news-item" data-aos="fade-up" data-aos-delay="100">
-            <time class="news-date">${formatDate(item.date)}</time>
-            <div class="news-content-wrapper">
-                <h3 class="news-title"><a href="news.html#news-${item.id}">${item.title}</a></h3>
-                <p class="news-excerpt">${item.excerpt}</p>
-            </div>
-        </article>
+        <a class="news-row" href="news.html#news-${item.id}">
+            <time class="news-row-date" datetime="${item.date}">${formatDate(item.date)}</time>
+            <span class="${categoryClass(item.category)}">${item.category}</span>
+            <span class="news-row-title">${item.title}</span>
+        </a>
     `;
 }
 
-// お知らせ詳細をHTMLに変換（お知らせページ用）
+// お知らせ詳細のHTML（お知らせページ用）
 function createNewsDetailHTML(item) {
-    const content = item.content.replace(/\n/g, '<br>');
+    const content = item.content
+        .split('\n\n')
+        .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+        .join('');
     return `
-        <article class="news-article" id="news-${item.id}" data-aos="fade-up">
-            <div class="news-header">
-                <time class="news-date">${formatDate(item.date)}</time>
-                <span class="news-category">${item.category}</span>
+        <article class="news-article" id="news-${item.id}" data-reveal>
+            <div class="news-article-meta">
+                <time datetime="${item.date}">${formatDate(item.date)}</time>
+                <span class="${categoryClass(item.category)}">${item.category}</span>
             </div>
-            <h2 class="news-title">${item.title}</h2>
-            <div class="news-content">
-                <p>${content}</p>
-            </div>
+            <h2 class="news-article-title">${item.title}</h2>
+            <div class="news-article-body">${content}</div>
         </article>
     `;
 }
 
-// ホームページのお知らせダイジェストを更新
+// ホームページのお知らせダイジェストを更新（最新4件）
 function loadNewsDigest() {
+    const newsGrid = document.querySelector('.news-list[data-news-digest]');
+    if (!newsGrid) return;
     try {
-        // newsDataから直接読み込み
         if (typeof newsData === 'undefined') {
             throw new Error('お知らせデータが見つかりません');
         }
-        
-        // 最新5件を取得
-        const latestNews = newsData.news.slice(0, 5);
-        
-        // HTMLを生成
-        const newsHTML = latestNews.map(item => createNewsItemHTML(item)).join('');
-        
-        // ページに挿入
-        const newsGrid = document.querySelector('.news-digest-grid');
-        if (newsGrid) {
-            newsGrid.innerHTML = newsHTML;
-            // AOSアニメーションを再初期化
-            if (typeof AOS !== 'undefined') {
-                AOS.refresh();
-            }
-        }
+        const latestNews = newsData.news.slice(0, 4);
+        newsGrid.innerHTML = latestNews.map(createNewsItemHTML).join('');
     } catch (error) {
         console.error('お知らせの読み込みに失敗しました:', error);
-        // エラー時の表示
-        const newsGrid = document.querySelector('.news-digest-grid');
-        if (newsGrid) {
-            newsGrid.innerHTML = '<div class="error-message">お知らせを読み込めませんでした。</div>';
-        }
+        newsGrid.innerHTML = '<div class="error-message">お知らせを読み込めませんでした。</div>';
     }
 }
 
 // お知らせページの全件表示を更新
 function loadAllNews() {
+    const newsContainer = document.querySelector('[data-news-all]');
+    if (!newsContainer) return;
     try {
-        // newsDataから直接読み込み
         if (typeof newsData === 'undefined') {
             throw new Error('お知らせデータが見つかりません');
         }
-        
-        // HTMLを生成
-        const newsHTML = newsData.news.map(item => createNewsDetailHTML(item)).join('');
-        
-        // ページに挿入
-        const newsContainer = document.querySelector('.news-list');
-        if (newsContainer) {
-            newsContainer.innerHTML = newsHTML;
-            // AOSアニメーションを再初期化
-            if (typeof AOS !== 'undefined') {
-                AOS.refresh();
-            }
+        newsContainer.innerHTML = newsData.news.map(createNewsDetailHTML).join('');
+        // 動的に追加した要素にも表示アニメーションを適用
+        newsContainer.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
+        // ハッシュ付きURL（news.html#news-9 など）で直接開かれた場合のスクロール
+        if (window.location.hash) {
+            const target = document.querySelector(window.location.hash);
+            if (target) target.scrollIntoView();
         }
     } catch (error) {
         console.error('お知らせの読み込みに失敗しました:', error);
-        // エラー時の表示
-        const newsContainer = document.querySelector('.news-list');
-        if (newsContainer) {
-            newsContainer.innerHTML = '<div class="error-message">お知らせを読み込めませんでした。</div>';
-        }
+        newsContainer.innerHTML = '<div class="error-message">お知らせを読み込めませんでした。</div>';
     }
 }
 
 // ページ読み込み時に実行
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // 公開環境では /news.html が /news のような拡張子なしURLになるため、
     // 最後のパス名から .html を除いてページを判定する
     const pageName = window.location.pathname
@@ -113,10 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .replace(/\.html$/, '');
 
     if (pageName === '' || pageName === 'index') {
-        // ホームページの場合
         loadNewsDigest();
     } else if (pageName === 'news') {
-        // お知らせページの場合
         loadAllNews();
     }
 });

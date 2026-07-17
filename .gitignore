@@ -1,2 +1,3 @@
 dist/
 .sites-deploy/
+.claude/settings.local.json
