@@ -678,6 +678,179 @@ body.drawer-open {
 }
 .hero-card-link:hover .icon { transform: translateX(4px); }
 
+/* --- Notice band (発熱・かぜ症状の事前連絡のお願い) --- */
+.notice-band {
+    background: #fdf6ec;
+    border-top: 1px solid #f0e3c8;
+    border-bottom: 1px solid #f0e3c8;
+    padding: 14px 0;
+}
+.notice-band .container {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+.notice-band .icon {
+    color: var(--accent);
+    flex-shrink: 0;
+    align-self: center;
+}
+.notice-band strong { color: #8a6120; }
+.notice-band a {
+    color: var(--primary-dark);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* --- Segment cards (目的別のご案内) --- */
+.segment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(20px, 3vw, 32px);
+}
+
+.segment-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 34px 30px 30px;
+    box-shadow: var(--shadow-soft);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.segment-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow);
+}
+
+.segment-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.16rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+}
+
+.segment-card p {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+.segment-more {
+    margin-top: auto;
+    padding-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+.segment-more .icon {
+    width: 0.9em;
+    height: 0.9em;
+    transition: transform 0.25s var(--ease);
+}
+.segment-card:hover .segment-more .icon { transform: translateX(4px); }
+
+/* --- Price table (がん検診の自己負担) --- */
+.table-scroll { overflow-x: auto; }
+
+.price-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 18px 0 6px;
+}
+.price-table th,
+.price-table td {
+    padding: 13px 12px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+}
+.price-table thead th {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    border-bottom: 2px solid var(--ink);
+    white-space: nowrap;
+}
+.price-table .exam-name {
+    font-weight: 700;
+    white-space: nowrap;
+}
+.price-table .exam-desc {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+    white-space: normal;
+}
+.price-table .price {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Info box (セクション内の強調ボックス) --- */
+.info-box {
+    margin-top: 22px;
+    padding: clamp(20px, 3vw, 28px);
+    background: var(--primary-tint);
+    border-radius: var(--radius-sm);
+}
+.info-box > h3,
+.info-box > h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+}
+.info-box p {
+    font-size: 0.92rem;
+    margin-bottom: 10px;
+}
+.info-box p:last-child { margin-bottom: 0; }
+.info-box--amber {
+    background: #fdf6ec;
+}
+.info-box--amber > h3,
+.info-box--amber > h4 { color: #8a6120; }
+
+.check-list {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0 4px;
+}
+.check-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 0.92rem;
+}
+.check-list .icon {
+    color: var(--primary);
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.fine-print {
+    margin-top: 14px;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+}
+
 /* --- News --- */
 .news-list {
     display: flex;
@@ -850,31 +1023,12 @@ body.drawer-open {
 }
 
 /* --- Greeting --- */
-.greeting-grid {
-    display: grid;
-    grid-template-columns: minmax(220px, 300px) 1fr;
-    gap: clamp(32px, 5vw, 64px);
-    align-items: center;
-}
-
-.greeting-photo {
-    position: relative;
-}
-.greeting-photo img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
+.greeting-body {
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
-}
-.greeting-photo::after {
-    content: '';
-    position: absolute;
-    inset: 14px -14px -14px 14px;
-    border: 1px solid var(--primary);
-    opacity: 0.28;
-    border-radius: var(--radius);
-    z-index: -1;
+    box-shadow: var(--shadow-soft);
+    padding: clamp(30px, 5vw, 56px);
 }
 
 .greeting-body .kicker { margin-bottom: 10px; }
@@ -1287,24 +1441,13 @@ body.drawer-open {
 
 /* --- Doctors page --- */
 .doctor-card {
-    display: grid;
-    grid-template-columns: minmax(200px, 260px) 1fr;
-    gap: clamp(28px, 4vw, 52px);
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow-soft);
     padding: clamp(28px, 4vw, 48px);
-    align-items: start;
 }
 .doctor-card + .doctor-card { margin-top: clamp(28px, 4vw, 44px); }
-
-.doctor-card-photo img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: var(--radius);
-}
 
 .doctor-role {
     font-size: 0.8rem;
@@ -1759,9 +1902,7 @@ body.drawer-open {
     .brand-en { font-size: 0.5rem; letter-spacing: 0.2em; }
 
     .features-grid { grid-template-columns: 1fr; }
-
-    .greeting-grid { grid-template-columns: 1fr; }
-    .greeting-photo { max-width: 260px; margin-inline: auto; }
+    .segment-grid { grid-template-columns: 1fr; }
 
     .news-row {
         flex-wrap: wrap;
@@ -1777,9 +1918,6 @@ body.drawer-open {
     }
     .service-icon { width: 64px; height: 64px; }
     .service-icon .icon { width: 28px; height: 28px; }
-
-    .doctor-card { grid-template-columns: 1fr; }
-    .doctor-card-photo { max-width: 220px; margin-inline: auto; }
 
     .access-grid { grid-template-columns: 1fr; }
     .parking-summary { grid-template-columns: 1fr; }
