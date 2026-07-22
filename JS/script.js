@@ -36,6 +36,10 @@ const cameFromInsideSite = (function () {
     return found;
 })();
 
+// このページを「直接」開いたか（初回アクセス・リロード・ブックマーク等）。
+// 開幕演出と、重要なお知らせのポップアップは、この時だけ出す。
+window.hgcFreshVisit = !cameFromInsideSite;
+
 // --- 開幕演出 ---
 // トップページを「直接」開いた時だけ表示する（初回アクセス・リロード・ブックマーク等）。
 // サイト内の他ページから移動してきた場合は出さない。
@@ -49,6 +53,9 @@ const cameFromInsideSite = (function () {
 
     // サイト内の別ページから移動してきた場合は出さない
     if (cameFromInsideSite) return;
+
+    // 幕を出すことが決まった。お知らせのポップアップは、幕が消えてから出す
+    window.hgcCurtainPending = true;
 
     const curtain = document.createElement('div');
     curtain.className = 'curtain';
@@ -83,6 +90,13 @@ const cameFromInsideSite = (function () {
             return opacity;
         }
 
+        // 幕を取り払い、「幕が消えた」と知らせる（お知らせのポップアップ用）
+        function removeCurtain() {
+            curtain.remove();
+            window.hgcCurtainPending = false;
+            document.dispatchEvent(new CustomEvent('hgc:curtain-end'));
+        }
+
         function cleanup() {
             clearTimeout(autoTimer);
             window.removeEventListener('wheel', onWheel);
@@ -98,7 +112,7 @@ const cameFromInsideSite = (function () {
             if (done) return;
             done = true;
             cleanup();
-            curtain.remove();
+            removeCurtain();
         }
 
         // 何もしなかった時・クリックされた時：その場でふわっと消える
@@ -109,7 +123,7 @@ const cameFromInsideSite = (function () {
             curtain.classList.remove('is-pulling');
             curtain.classList.add('is-lifting');
             curtain.style.opacity = '0';
-            setTimeout(function () { curtain.remove(); }, 2000);
+            setTimeout(removeCurtain, 2000);
         }
 
         // スクロール量ぶんだけ、そのままめくる（マイナスなら戻る）
@@ -142,7 +156,7 @@ const cameFromInsideSite = (function () {
             curtain.classList.add('is-lifting', 'is-auto-lifting');
             curtain.style.transform = 'translateY(-' + Math.round(window.innerHeight) + 'px)';
             curtain.style.opacity = '0';
-            setTimeout(function () { curtain.remove(); }, 1600);
+            setTimeout(removeCurtain, 1600);
         }
 
         // 元の位置へ戻す
