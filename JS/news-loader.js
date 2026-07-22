@@ -46,7 +46,7 @@ function createNewsDetailHTML(item) {
     `;
 }
 
-// ホームページのお知らせダイジェストを更新（最新4件）
+// ホームページのお知らせダイジェストを更新（最新3件）
 function loadNewsDigest() {
     const newsGrid = document.querySelector('.news-list[data-news-digest]');
     if (!newsGrid) return;
@@ -54,7 +54,7 @@ function loadNewsDigest() {
         if (typeof newsData === 'undefined') {
             throw new Error('お知らせデータが見つかりません');
         }
-        const latestNews = newsData.news.slice(0, 4);
+        const latestNews = newsData.news.slice(0, 3);
         newsGrid.innerHTML = latestNews.map(createNewsItemHTML).join('');
     } catch (error) {
         console.error('お知らせの読み込みに失敗しました:', error);

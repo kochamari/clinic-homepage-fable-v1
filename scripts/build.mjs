@@ -17,6 +17,7 @@ const files = [
   "access.html",
   "contact.html",
   "materials.html",
+  "404.html",
 ];
 
 const directories = ["CSS", "JS", "images", "PDF"];

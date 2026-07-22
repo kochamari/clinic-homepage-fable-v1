@@ -4,16 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>原口消化器内科｜佐世保市松浦町の消化器内科・内視鏡クリニック</title>
-    <meta name="description" content="佐世保市松浦町の原口消化器内科。胃カメラ・大腸カメラなどの内視鏡検査、消化器疾患の専門診療、生活習慣病の管理まで。専用駐車場5台。ご予約はお電話で。">
+    <meta name="description" content="佐世保市松浦町の原口消化器内科。腹痛・体重減少・血便などがんが心配な症状のご相談、胃カメラ、佐世保市のがん検診・特定健診、生活習慣病、ワクチン接種に対応。専用駐車場5台。ご予約はお電話で。">
     <meta name="theme-color" content="#186a64">
+    <meta name="robots" content="noindex">
+    <meta property="og:site_name" content="原口消化器内科">
     <meta property="og:title" content="原口消化器内科｜佐世保市松浦町の消化器内科・内視鏡クリニック">
     <meta property="og:type" content="website">
-    <meta property="og:description" content="笑顔とまごころの、まちの消化器内科。胃・大腸内視鏡から生活習慣病まで、専門医が寄り添う診療を行います。">
-    <link rel="icon" type="image/png" href="images/logo.PNG">
+    <meta property="og:description" content="笑顔とまごころの、まちの消化器内科。気になる症状のご相談から、がん検診・特定健診、生活習慣病、ワクチン接種まで。">
+    <meta property="og:image" content="images/ogp.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="ja_JP">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./CSS/style.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MedicalClinic",
+      "name": "原口消化器内科",
+      "description": "佐世保市松浦町の消化器内科・内視鏡クリニック。気になる症状のご相談から、がん検診・特定健診、生活習慣病の管理、ワクチン接種まで対応します。",
+      "medicalSpecialty": "Gastroenterologic",
+      "telephone": "+81-956-37-3777",
+      "image": "images/ogp.png",
+      "logo": "images/logo.PNG",
+      "address": {
+        "@type": "PostalAddress",
+        "postalCode": "857-0052",
+        "addressRegion": "長崎県",
+        "addressLocality": "佐世保市",
+        "streetAddress": "松浦町5番28号 アーバンパレス米春2F",
+        "addressCountry": "JP"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "12:30"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Thursday", "Friday"],
+          "opens": "14:00",
+          "closes": "17:30"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Wednesday",
+          "opens": "09:00",
+          "closes": "12:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Saturday",
+          "opens": "09:00",
+          "closes": "12:30"
+        }
+      ],
+      "availableService": [
+        { "@type": "MedicalProcedure", "name": "胃カメラ（上部消化管内視鏡検査）" },
+        { "@type": "MedicalTest", "name": "佐世保市がん検診（胃・大腸・肺）" },
+        { "@type": "MedicalTest", "name": "特定健診・後期高齢者健診" },
+        { "@type": "MedicalProcedure", "name": "予防接種（インフルエンザ・新型コロナ・帯状疱疹）" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <svg hidden aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -107,6 +167,7 @@
                 </div>
                 <aside class="hero-card" aria-label="ご予約・診療時間のご案内">
                     <img src="images/logo.PNG" alt="" class="hero-card-mark">
+                    <p class="clinic-status" data-clinic-status role="status" aria-live="polite"></p>
                     <p class="hero-card-label">ご予約・ご相談</p>
                     <a href="tel:0956-37-3777" class="hero-card-tel">
                         <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
@@ -127,6 +188,22 @@
                         <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg>
                     </a>
                 </aside>
+            </div>
+        </section>
+
+        <!-- News -->
+        <section class="section section--tint" aria-labelledby="news-heading">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <p class="kicker">News</p>
+                    <h2 class="section-title" id="news-heading">お知らせ</h2>
+                </div>
+                <div class="news-list" data-news-digest data-reveal>
+                    <div class="loading-message">お知らせを読み込んでいます…</div>
+                </div>
+                <div class="news-more" data-reveal>
+                    <a href="news.html" class="btn btn-ghost">すべてのお知らせを見る</a>
+                </div>
             </div>
         </section>
 
@@ -174,22 +251,6 @@
             </div>
         </section>
 
-        <!-- News -->
-        <section class="section section--tint" aria-labelledby="news-heading">
-            <div class="container">
-                <div class="section-head" data-reveal>
-                    <p class="kicker">News</p>
-                    <h2 class="section-title" id="news-heading">お知らせ</h2>
-                </div>
-                <div class="news-list" data-news-digest data-reveal>
-                    <div class="loading-message">お知らせを読み込んでいます…</div>
-                </div>
-                <div class="news-more" data-reveal>
-                    <a href="news.html" class="btn btn-ghost">すべてのお知らせを見る</a>
-                </div>
-            </div>
-        </section>
-
         <!-- Features -->
         <section class="section" aria-labelledby="features-heading">
             <div class="container">
@@ -220,6 +281,16 @@
             </div>
         </section>
 
+        <!-- Statement -->
+        <section class="statement" aria-labelledby="statement-heading">
+            <div class="container">
+                <div class="statement-rule" aria-hidden="true"></div>
+                <h2 class="statement-title" id="statement-heading">いつもの健康管理から、<br>がんの早期発見まで。</h2>
+                <p class="statement-lead">高血圧・糖尿病・脂質異常症などの継続的な管理から、胃・大腸・膵臓などの病気の早期発見まで。地域の皆さまが安心して通える、身近なかかりつけ医を目指します。</p>
+                <p class="statement-sign">Haraguchi Gastroenterology</p>
+            </div>
+        </section>
+
         <!-- Greeting -->
         <section class="section" aria-labelledby="greeting-heading">
             <div class="container--narrow">
@@ -247,7 +318,7 @@
                             <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
                             診療時間
                         </h3>
-                        <table class="hours-table">
+                        <table class="hours-table" data-hours-table>
                             <thead>
                                 <tr>
                                     <th scope="col">診療時間</th>
@@ -328,6 +399,20 @@
                         <a href="access.html" class="btn btn-ghost">詳しいアクセス・駐車場案内</a>
                     </div>
                 </div>
+
+                <div class="closure-calendar-wrap" data-reveal>
+                    <h3 class="info-panel-title">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                        休診日カレンダー
+                    </h3>
+                    <div class="closure-calendar" data-closure-calendar></div>
+                    <ul class="calendar-legend">
+                        <li><span class="legend-swatch is-closed"></span>休診（日曜・祝日・臨時休診）</li>
+                        <li><span class="legend-swatch is-half"></span>午前のみ（水曜・土曜）</li>
+                        <li><span class="legend-swatch is-today"></span>本日</li>
+                    </ul>
+                    <ul class="closure-notes" data-closure-notes></ul>
+                </div>
             </div>
         </section>
 
@@ -393,6 +478,7 @@
     </a>
 
     <script src="./JS/script.js"></script>
+    <script src="./JS/clinic-hours.js"></script>
     <script src="./JS/news-data.js"></script>
     <script src="./JS/news-loader.js"></script>
 </body>

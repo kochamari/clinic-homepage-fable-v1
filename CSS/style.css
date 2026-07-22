@@ -24,14 +24,22 @@
     /* typography */
     --font-sans: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
     --font-serif: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    /* 数字専用。数字が美しいだけで仕立てが良く見える */
+    --font-num: 'Cormorant Garamond', 'Shippori Mincho', serif;
 
     /* shape */
     --radius: 14px;
     --radius-sm: 8px;
-    --shadow: 0 10px 30px rgba(31, 54, 58, 0.08);
-    --shadow-soft: 0 4px 16px rgba(31, 54, 58, 0.06);
+    /* 影は「近くの濃い影」と「遠くの薄い影」を重ねると、紙が浮いているように見える */
+    --shadow-soft:
+        0 1px 2px rgba(31, 54, 58, 0.04),
+        0 4px 12px rgba(31, 54, 58, 0.05);
+    --shadow:
+        0 1px 2px rgba(31, 54, 58, 0.05),
+        0 6px 16px rgba(31, 54, 58, 0.06),
+        0 18px 40px rgba(31, 54, 58, 0.07);
 
-    /* motion */
+    /* motion：サイト全体でこの1本に統一する（最初速く、最後ゆっくり） */
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --header-h: 76px;
 }
@@ -90,7 +98,7 @@ ul, ol {
 
 .section--tint {
     /* パララックス背景がうっすら透けるように半透明にする */
-    background-color: rgba(238, 244, 241, 0.72);
+    background-color: rgba(230, 239, 236, 0.9);
 }
 
 .text-center { text-align: center; }
@@ -123,58 +131,247 @@ ul, ol {
 .skip-link:focus { transform: translateY(0); }
 
 /* --- Parallax background --- */
-/* JSが body 先頭に .parallax-bg を挿入する。3層構成:
-   far   = 大きな色面（スクロールにゆっくり追従）
-   near  = ドットパターン（やや速く動いて奥行きを出す）
-   drift = 細い輪の装飾（スクロールとは独立にゆったり漂う） */
+/* JSが body 先頭に .parallax-bg を挿入する。奥行きの異なる複数レイヤーで、
+   スクロールとマウスに反応する立体的な背景をつくる。
+   orbs  = ぼかした光の玉（最奥・最もゆっくり／各玉が個別に漂う）
+   dots  = ドットの粒（中景・ループで流れ、明滅する）
+   rings = 細い輪（近景・回転しながら漂う）
+   glow  = マウスに追従する淡いスポットライト（PCのみ） */
 .parallax-bg {
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
     overflow: hidden;
+    background:
+        radial-gradient(130% 90% at 50% -20%, rgba(227, 239, 236, 0.55) 0%, transparent 60%),
+        linear-gradient(180deg, var(--paper) 0%, #f3f1e8 100%);
 }
 
 .parallax-layer {
     position: absolute;
-    inset: -10vh 0 -55vh;
+    inset: -14vh -8vw -62vh;
     will-change: transform;
 }
 
-.parallax-layer--far {
-    background:
-        radial-gradient(circle at 82% 10%, rgba(24, 106, 100, 0.11) 0%, transparent 40%),
-        radial-gradient(circle at 6% 62%, rgba(24, 106, 100, 0.08) 0%, transparent 36%),
-        radial-gradient(circle at 52% 96%, rgba(185, 138, 62, 0.06) 0%, transparent 30%);
+/* orbs：ぼかした光の玉。それ自体は動かず、スクロール時にレイヤーごと視差で動く */
+.p-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(42px);
+}
+.p-orb--1 {
+    width: 46vw; height: 46vw;
+    top: 1%; right: -4%;
+    background: radial-gradient(circle at 36% 34%, rgba(24, 106, 100, 0.22), rgba(24, 106, 100, 0) 68%);
+}
+.p-orb--2 {
+    width: 40vw; height: 40vw;
+    top: 42%; left: -12%;
+    background: radial-gradient(circle at 42% 40%, rgba(15, 75, 71, 0.18), rgba(15, 75, 71, 0) 66%);
+}
+.p-orb--3 {
+    width: 32vw; height: 32vw;
+    top: 74%; left: 46%;
+    background: radial-gradient(circle at 46% 44%, rgba(185, 138, 62, 0.15), rgba(185, 138, 62, 0) 64%);
 }
 
-.parallax-layer--near {
-    inset: -30px 0;
-    background-image: radial-gradient(circle, rgba(24, 106, 100, 0.09) 1px, transparent 1.6px);
+/* dots：細かい粒。マスクで2か所をふわっと抜く */
+.parallax-layer--dots {
+    background-image: radial-gradient(circle, rgba(24, 106, 100, 0.10) 1px, transparent 1.7px);
     background-size: 26px 26px;
+    opacity: 0.8;
     -webkit-mask-image:
-        radial-gradient(ellipse 60% 45% at 74% 18%, #000 0%, transparent 100%),
-        radial-gradient(ellipse 55% 40% at 12% 82%, #000 0%, transparent 100%);
+        radial-gradient(ellipse 55% 45% at 78% 14%, #000 0%, transparent 100%),
+        radial-gradient(ellipse 50% 42% at 14% 80%, #000 0%, transparent 100%);
     mask-image:
-        radial-gradient(ellipse 60% 45% at 74% 18%, #000 0%, transparent 100%),
-        radial-gradient(ellipse 55% 40% at 12% 82%, #000 0%, transparent 100%);
+        radial-gradient(ellipse 55% 45% at 78% 14%, #000 0%, transparent 100%),
+        radial-gradient(ellipse 50% 42% at 14% 80%, #000 0%, transparent 100%);
 }
 
-.parallax-layer--drift {
-    inset: -6vh 0;
+/* rings：細い輪（外側のレイヤーをJSが視差で動かす） */
+.rings-inner {
+    position: absolute;
+    inset: 0;
     background:
-        radial-gradient(circle at 16% 84%, transparent 208px, rgba(24, 106, 100, 0.14) 209px, rgba(24, 106, 100, 0.14) 210px, transparent 212px),
-        radial-gradient(circle at 88% 62%, transparent 128px, rgba(185, 138, 62, 0.16) 129px, rgba(185, 138, 62, 0.16) 130px, transparent 132px);
-    animation: parallaxDrift 32s ease-in-out infinite alternate;
+        radial-gradient(circle at 20% 24%, transparent 118px, rgba(24, 106, 100, 0.10) 119px, rgba(24, 106, 100, 0.10) 120px, transparent 121px),
+        radial-gradient(circle at 84% 68%, transparent 168px, rgba(185, 138, 62, 0.12) 169px, rgba(185, 138, 62, 0.12) 170px, transparent 171px),
+        radial-gradient(circle at 60% 30%, transparent 58px, rgba(24, 106, 100, 0.09) 59px, rgba(24, 106, 100, 0.09) 60px, transparent 61px);
 }
 
-@keyframes parallaxDrift {
-    from { transform: translate3d(0, -1.2%, 0) scale(1); }
-    to   { transform: translate3d(0, 1.2%, 0) scale(1.04); }
+/* glow：マウスに追従する淡い光（JSが位置と表示を制御） */
+.parallax-glow {
+    position: absolute;
+    top: 0; left: 0;
+    width: 42vmax; height: 42vmax;
+    margin: -21vmax 0 0 -21vmax;
+    background: radial-gradient(circle, rgba(24, 106, 100, 0.10) 0%, rgba(24, 106, 100, 0) 62%);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease);
+    will-change: transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .parallax-layer--drift { animation: none; }
+    .parallax-glow { display: none; }
+}
+
+/* --- 金の差し色 --- */
+/* 要所に金を細く効かせて、全体の格を上げる */
+
+/* セクション見出しの英字ラベルの罫線を金に */
+.kicker::before,
+.section-head--center .kicker::after {
+    background: var(--accent);
+    opacity: 0.85;
+}
+
+/* カードの上辺に、金の細い線を一本走らせる */
+.feature-card::before,
+.segment-card::before,
+.service-card::before,
+.info-panel::before,
+.doctor-card::before,
+.closure-calendar-wrap::before,
+.contact-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: linear-gradient(90deg,
+        rgba(185, 138, 62, 0) 0%,
+        rgba(185, 138, 62, 0.55) 30%,
+        rgba(185, 138, 62, 0.55) 70%,
+        rgba(185, 138, 62, 0) 100%);
+}
+.info-panel,
+.doctor-card,
+.closure-calendar-wrap,
+.contact-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* 主要ボタンの縁にも、うっすら金を添える */
+.btn-primary {
+    box-shadow:
+        0 0 0 1px rgba(185, 138, 62, 0.35),
+        0 8px 20px rgba(24, 106, 100, 0.28);
+}
+.btn-primary:hover {
+    box-shadow:
+        0 0 0 1px rgba(185, 138, 62, 0.6),
+        0 10px 24px rgba(24, 106, 100, 0.32);
+}
+
+/* 院長ごあいさつの署名を金に */
+.greeting-sign { color: var(--accent); }
+.greeting-sign small { color: var(--ink-soft); }
+
+/* 医師の肩書き・資料アイコンの矢印も金で揃える */
+.doctor-role { color: var(--accent); }
+.material-arrow { color: var(--accent); }
+
+/* フッターの見出しラベルを金に */
+.footer-head { color: rgba(185, 138, 62, 0.85); }
+
+/* 電話ボタンの中の受話器アイコンを金に（濃い緑地に映える） */
+.header-tel .icon,
+.cta-tel .icon,
+.footer-tel .icon { color: rgba(216, 178, 110, 0.95); }
+
+/* --- 和紙の質感 --- */
+/* 画面全体にごく薄いノイズを重ね、単色の面を「紙」に見せる。動きはない */
+.grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --- 画面左端の縦書きラベル（広い画面の余白を使う） --- */
+.side-label {
+    position: fixed;
+    left: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: none;
+    writing-mode: vertical-rl;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    color: var(--ink-soft);
+    opacity: 0.5;
+    pointer-events: none;
+    white-space: nowrap;
+}
+@media (min-width: 1500px) {
+    .side-label { display: block; }
+}
+
+/* --- 開幕演出（初回のみ・JSが挿入） --- */
+html.is-curtain,
+html.is-curtain body { overflow: hidden; }
+
+.curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    /* 幕はゆっくり静かに消えていく（スクロール時は上へめくれながら） */
+    transition: opacity 1.8s var(--ease), transform 1.8s var(--ease);
+    transform-origin: top center;
+}
+/* スクロールで指の動きに追従させている間は、なめらかさより即応性を優先 */
+.curtain.is-pulling {
+    transition: none;
+}
+.curtain.is-lifting {
+    opacity: 0;
+    /* 消えはじめたらすぐ操作できるようにする */
+    pointer-events: none;
+}
+/* 中のロゴは、少しだけ上に流れながら先に消える */
+.curtain.is-lifting .curtain-inner {
+    opacity: 0;
+    transform: translateY(-10px) scale(1.03);
+    transition: opacity 1.2s var(--ease), transform 1.6s var(--ease);
+}
+
+.curtain-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+}
+.curtain.is-shown .curtain-inner {
+    opacity: 1;
+    transform: none;
+}
+
+.curtain-mark {
+    width: 82px;
+    height: 82px;
+    object-fit: contain;
+}
+.curtain-name {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;
+    color: var(--ink);
 }
 
 /* icons (inline svg) */
@@ -546,12 +743,13 @@ body.drawer-open {
 }
 
 .hero-title {
-    margin-top: 20px;
+    margin-top: 22px;
     font-family: var(--font-serif);
-    font-size: clamp(2rem, 5vw, 3.3rem);
-    font-weight: 600;
-    line-height: 1.55;
-    letter-spacing: 0.09em;
+    /* 本文とのサイズ差を大きくとりつつ、9文字が1行に収まる上限に留める */
+    font-size: clamp(2rem, 4.6vw, 3.45rem);
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.08em;
     color: var(--ink);
 }
 
@@ -604,7 +802,7 @@ body.drawer-open {
     top: 0; left: 32px; right: 32px;
     height: 3px;
     border-radius: 0 0 3px 3px;
-    background: linear-gradient(90deg, var(--primary), var(--primary-tint));
+    background: linear-gradient(90deg, var(--primary), var(--accent));
 }
 
 .hero-card-mark {
@@ -851,6 +1049,152 @@ body.drawer-open {
     color: var(--ink-soft);
 }
 
+/* --- 今の診療状況（JSが現在時刻から判定して表示） --- */
+.clinic-status {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 8px 16px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    background: var(--surface-tint);
+    color: var(--ink-soft);
+}
+.clinic-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+.clinic-status-label { font-weight: 700; letter-spacing: 0.04em; }
+.clinic-status-detail { font-size: 0.78rem; opacity: 0.8; }
+
+.clinic-status.is-open {
+    background: var(--primary-tint);
+    color: var(--primary-dark);
+}
+.clinic-status.is-before,
+.clinic-status.is-lunch {
+    background: #fdf6ec;
+    color: #8a6120;
+}
+.clinic-status.is-after,
+.clinic-status.is-closed {
+    background: var(--danger-tint);
+    color: var(--danger);
+}
+
+/* --- 休診日カレンダー --- */
+.closure-calendar-wrap {
+    margin-top: clamp(24px, 3.5vw, 40px);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    padding: clamp(24px, 3.4vw, 38px);
+}
+
+.closure-calendar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(24px, 4vw, 52px);
+}
+
+.cal-title {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-head {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    padding-bottom: 4px;
+}
+.cal-head.is-sun { color: var(--danger); }
+.cal-head.is-sat { color: var(--primary); }
+
+.cal-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+}
+.cal-cell.is-empty { visibility: hidden; }
+.cal-cell.is-half {
+    background: #fdf6ec;
+    color: #8a6120;
+    font-weight: 700;
+}
+.cal-cell.is-closed {
+    background: var(--danger-tint);
+    color: var(--danger);
+    font-weight: 700;
+}
+.cal-cell.is-today {
+    box-shadow: inset 0 0 0 2px var(--primary);
+    font-weight: 700;
+}
+
+.calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+}
+.calendar-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.legend-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+.legend-swatch.is-closed { background: var(--danger-tint); }
+.legend-swatch.is-half { background: #fdf6ec; }
+.legend-swatch.is-today { box-shadow: inset 0 0 0 2px var(--primary); }
+
+.closure-notes {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 0.86rem;
+}
+.closure-notes li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+}
+.closure-note-date {
+    font-weight: 700;
+    color: var(--danger);
+}
+
 /* --- News --- */
 .news-list {
     display: flex;
@@ -980,10 +1324,7 @@ body.drawer-open {
     box-shadow: var(--shadow-soft);
     transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
 }
-.feature-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow);
-}
+/* 特徴カードは押せないので、ホバーで浮かせない */
 
 .feature-num {
     position: absolute;
@@ -1123,6 +1464,33 @@ body.drawer-open {
 }
 .hours-table .closed { color: #c1beb2; }
 .hours-table .day-off { color: var(--danger); }
+
+/* 今日の曜日の列を目立たせる（JSが is-today-col を付与） */
+.hours-table .is-today-col {
+    background: var(--primary-tint);
+}
+.hours-table thead .is-today-col {
+    color: var(--primary-dark);
+    border-bottom-color: var(--primary);
+}
+.hours-table .is-today-col.is-closed-today {
+    background: var(--danger-tint);
+}
+.today-badge {
+    display: block;
+    width: fit-content;
+    margin: 4px auto 0;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+.today-badge.is-closed {
+    background: var(--danger);
+}
 
 .hours-notes {
     margin-top: 16px;
@@ -1808,7 +2176,8 @@ body.drawer-open {
     color: inherit;
     transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
-.material-card:hover {
+/* リンクになっている資料カードだけ、ホバーで少し浮かせる */
+a.material-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow);
 }
@@ -1841,12 +2210,297 @@ body.drawer-open {
     color: var(--primary);
 }
 
+/* 資料準備中のカード：クリックできないので、その見た目にする */
+.material-card.is-preparing {
+    cursor: default;
+}
+.material-card.is-preparing:hover {
+    transform: none;
+    box-shadow: var(--shadow-soft);
+}
+.material-card.is-preparing .material-icon {
+    background: var(--surface-tint);
+    color: var(--ink-soft);
+}
+.material-card.is-preparing h2 {
+    color: var(--ink-soft);
+}
+
 .materials-note {
     margin-top: 32px;
     font-size: 0.85rem;
     color: var(--ink-soft);
     text-align: center;
 }
+
+/* --- 404ページ --- */
+.error-hero {
+    min-height: 62vh;
+    display: flex;
+    align-items: center;
+    border-bottom: none;
+}
+.error-hero .hero-actions { margin-top: 34px; }
+
+/* --- ステートメント帯（サイト唯一の暗い面。全体を引き締める） --- */
+.statement {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(26px, 2.8vw, 36px) 0;
+    background: linear-gradient(160deg, #1a2f33 0%, #16292d 55%, #12262a 100%);
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+/* 暗い面の上でだけ、金の線と粒子が映える */
+.statement::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(60% 50% at 50% 0%, rgba(185, 138, 62, 0.13) 0%, transparent 70%),
+        radial-gradient(50% 40% at 12% 100%, rgba(24, 106, 100, 0.28) 0%, transparent 70%);
+}
+.statement .container { position: relative; z-index: 1; }
+
+.statement-rule {
+    width: 1px;
+    height: clamp(12px, 1.6vw, 20px);
+    margin: 0 auto clamp(8px, 1.2vw, 12px);
+    background: linear-gradient(to bottom, transparent, var(--accent));
+}
+
+.statement-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.35rem, 2.9vw, 2.05rem);
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.1em;
+    color: #fff;
+}
+
+.statement-lead {
+    max-width: 760px;
+    margin: clamp(10px, 1.4vw, 15px) auto 0;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.statement-sign {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: clamp(12px, 1.6vw, 18px);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.statement-sign::before,
+.statement-sign::after {
+    content: '';
+    width: clamp(24px, 5vw, 52px);
+    height: 1px;
+    background: currentColor;
+    opacity: 0.5;
+}
+
+/* --- 数字を美しく --- */
+/* 電話番号や料金など、数字が主役の箇所はセリフ体のオールドスタイル数字にする */
+.hero-card-tel,
+.cta-tel,
+.contact-tel,
+.footer-tel,
+.price-table .price,
+.feature-num {
+    font-family: var(--font-num);
+    font-feature-settings: "onum" 1, "palt" 1;
+    letter-spacing: 0.02em;
+}
+.hero-card-tel,
+.cta-tel,
+.contact-tel,
+.footer-tel {
+    font-weight: 600;
+}
+
+/* --- 特徴カードの飾り番号（背景に大きく薄く） --- */
+.feature-card .feature-num {
+    top: auto;
+    right: clamp(14px, 2.5vw, 26px);
+    bottom: -0.32em;
+    font-size: clamp(4.6rem, 9vw, 7.4rem);
+    line-height: 1;
+    font-weight: 400;
+    color: var(--primary);
+    opacity: 0.07;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* --- 本文リンクの下線が左から引かれる --- */
+.section p > a:not(.btn),
+.faq-a a,
+.access-card p a,
+.materials-note a,
+.map-fallback a,
+.notice-band a {
+    position: relative;
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 1px;
+    transition: background-size 0.45s var(--ease);
+    padding-bottom: 1px;
+}
+.section p > a:not(.btn):hover,
+.faq-a a:hover,
+.access-card p a:hover,
+.materials-note a:hover,
+.map-fallback a:hover,
+.notice-band a:hover {
+    background-size: 100% 1px;
+}
+
+/* --- 細部の仕上げ --- */
+::selection {
+    background: var(--primary-tint);
+    color: var(--primary-dark);
+}
+
+html {
+    scrollbar-color: rgba(24, 106, 100, 0.35) transparent;
+    scrollbar-width: thin;
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: rgba(24, 106, 100, 0.28);
+    border-radius: 999px;
+    border: 3px solid var(--paper);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(24, 106, 100, 0.45); }
+
+/* --- スクロール進捗バー --- */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 1100;
+    pointer-events: none;
+}
+.scroll-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* --- 大見出しの文字送り（JSが1文字ずつspanで包む） --- */
+/* .char が「窓」、.char-inner が中身。下からせり上がって窓に収まる */
+.js .split-text .char {
+    display: inline-block;
+    overflow: hidden;
+    /* 明朝の下に伸びる部分が切れないよう、窓を少し下に広げる */
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+    vertical-align: bottom;
+}
+.js .split-text .char-inner {
+    display: inline-block;
+    transform: translateY(105%);
+    transition: transform 1.15s var(--ease);
+}
+.js .split-text.is-visible .char-inner {
+    transform: translateY(0);
+}
+
+/* --- アイコンの線描き（カードが現れた後、線を引くように表示） --- */
+/* カードのフェードイン（0.8秒）が終わってから描き始めるので、描かれる様子が見える */
+@media (prefers-reduced-motion: no-preference) {
+    .js .feature-icon .icon,
+    .js .service-icon .icon,
+    .js .contact-card-icon .icon {
+        stroke-dasharray: 70;
+        stroke-dashoffset: 70;
+        transition: stroke-dashoffset 1.6s var(--ease) 0.55s;
+    }
+    .js [data-reveal].is-visible .feature-icon .icon,
+    .js [data-reveal].is-visible .service-icon .icon,
+    .js [data-reveal].is-visible .contact-card-icon .icon {
+        stroke-dashoffset: 0;
+    }
+    /* アイコンの丸い下地も、線を描く前にふわっと開く */
+    .js .feature-icon,
+    .js .service-icon,
+    .js .contact-card-icon {
+        transform: scale(0.82);
+        opacity: 0;
+        transition: transform 0.8s var(--ease) 0.15s, opacity 0.8s var(--ease) 0.15s;
+    }
+    .js [data-reveal].is-visible .feature-icon,
+    .js [data-reveal].is-visible .service-icon,
+    .js [data-reveal].is-visible .contact-card-icon {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* --- カードのホバー光沢（カーソル位置はJSが --mx / --my で渡す） --- */
+/* クリックできるカード（トップの「こんなときは、当院へ」）だけに付ける。
+   押せないカードを光らせると、押せると誤解されるため */
+.feature-card,
+.segment-card,
+.service-card,
+.material-card {
+    position: relative;
+    overflow: hidden;
+}
+.segment-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s var(--ease);
+    background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(24, 106, 100, 0.12) 45%,
+        transparent 75%);
+}
+@media (hover: hover) and (pointer: fine) {
+    .segment-card:hover::after {
+        opacity: 1;
+    }
+    /* 光と一緒に枠もわずかに色づかせて、押せることを伝える */
+    .segment-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 8px 20px rgba(24, 106, 100, 0.1);
+    }
+}
+
+/* --- セクション境界をやわらかい曲線に --- */
+/* 上下の辺を楕円状に丸めて、直線的な区切りをなくす */
+.section--tint {
+    border-radius: 50% 50% 50% 50% / 72px 72px 72px 72px;
+}
+
+/* --- ページ遷移をなめらかに繋ぐ --- */
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition { navigation: auto; }
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.35s;
+}
+.site-header { view-transition-name: site-header; }
 
 /* --- Reveal on scroll --- */
 @media (prefers-reduced-motion: no-preference) {
@@ -1865,9 +2519,10 @@ body.drawer-open {
 
 /* --- Focus --- */
 :focus-visible {
-    outline: 3px solid var(--primary);
-    outline-offset: 3px;
-    border-radius: 4px;
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+    border-radius: 3px;
+    box-shadow: 0 0 0 6px rgba(24, 106, 100, 0.12);
 }
 
 /* ==========================================================================
@@ -1903,6 +2558,7 @@ body.drawer-open {
 
     .features-grid { grid-template-columns: 1fr; }
     .segment-grid { grid-template-columns: 1fr; }
+    .closure-calendar { grid-template-columns: 1fr; }
 
     .news-row {
         flex-wrap: wrap;
