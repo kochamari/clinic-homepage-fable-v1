@@ -88,6 +88,8 @@ const cameFromInsideSite = (function () {
             window.removeEventListener('wheel', onWheel);
             curtain.removeEventListener('touchstart', onTouchStart);
             curtain.removeEventListener('touchmove', onTouchMove);
+            curtain.removeEventListener('touchend', onTouchEnd);
+            curtain.removeEventListener('touchcancel', onTouchEnd);
             document.documentElement.classList.remove('is-curtain');
         }
 
@@ -126,11 +128,41 @@ const cameFromInsideSite = (function () {
             pullBy(e.deltaY);   // 下へスクロールでめくれ、上へスクロールで戻る
         }
 
+        // --- スマホ（指で操作する場合） ---
+        // 指を動かしている間は追従し、離した時に残りを自動で巻き上げる。
+        // ほとんど動かさずに離した時は、元の位置に戻す。
+        const TOUCH_COMMIT = 40;   // これだけスワイプしていれば、あとは自動で巻き上げる
+
+        // 残りを自動で巻き上げて消す
+        function autoLift() {
+            if (done) return;
+            done = true;
+            cleanup();
+            curtain.classList.remove('is-pulling');
+            curtain.classList.add('is-lifting', 'is-auto-lifting');
+            curtain.style.transform = 'translateY(-' + Math.round(window.innerHeight) + 'px)';
+            curtain.style.opacity = '0';
+            setTimeout(function () { curtain.remove(); }, 1600);
+        }
+
+        // 元の位置へ戻す
+        function snapBack() {
+            pulled = 0;
+            curtain.classList.remove('is-pulling');
+            curtain.classList.add('is-returning');
+            curtain.style.transform = 'translateY(0)';
+            curtain.style.opacity = '1';
+            // 戻したまま放置されないよう、自動で消すタイマーをかけ直す
+            clearTimeout(autoTimer);
+            autoTimer = setTimeout(fadeOut, 4000);
+        }
+
         let touchStartY = 0;
         let touchBase = 0;
         function onTouchStart(e) {
             touchStartY = e.touches[0].clientY;
             touchBase = pulled;
+            curtain.classList.remove('is-returning');
         }
         function onTouchMove(e) {
             if (done) return;
@@ -141,10 +173,17 @@ const cameFromInsideSite = (function () {
             pulled = Math.max(0, touchBase + dy);
             if (render() <= 0.005) finish();   // 小数の誤差でわずかに残るのを防ぐ
         }
+        function onTouchEnd() {
+            if (done) return;
+            if (pulled >= TOUCH_COMMIT) autoLift();
+            else snapBack();
+        }
 
         window.addEventListener('wheel', onWheel, { passive: false });
         curtain.addEventListener('touchstart', onTouchStart, { passive: true });
         curtain.addEventListener('touchmove', onTouchMove, { passive: false });
+        curtain.addEventListener('touchend', onTouchEnd, { passive: true });
+        curtain.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
         // 何もしなければ4秒ほど見せてから、ふわっと消える
         autoTimer = setTimeout(fadeOut, 4000);

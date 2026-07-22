@@ -334,6 +334,14 @@ html.is-curtain body { overflow: hidden; }
 .curtain.is-pulling {
     transition: none;
 }
+/* スマホで指を離したあと、残りを自動で巻き上げる時の速さ */
+.curtain.is-auto-lifting {
+    transition: opacity 1.1s var(--ease), transform 1.1s var(--ease);
+}
+/* ほとんど動かさずに離した時、元の位置へ戻る時の速さ */
+.curtain.is-returning {
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
 .curtain.is-lifting {
     opacity: 0;
     /* 消えはじめたらすぐ操作できるようにする */
