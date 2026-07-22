@@ -254,6 +254,10 @@ document.addEventListener('DOMContentLoaded', function () {
     parallaxBg.className = 'parallax-bg';
     parallaxBg.setAttribute('aria-hidden', 'true');
     parallaxBg.innerHTML =
+        '<div class="parallax-layer parallax-layer--leaves">' +
+            '<span class="p-leaf p-leaf--1"></span>' +
+            '<span class="p-leaf p-leaf--2"></span>' +
+        '</div>' +
         '<div class="parallax-layer parallax-layer--orbs">' +
             '<span class="p-orb p-orb--1"></span>' +
             '<span class="p-orb p-orb--2"></span>' +
@@ -266,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!prefersReducedMotion.matches) {
+        const leavesLayer = parallaxBg.querySelector('.parallax-layer--leaves');
         const orbsLayer = parallaxBg.querySelector('.parallax-layer--orbs');
         const dotsLayer = parallaxBg.querySelector('.parallax-layer--dots');
         const ringsLayer = parallaxBg.querySelector('.parallax-layer--rings');
@@ -286,6 +291,11 @@ document.addEventListener('DOMContentLoaded', function () {
             pointerY += (targetPY - pointerY) * 0.08;
 
             // 奥ほど遅く、手前ほど速く／マウスにも手前ほど大きく反応させる
+            // グリーンの写真はいちばん奥。ほとんど動かず、そっと揺れる程度にする
+            const leavesY = -Math.min(y * 0.035, vh * 0.5);
+            leavesLayer.style.transform =
+                'translate3d(' + (pointerX * 7).toFixed(1) + 'px, ' + (leavesY + pointerY * 7).toFixed(1) + 'px, 0)';
+
             const orbsY = -Math.min(y * 0.05, vh * 0.6);
             orbsLayer.style.transform =
                 'translate3d(' + (pointerX * 10).toFixed(1) + 'px, ' + (orbsY + pointerY * 10).toFixed(1) + 'px, 0)';
@@ -339,6 +349,59 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         render();
+    }
+
+    // --- ヒーローの葉影写真 ---
+    // 開いた時にゆっくり浮かび上がり、スクロールすると奥へ沈みながら消えていく
+    const heroPhoto = document.querySelector('.hero-photo');
+    if (heroPhoto) {
+        const heroPhotoImg = heroPhoto.querySelector('.hero-photo-img');
+
+        // 浮かび上がり。開幕の幕が出ている時は、幕が消えてから咲くように出す
+        function heroPhotoIn() {
+            heroPhotoImg.classList.add('is-in');
+        }
+        if (prefersReducedMotion.matches) {
+            // 動きを減らす設定なら、最初から定着させておく
+            heroPhotoImg.style.transition = 'none';
+            heroPhotoIn();
+        } else if (window.hgcCurtainPending) {
+            let heroInFired = false;
+            const heroInGo = function () {
+                if (heroInFired) return;
+                heroInFired = true;
+                document.removeEventListener('hgc:curtain-end', heroInGo);
+                heroPhotoIn();
+            };
+            document.addEventListener('hgc:curtain-end', heroInGo);
+            // 万一、幕の終わりを受け取れなかった時の保険
+            setTimeout(heroInGo, 15000);
+        } else {
+            requestAnimationFrame(heroPhotoIn);
+        }
+
+        if (!prefersReducedMotion.matches) {
+            let heroRafPending = false;
+
+            function heroRender() {
+                heroRafPending = false;
+                const y = window.scrollY;
+                // ヒーローの高さ8割ぶんスクロールしきったら、完全に消える
+                const progress = Math.min(y / (window.innerHeight * 0.8), 1);
+                // 写真はスクロールの4割の速さで遅れて下がる＝奥に沈んで見える
+                heroPhoto.style.transform =
+                    'translateY(' + (y * 0.4).toFixed(1) + 'px) scale(' + (1 + progress * 0.05).toFixed(3) + ')';
+                heroPhoto.style.opacity = (1 - progress).toFixed(3);
+            }
+
+            window.addEventListener('scroll', function () {
+                if (heroRafPending) return;
+                heroRafPending = true;
+                requestAnimationFrame(heroRender);
+            }, { passive: true });
+
+            heroRender();
+        }
     }
 
     // --- モバイルドロワーメニュー ---

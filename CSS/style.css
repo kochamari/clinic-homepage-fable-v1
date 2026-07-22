@@ -154,6 +154,29 @@ ul, ol {
     will-change: transform;
 }
 
+/* leaves：窓辺のグリーンの写真を、円形にぼかして水彩のように置く（最奥） */
+.p-leaf {
+    position: absolute;
+    border-radius: 50%;
+    background: url('../images/photo-window-green.jpg') center / cover no-repeat;
+    -webkit-mask-image: radial-gradient(closest-side, #000 18%, transparent 70%);
+    mask-image: radial-gradient(closest-side, #000 18%, transparent 70%);
+}
+.p-leaf--1 {
+    width: clamp(420px, 46vw, 720px);
+    height: clamp(420px, 46vw, 720px);
+    top: 20%; right: -14%;
+    opacity: 0.34;
+}
+.p-leaf--2 {
+    width: clamp(340px, 36vw, 560px);
+    height: clamp(340px, 36vw, 560px);
+    top: 58%; left: -12%;
+    background-image: url('../images/photo-leaf-shadow.jpg');
+    background-position: 78% 40%;
+    opacity: 0.42;
+}
+
 /* orbs：ぼかした光の玉。それ自体は動かず、スクロール時にレイヤーごと視差で動く */
 .p-orb {
     position: absolute;
@@ -723,6 +746,42 @@ body.drawer-open {
 .hero {
     position: relative;
     padding: clamp(64px, 9vw, 120px) 0 clamp(72px, 10vw, 130px);
+}
+
+/* 葉影の写真レイヤー。
+   外側（.hero-photo）… スクロールに合わせてJSが沈み込み・消え際を操作する
+   内側（.hero-photo-img）… ページを開いた時に、ゆっくり浮かび上がって定着する */
+.hero-photo {
+    position: absolute;
+    inset: 0 0 -14% 0;
+    overflow: hidden;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+.hero-photo-img {
+    position: absolute;
+    inset: 0;
+    background: url('../images/photo-leaf-shadow.jpg') right 30% / cover no-repeat;
+}
+.js .hero-photo-img {
+    opacity: 0;
+    transform: scale(1.07);
+    transition: opacity 1.9s var(--ease), transform 3.2s var(--ease);
+}
+.js .hero-photo-img.is-in {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 紙色のグラデーションを写真の上に被せて、文字の読みやすさを保つ */
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(180deg, var(--paper) 0%, rgba(250, 249, 245, 0) 20%, rgba(250, 249, 245, 0) 60%, var(--paper) 96%),
+        linear-gradient(90deg, var(--paper) 6%, rgba(250, 249, 245, 0.9) 36%, rgba(250, 249, 245, 0.42) 64%, rgba(250, 249, 245, 0.08) 100%);
 }
 
 .hero-grid {
@@ -2375,6 +2434,34 @@ a.material-card:hover {
 }
 .error-hero .hero-actions { margin-top: 34px; }
 
+/* --- 診療案内カードの写真 --- */
+.service-photo {
+    margin: 20px 0 0;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+}
+.service-photo img {
+    display: block;
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    object-position: center 30%;
+}
+
+/* --- 下層ページ見出しの背景写真（右側にうっすら敷く） --- */
+.page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('../images/photo-window-green.jpg') right center / cover no-repeat;
+    opacity: 0.12;
+    -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 80%);
+    mask-image: linear-gradient(90deg, transparent 30%, #000 80%);
+    pointer-events: none;
+}
+.page-hero > .container { position: relative; }
+
 /* --- ステートメント帯（サイト唯一の暗い面。全体を引き締める） --- */
 .statement {
     position: relative;
@@ -2384,11 +2471,23 @@ a.material-card:hover {
     color: rgba(255, 255, 255, 0.9);
     text-align: center;
 }
+/* 院内サインの写真を、質感としてかすかに溶かし込む */
+.statement::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url('../images/photo-sign.jpg') center 42% / cover no-repeat;
+    opacity: 0.1;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+}
 /* 暗い面の上でだけ、金の線と粒子が映える */
 .statement::before {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
     pointer-events: none;
     background:
         radial-gradient(60% 50% at 50% 0%, rgba(185, 138, 62, 0.13) 0%, transparent 70%),
@@ -2673,6 +2772,12 @@ html {
         grid-template-columns: 1fr;
     }
     .hero-card { max-width: 480px; }
+
+    /* 1段組では文字が写真の上に重なるため、紙の膜を全体に濃くかける */
+    .hero::after {
+        background-image:
+            linear-gradient(180deg, var(--paper) 0%, rgba(250, 249, 245, 0.72) 28%, rgba(250, 249, 245, 0.72) 72%, var(--paper) 96%);
+    }
 
     .info-grid { grid-template-columns: 1fr; }
 
