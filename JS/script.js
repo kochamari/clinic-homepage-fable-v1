@@ -231,7 +231,22 @@ document.addEventListener('click', function (e) {
     }
 
     markInternalNav();
+
+    // ふわっと暗転してから移動する（新しいタブで開く操作の時はそのまま）
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (e.defaultPrevented) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    e.preventDefault();
+    document.documentElement.classList.add('is-leaving');
+    setTimeout(function () {
+        window.location.href = link.href;
+    }, 200);
 }, true);
+
+// 「戻る」でキャッシュから復帰した時に、暗転したまま残らないようにする
+window.addEventListener('pageshow', function () {
+    document.documentElement.classList.remove('is-leaving');
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     // --- 和紙の質感（画面全体にごく薄いノイズを重ねる。動かない） ---
@@ -253,10 +268,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const parallaxBg = document.createElement('div');
     parallaxBg.className = 'parallax-bg';
     parallaxBg.setAttribute('aria-hidden', 'true');
+    // 院内サインの透かしはトップページだけに置く
+    const isHomePage = (function () {
+        const page = window.location.pathname
+            .replace(/\/$/, '').split('/').pop().replace(/\.html$/, '');
+        return page === '' || page === 'index';
+    })();
+
     parallaxBg.innerHTML =
         '<div class="parallax-layer parallax-layer--leaves">' +
             '<span class="p-leaf p-leaf--1"></span>' +
             '<span class="p-leaf p-leaf--2"></span>' +
+            (isHomePage ? '<span class="p-sign"><span class="p-sign-img"></span></span>' : '') +
         '</div>' +
         '<div class="parallax-layer parallax-layer--orbs">' +
             '<span class="p-orb p-orb--1"></span>' +
@@ -271,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!prefersReducedMotion.matches) {
         const leavesLayer = parallaxBg.querySelector('.parallax-layer--leaves');
+        const signMark = parallaxBg.querySelector('.p-sign');
+        const signMarkImg = parallaxBg.querySelector('.p-sign-img');
+        let signHasEmerged = false;
         const orbsLayer = parallaxBg.querySelector('.parallax-layer--orbs');
         const dotsLayer = parallaxBg.querySelector('.parallax-layer--dots');
         const ringsLayer = parallaxBg.querySelector('.parallax-layer--rings');
@@ -282,6 +308,59 @@ document.addEventListener('DOMContentLoaded', function () {
         let targetPX = 0, targetPY = 0;
         let glowX = window.innerWidth / 2, glowY = window.innerHeight / 2;
         let rafPending = false;
+
+        // 院内サインの透かし。ヒーローの写真と同じ流れで見せる。
+        //   現れはじめ … ゆっくり浮かび上がる（初回だけ、時間をかけて寄りが引ける）
+        //   通り過ぎ   … 奥へ沈みながら消えていく（スクロールに追随）
+        // 出はじめる位置は「お知らせ」の下あたり。無いページは画面半分ほど進んだら。
+        let signIn = 0, signFull = 0, signHold = 0, signOut = 0;
+
+        function measureSignSchedule() {
+            const vh = window.innerHeight;
+            const scrollable = Math.max(document.documentElement.scrollHeight - vh, 1);
+
+            const digest = document.querySelector('[data-news-digest]');
+            let anchor;
+            if (digest) {
+                const sec = digest.closest('section') || digest;
+                anchor = sec.offsetTop + sec.offsetHeight;   // お知らせの下端
+            } else {
+                anchor = vh * 1.4;
+            }
+
+            // お知らせの下端が画面の下に来たあたりから現れはじめる
+            signIn = Math.max(anchor - vh, vh * 0.2);
+            signFull = signIn + 350;
+            signHold = signIn + 1300;
+            signOut = signIn + 1900;
+
+            // 短いページでも、現れて消えるまでがページ内に収まるように縮める
+            if (signOut > scrollable) {
+                const k = scrollable / signOut;
+                signIn *= k; signFull *= k; signHold *= k; signOut *= k;
+            }
+        }
+
+        // 見えている濃さ（0〜1）
+        function signFadeAt(y) {
+            if (y <= signIn || y >= signOut) return 0;
+            if (y < signFull) return (y - signIn) / (signFull - signIn);
+            if (y <= signHold) return 1;
+            return (signOut - y) / (signOut - signHold);
+        }
+
+        // 奥へ沈んでいく量（0〜1）
+        function signSinkAt(y) {
+            if (y <= signHold) return 0;
+            return Math.min((y - signHold) / (signOut - signHold), 1);
+        }
+
+        if (signMark) {
+            measureSignSchedule();
+            // お知らせは後から差し込まれるので、読み込み完了後にもう一度測り直す
+            window.addEventListener('load', measureSignSchedule);
+            window.addEventListener('resize', measureSignSchedule);
+        }
 
         function render() {
             rafPending = false;
@@ -295,6 +374,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const leavesY = -Math.min(y * 0.035, vh * 0.5);
             leavesLayer.style.transform =
                 'translate3d(' + (pointerX * 7).toFixed(1) + 'px, ' + (leavesY + pointerY * 7).toFixed(1) + 'px, 0)';
+
+            // 院内サインの透かし：浮かび上がって、奥へ沈みながら消えていく
+            if (signMark) {
+                // はじめて区間に入った時だけ、ゆっくり寄りが引ける演出を始める
+                if (!signHasEmerged && y >= signIn) {
+                    signHasEmerged = true;
+                    signMarkImg.classList.add('is-in');
+                }
+                const sink = signSinkAt(y);
+                signMark.style.transform =
+                    'translateY(' + (sink * 90).toFixed(1) + 'px) scale(' + (1 + sink * 0.05).toFixed(3) + ')';
+                signMark.style.opacity = signFadeAt(y).toFixed(3);
+            }
 
             const orbsY = -Math.min(y * 0.05, vh * 0.6);
             orbsLayer.style.transform =
@@ -351,11 +443,31 @@ document.addEventListener('DOMContentLoaded', function () {
         render();
     }
 
-    // --- ヒーローの葉影写真 ---
+    // --- ヒーロー / ページ見出しの背景写真 ---
     // 開いた時にゆっくり浮かび上がり、スクロールすると奥へ沈みながら消えていく
-    const heroPhoto = document.querySelector('.hero-photo');
+
+    // 下層ページには写真レイヤーをJSで差し込む
+    const pageHero = document.querySelector('.page-hero');
+    if (pageHero) {
+        const pageHeroPhoto = document.createElement('div');
+        pageHeroPhoto.className = 'page-hero-photo';
+        pageHeroPhoto.setAttribute('aria-hidden', 'true');
+        pageHeroPhoto.innerHTML = '<div class="page-hero-photo-img"></div>';
+        pageHero.prepend(pageHeroPhoto);
+    }
+
+    const heroPhoto = document.querySelector('.hero-photo, .page-hero-photo');
     if (heroPhoto) {
-        const heroPhotoImg = heroPhoto.querySelector('.hero-photo-img');
+        const heroPhotoImg = heroPhoto.querySelector('.hero-photo-img, .page-hero-photo-img');
+        const heroSection = heroPhoto.parentElement;
+
+        // 消えきるまでのスクロール量。トップは画面の8割、下層は見出しの高さぶん
+        function heroFadeDistance() {
+            if (heroSection && heroSection.classList.contains('page-hero')) {
+                return Math.max(heroSection.offsetHeight * 1.15, 280);
+            }
+            return window.innerHeight * 0.8;
+        }
 
         // 浮かび上がり。開幕の幕が出ている時は、幕が消えてから咲くように出す
         function heroPhotoIn() {
@@ -386,8 +498,7 @@ document.addEventListener('DOMContentLoaded', function () {
             function heroRender() {
                 heroRafPending = false;
                 const y = window.scrollY;
-                // ヒーローの高さ8割ぶんスクロールしきったら、完全に消える
-                const progress = Math.min(y / (window.innerHeight * 0.8), 1);
+                const progress = Math.min(y / heroFadeDistance(), 1);
                 // 写真はスクロールの4割の速さで遅れて下がる＝奥に沈んで見える
                 heroPhoto.style.transform =
                     'translateY(' + (y * 0.4).toFixed(1) + 'px) scale(' + (1 + progress * 0.05).toFixed(3) + ')';

@@ -176,6 +176,37 @@ ul, ol {
     background-position: 78% 40%;
     opacity: 0.42;
 }
+/* 院内サイン。ロゴと HARAGUCHI CLINIC をひと続きのまま、
+   紙の上に押した刻印のように浮かべる（縁だけを溶かして四角さを消す）。
+   ヒーローの写真と同じで、外側がスクロールに合わせて沈み込み・消え際を受け持ち、
+   内側が「ゆっくり浮かび上がる」入りの演出を受け持つ。 */
+.p-sign {
+    --sign-peak: 0.5;
+    position: absolute;
+    width: clamp(420px, 44vw, 700px);
+    height: clamp(210px, 22vw, 350px);
+    top: 46%; left: 8%;
+    opacity: 0;
+    mix-blend-mode: multiply;
+    will-change: transform, opacity;
+}
+.p-sign-img {
+    position: absolute;
+    inset: 0;
+    background: url('../images/photo-sign.jpg') 34% 42% / 132% no-repeat;
+    -webkit-mask-image: radial-gradient(ellipse 62% 58% at 46% 50%, #000 0%, #000 34%, transparent 88%);
+    mask-image: radial-gradient(ellipse 62% 58% at 46% 50%, #000 0%, #000 34%, transparent 88%);
+    opacity: var(--sign-peak);
+}
+.js .p-sign-img {
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity 1.9s var(--ease), transform 3.2s var(--ease);
+}
+.js .p-sign-img.is-in {
+    opacity: var(--sign-peak);
+    transform: scale(1);
+}
 
 /* orbs：ぼかした光の玉。それ自体は動かず、スクロール時にレイヤーごと視差で動く */
 .p-orb {
@@ -236,6 +267,15 @@ ul, ol {
 
 @media (prefers-reduced-motion: reduce) {
     .parallax-glow { display: none; }
+}
+
+/* 画面が狭いと、サインの透かしが主張しすぎるので控えめにする */
+@media (max-width: 760px) {
+    .p-sign {
+        --sign-peak: 0.32;
+        width: 300px;
+        height: 150px;
+    }
 }
 
 /* --- 金の差し色 --- */
@@ -340,6 +380,15 @@ ul, ol {
 /* --- 開幕演出（初回のみ・JSが挿入） --- */
 html.is-curtain,
 html.is-curtain body { overflow: hidden; }
+
+/* --- ページ間の移動 --- */
+/* サイト内のリンクを押すと、ふわっと明転が抜けてから次のページへ移る */
+body {
+    transition: opacity 0.2s ease;
+}
+html.is-leaving body {
+    opacity: 0;
+}
 
 .curtain {
     position: fixed;
@@ -2449,18 +2498,47 @@ a.material-card:hover {
     object-position: center 30%;
 }
 
-/* --- 下層ページ見出しの背景写真（右側にうっすら敷く） --- */
-.page-hero::before {
-    content: '';
+/* 記事内の写真は、カードが現れる時にゆっくり寄りが引けて定着する */
+.parking-figure { overflow: hidden; border-radius: var(--radius-sm); }
+.js [data-reveal] .service-photo img,
+.js [data-reveal] .parking-figure img {
+    transform: scale(1.06);
+    transition: transform 2.4s var(--ease);
+}
+.js [data-reveal].is-visible .service-photo img,
+.js [data-reveal].is-visible .parking-figure img {
+    transform: scale(1);
+}
+
+/* --- 下層ページ見出しの背景写真（JSがページごとの写真を差し込む） ---
+   右側にうっすら敷き、トップと同じく「浮かび上がり → スクロールで沈んで消える」 */
+.page-hero { overflow: hidden; }
+.page-hero > .container { position: relative; z-index: 1; }
+
+.page-hero-photo {
+    position: absolute;
+    inset: 0 0 -14% 0;
+    overflow: hidden;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+.page-hero-photo-img {
     position: absolute;
     inset: 0;
     background: url('../images/photo-window-green.jpg') right center / cover no-repeat;
     opacity: 0.12;
     -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 80%);
     mask-image: linear-gradient(90deg, transparent 30%, #000 80%);
-    pointer-events: none;
 }
-.page-hero > .container { position: relative; }
+.js .page-hero-photo-img {
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity 1.6s var(--ease), transform 2.8s var(--ease);
+}
+.js .page-hero-photo-img.is-in {
+    opacity: 0.12;
+    transform: scale(1);
+}
 
 /* --- ステートメント帯（サイト唯一の暗い面。全体を引き締める） --- */
 .statement {
@@ -2471,23 +2549,11 @@ a.material-card:hover {
     color: rgba(255, 255, 255, 0.9);
     text-align: center;
 }
-/* 院内サインの写真を、質感としてかすかに溶かし込む */
-.statement::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: url('../images/photo-sign.jpg') center 42% / cover no-repeat;
-    opacity: 0.1;
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-}
 /* 暗い面の上でだけ、金の線と粒子が映える */
 .statement::before {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 1;
     pointer-events: none;
     background:
         radial-gradient(60% 50% at 50% 0%, rgba(185, 138, 62, 0.13) 0%, transparent 70%),
