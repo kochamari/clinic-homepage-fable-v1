@@ -306,7 +306,6 @@ html.is-page-zoomed *::after {
     .grain,
     .parallax-layer--orbs,
     .parallax-layer--dots,
-    .parallax-layer--rings,
     .parallax-glow,
     .p-sign,
     .p-leaf--2 {
@@ -316,7 +315,8 @@ html.is-page-zoomed *::after {
     .parallax-bg {
         position: absolute;
         bottom: auto;
-        height: 100svh;
+        height: 165svh;
+        contain: paint;
     }
 
     .parallax-layer {
@@ -329,12 +329,31 @@ html.is-page-zoomed *::after {
         will-change: auto;
     }
 
+    .parallax-layer--rings {
+        display: block;
+        opacity: 0.62;
+    }
+
+    .parallax-bg.is-mobile-parallax-active .parallax-layer--leaves,
+    .parallax-bg.is-mobile-parallax-active .parallax-layer--rings,
+    .hero-photo.is-scroll-active,
+    .page-hero-photo.is-scroll-active {
+        will-change: transform, opacity;
+    }
+
     .p-leaf--1 {
         width: min(125vw, 560px);
         height: min(125vw, 560px);
         top: 18%;
         right: -34%;
-        opacity: 0.22;
+        opacity: 0.26;
+    }
+
+    .parallax-layer--rings .rings-inner {
+        background:
+            radial-gradient(circle at 14% 24%, transparent 74px, rgba(24, 106, 100, 0.13) 75px, rgba(24, 106, 100, 0.13) 76px, transparent 77px),
+            radial-gradient(circle at 88% 66%, transparent 118px, rgba(185, 138, 62, 0.14) 119px, rgba(185, 138, 62, 0.14) 120px, transparent 121px),
+            radial-gradient(circle at 58% 42%, transparent 42px, rgba(24, 106, 100, 0.10) 43px, rgba(24, 106, 100, 0.10) 44px, transparent 45px);
     }
 
 }
@@ -1407,6 +1426,35 @@ body.drawer-open {
     gap: clamp(24px, 4vw, 52px);
 }
 
+.calendar-doctor-highlight {
+    display: flex;
+    align-items: center;
+    gap: 10px 14px;
+    width: fit-content;
+    margin: 4px 0 22px;
+    padding: 9px 14px 9px 10px;
+    border: 1px solid rgba(24, 106, 100, 0.2);
+    border-radius: 999px;
+    background: linear-gradient(100deg, rgba(227, 239, 236, 0.95), rgba(253, 246, 236, 0.85));
+    color: var(--ink-soft);
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+.calendar-doctor-highlight strong {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+.calendar-doctor-day {
+    flex-shrink: 0;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
 .cal-title {
     font-family: var(--font-serif);
     font-size: 1.05rem;
@@ -1457,6 +1505,35 @@ body.drawer-open {
     box-shadow: inset 0 0 0 2px var(--primary);
     font-weight: 700;
 }
+.cal-cell.is-oda {
+    position: relative;
+    padding-bottom: 10px;
+    background: linear-gradient(145deg, #e7f3ef, #fff7e8);
+    color: var(--primary-dark);
+    font-weight: 800;
+    box-shadow: inset 0 0 0 1px rgba(24, 106, 100, 0.34);
+}
+.cal-cell.is-oda.is-today {
+    box-shadow:
+        inset 0 0 0 2px var(--primary),
+        0 0 0 2px rgba(185, 138, 62, 0.28);
+}
+.cal-doctor-badge {
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    min-width: 25px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.15;
+    text-align: center;
+    transform: translateX(-50%);
+}
 
 .calendar-legend {
     display: flex;
@@ -1482,6 +1559,20 @@ body.drawer-open {
 .legend-swatch.is-closed { background: var(--danger-tint); }
 .legend-swatch.is-half { background: #fdf6ec; }
 .legend-swatch.is-today { box-shadow: inset 0 0 0 2px var(--primary); }
+.legend-swatch.is-oda {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 28px;
+    padding-inline: 4px;
+    background: linear-gradient(145deg, #e7f3ef, #fff7e8);
+    color: var(--primary-dark);
+    box-shadow: inset 0 0 0 1px rgba(24, 106, 100, 0.34);
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
 
 .closure-notes {
     display: grid;

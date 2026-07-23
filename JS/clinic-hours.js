@@ -91,6 +91,11 @@ const clinicSchedule = {
         return Number(parts[0]) * 60 + Number(parts[1]);
     }
 
+    function isFourthSaturday(date) {
+        const day = date.getUTCDate();
+        return date.getUTCDay() === 6 && day >= 22 && day <= 28;
+    }
+
     // その日の受付時間帯を返す（休診日は空配列）
     function sessionsOf(date) {
         const key = ymd(date);
@@ -205,9 +210,16 @@ const clinicSchedule = {
                 classes.push('is-half');
                 label = '午前のみ';
             }
+            if (sessions.length && isFourthSaturday(date)) {
+                classes.push('is-oda');
+                label += (label ? '・' : '') + '小田先生診察';
+            }
             if (ymd(date) === todayKey) classes.push('is-today');
 
             cells += '<span class="' + classes.join(' ') + '">' + day +
+                (classes.includes('is-oda')
+                    ? '<span class="cal-doctor-badge" aria-hidden="true">小田</span>'
+                    : '') +
                 (label ? '<span class="visually-hidden">（' + label + '）</span>' : '') +
                 '</span>';
         }

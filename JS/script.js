@@ -320,6 +320,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const canUseParallaxMotion =
         !prefersReducedMotion.matches &&
         window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const canUseMobileParallax =
+        !prefersReducedMotion.matches &&
+        window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
     if (canUseParallaxMotion) {
         const leavesLayer = parallaxBg.querySelector('.parallax-layer--leaves');
@@ -501,6 +504,73 @@ document.addEventListener('DOMContentLoaded', function () {
         render();
     }
 
+    // タッチ端末は、固定背景やぼかしを使わず、葉影と細いリングの2枚だけを動かす。
+    // 背景自体は文書と一緒に流し、transform の速度差だけで軽い奥行きをつくる。
+    if (canUseMobileParallax) {
+        const mobileLeaves = parallaxBg.querySelector('.parallax-layer--leaves');
+        const mobileRings = parallaxBg.querySelector('.parallax-layer--rings');
+        let mobileScrollY = window.scrollY;
+        let mobileRafPending = false;
+        let mobileLayersActive = false;
+        let mobileReleaseTimer = 0;
+
+        function mobileParallaxLimit() {
+            return window.innerHeight * 1.7;
+        }
+
+        function setMobileLayersActive(active) {
+            if (active === mobileLayersActive) return;
+            mobileLayersActive = active;
+            parallaxBg.classList.toggle('is-mobile-parallax-active', active);
+        }
+
+        function releaseMobileLayersAfterScroll() {
+            clearTimeout(mobileReleaseTimer);
+            mobileReleaseTimer = setTimeout(function () {
+                if (window.scrollY > mobileParallaxLimit()) {
+                    setMobileLayersActive(false);
+                }
+            }, 220);
+        }
+
+        function renderMobileParallax() {
+            mobileRafPending = false;
+
+            if (document.documentElement.classList.contains('is-page-zoomed')) {
+                clearTimeout(mobileReleaseTimer);
+                setMobileLayersActive(false);
+                return;
+            }
+
+            const limit = mobileParallaxLimit();
+            if (mobileScrollY > limit) {
+                // スクロール中のGPUレイヤー解除は一瞬の引っかかりになるため、停止後に回す。
+                releaseMobileLayersAfterScroll();
+                return;
+            }
+
+            clearTimeout(mobileReleaseTimer);
+            setMobileLayersActive(true);
+            const y = Math.max(0, mobileScrollY);
+            mobileLeaves.style.transform =
+                'translate3d(0, ' + (y * 0.28).toFixed(1) + 'px, 0)';
+            mobileRings.style.transform =
+                'translate3d(0, ' + (y * 0.12).toFixed(1) + 'px, 0)';
+        }
+
+        function scheduleMobileParallax() {
+            mobileScrollY = window.scrollY;
+            if (mobileRafPending) return;
+            if (!mobileLayersActive && mobileScrollY > mobileParallaxLimit()) return;
+            mobileRafPending = true;
+            requestAnimationFrame(renderMobileParallax);
+        }
+
+        window.addEventListener('scroll', scheduleMobileParallax, { passive: true });
+        window.addEventListener('resize', scheduleMobileParallax, { passive: true });
+        renderMobileParallax();
+    }
+
     // --- ヒーロー / ページ見出しの背景写真 ---
     // 開いた時にゆっくり浮かび上がり、スクロールすると奥へ沈みながら消えていく
 
@@ -552,11 +622,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const canAnimateHeroOnScroll =
             !prefersReducedMotion.matches &&
-            window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            (canUseParallaxMotion || canUseMobileParallax);
 
         if (canAnimateHeroOnScroll) {
             let heroRafPending = false;
             let heroIsHidden = false;
+            let heroReleaseTimer = 0;
+            const useLightHeroMotion = canUseMobileParallax;
 
             function heroRender() {
                 heroRafPending = false;
@@ -571,18 +643,37 @@ document.addEventListener('DOMContentLoaded', function () {
                         heroPhoto.style.visibility = 'hidden';
                         heroIsHidden = true;
                     }
+                    if (useLightHeroMotion) {
+                        clearTimeout(heroReleaseTimer);
+                        heroReleaseTimer = setTimeout(function () {
+                            if (window.scrollY >= heroFadeDistance()) {
+                                heroPhoto.classList.remove('is-scroll-active');
+                            }
+                        }, 220);
+                    }
                     return;
                 }
 
+                clearTimeout(heroReleaseTimer);
                 if (heroIsHidden) {
                     heroPhoto.style.visibility = 'visible';
                     heroIsHidden = false;
                 }
+                if (useLightHeroMotion) {
+                    heroPhoto.classList.add('is-scroll-active');
+                }
 
                 const progress = Math.min(y / fadeDistance, 1);
-                // 写真はスクロールの4割の速さで遅れて下がる＝奥に沈んで見える
-                heroPhoto.style.transform =
-                    'translateY(' + (y * 0.4).toFixed(1) + 'px) scale(' + (1 + progress * 0.05).toFixed(3) + ')';
+                if (useLightHeroMotion) {
+                    // スマホは拡大を加えず、1枚だけをゆっくり遅らせて軽快さを保つ。
+                    heroPhoto.style.transform =
+                        'translate3d(0, ' + (y * 0.18).toFixed(1) + 'px, 0)';
+                } else {
+                    // PCはスクロールの4割の速さで遅れて下がる＝奥に沈んで見える。
+                    heroPhoto.style.transform =
+                        'translateY(' + (y * 0.4).toFixed(1) + 'px) scale(' +
+                        (1 + progress * 0.05).toFixed(3) + ')';
+                }
                 heroPhoto.style.opacity = (1 - progress).toFixed(3);
             }
 
