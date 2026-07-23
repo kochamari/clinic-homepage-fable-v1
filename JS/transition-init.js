@@ -2,11 +2,16 @@
 (function () {
     'use strict';
 
+    // 共通スクリプトはbody末尾にあるため、ここで先に付けないと
+    // 本文が一度表示された後にスクロール演出の初期状態へ戻ってしまう。
+    document.documentElement.classList.add('js');
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     try {
         if (sessionStorage.getItem('hgc-internal-nav')) {
             document.documentElement.classList.add('is-entering');
+            window.hgcPageEntering = true;
         }
     } catch (e) {
         // sessionStorage が使えない環境では通常表示に戻す。

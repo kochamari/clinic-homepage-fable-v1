@@ -44,11 +44,14 @@ window.hgcFreshVisit = !cameFromInsideSite;
 // transition-init.js が描画前に付けたクラスを、描画後にゆっくり解除する。
 if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.documentElement.classList.add('is-entering');
+    window.hgcPageEntering = true;
     requestAnimationFrame(function () {
         requestAnimationFrame(function () {
             document.documentElement.classList.add('is-entered');
             setTimeout(function () {
                 document.documentElement.classList.remove('is-entering', 'is-entered');
+                window.hgcPageEntering = false;
+                document.dispatchEvent(new CustomEvent('hgc:page-entered'));
             }, 620);
         });
     });
@@ -268,8 +271,11 @@ document.addEventListener('click', function (e) {
 }, true);
 
 // 「戻る」でキャッシュから復帰した時に、暗転したまま残らないようにする
-window.addEventListener('pageshow', function () {
+window.addEventListener('pageshow', function (event) {
+    if (!event.persisted) return;
     document.documentElement.classList.remove('is-leaving', 'is-entering', 'is-entered');
+    window.hgcPageEntering = false;
+    document.dispatchEvent(new CustomEvent('hgc:page-entered'));
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -995,8 +1001,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (window.hgcCurtainPending) {
         document.addEventListener('hgc:curtain-end', makeMotionReady, { once: true });
         motionReadyTimer = setTimeout(makeMotionReady, 8000);
-    } else if (motionRoot.classList.contains('is-entering')) {
-        motionReadyTimer = setTimeout(makeMotionReady, 760);
+    } else if (window.hgcPageEntering || motionRoot.classList.contains('is-entering')) {
+        document.addEventListener('hgc:page-entered', makeMotionReady, { once: true });
+        motionReadyTimer = setTimeout(makeMotionReady, 1200);
     } else {
         motionReadyTimer = setTimeout(makeMotionReady, 260);
     }

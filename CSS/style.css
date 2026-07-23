@@ -414,8 +414,8 @@ html.is-page-zoomed *::after {
         0 10px 24px rgba(24, 106, 100, 0.32);
 }
 
-/* 医院の歩みセクションの署名を金に */
-.home-story-sign { color: var(--accent); }
+/* 医院の歩みセクションの署名は本文と同じ墨色で落ち着かせる */
+.home-story-sign { color: var(--ink); }
 .home-story-sign small { color: var(--ink-soft); }
 
 /* 医師の肩書き・資料アイコンの矢印も金で揃える */
@@ -1344,10 +1344,25 @@ body.drawer-open {
 }
 .info-box p:last-child { margin-bottom: 0; }
 .info-box--amber {
-    background: #fdf6ec;
+    border: 1px solid rgba(185, 138, 62, 0.34);
+    background: linear-gradient(135deg, #fffaf2 0%, #f8eee0 100%);
+    box-shadow:
+        inset 4px 0 0 rgba(185, 138, 62, 0.78),
+        0 8px 24px rgba(86, 63, 32, 0.06);
 }
 .info-box--amber > h3,
-.info-box--amber > h4 { color: #8a6120; }
+.info-box--amber > h4 {
+    color: var(--ink);
+}
+.info-box--amber > h3 .icon,
+.info-box--amber > h4 .icon {
+    color: #8a6120;
+}
+.info-box--amber .check-list {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(185, 138, 62, 0.24);
+}
 
 .check-list {
     display: grid;
@@ -1364,6 +1379,12 @@ body.drawer-open {
     color: var(--primary);
     flex-shrink: 0;
     align-self: center;
+}
+.check-list li > span {
+    min-width: 0;
+}
+.check-list a[href^="tel:"] {
+    white-space: nowrap;
 }
 
 .fine-print {
@@ -1410,7 +1431,7 @@ body.drawer-open {
     color: var(--danger);
 }
 
-/* --- 休診日カレンダー --- */
+/* --- 診療日カレンダー --- */
 .closure-calendar-wrap {
     margin-top: clamp(24px, 3.5vw, 40px);
     background: var(--surface);
@@ -2737,6 +2758,134 @@ html.is-popup-open body { overflow: hidden; }
 /* --- Examinations --- */
 .examinations {
     scroll-margin-top: calc(var(--header-h) + 18px);
+}
+
+.examinations .section-head {
+    margin-bottom: clamp(26px, 4vw, 38px);
+}
+
+.examinations-disclosure {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-soft);
+}
+
+.examinations-disclosure > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 24px;
+    min-height: 116px;
+    padding: clamp(22px, 3vw, 32px) clamp(22px, 4vw, 42px);
+    list-style: none;
+    cursor: pointer;
+    transition:
+        background-color 0.3s var(--ease),
+        color 0.3s var(--ease);
+}
+
+.examinations-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+
+.examinations-disclosure > summary:hover {
+    background: var(--primary-tint);
+}
+
+.examinations-disclosure > summary:focus-visible {
+    outline: 3px solid rgba(24, 106, 100, 0.35);
+    outline-offset: -4px;
+}
+
+.examinations-summary-copy {
+    display: grid;
+    gap: 7px;
+}
+
+.examinations-summary-copy strong {
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 2vw, 1.42rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.examinations-summary-copy small {
+    color: var(--ink-soft);
+    font-size: 0.84rem;
+    line-height: 1.65;
+}
+
+.examinations-summary-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--primary-dark);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.examinations-summary-action .is-open-label {
+    display: none;
+}
+
+.examinations-summary-icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(24, 106, 100, 0.28);
+    border-radius: 50%;
+    background: var(--surface);
+}
+
+.examinations-summary-icon::before,
+.examinations-summary-icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 13px;
+    height: 1px;
+    background: var(--primary);
+    transform: translate(-50%, -50%);
+    transition: transform 0.35s var(--ease);
+}
+
+.examinations-summary-icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.examinations-disclosure[open] > summary {
+    border-bottom: 1px solid var(--line);
+    background: var(--primary-tint);
+}
+
+.examinations-disclosure[open] .is-closed-label {
+    display: none;
+}
+
+.examinations-disclosure[open] .is-open-label {
+    display: inline;
+}
+
+.examinations-disclosure[open] .examinations-summary-icon::after {
+    transform: translate(-50%, -50%) rotate(0);
+}
+
+.examinations-content {
+    padding: clamp(30px, 5vw, 54px) clamp(20px, 4vw, 42px) clamp(38px, 6vw, 68px);
+}
+
+.examinations-intro {
+    max-width: 60em;
+    margin: 0 auto clamp(28px, 4vw, 42px);
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.9;
 }
 
 .examination-groups {
@@ -4528,9 +4677,14 @@ html {
         font-size: 0.84rem;
         line-height: 1.65;
     }
-    .hero-card-hours > div:nth-child(2),
-    .hero-card-hours-note {
+    .hero-card-hours > div:nth-child(2) {
         display: none;
+    }
+    .hero-card-hours-note {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.76rem;
+        line-height: 1.5;
     }
     .hero-card-link {
         margin-top: 12px;
@@ -4641,6 +4795,31 @@ html {
         font-size: 0.88rem;
     }
     .service-index-list a > span { font-size: 0.9rem; }
+    .examinations-disclosure > summary {
+        min-height: 0;
+        gap: 16px;
+        padding: 20px;
+    }
+    .examinations-summary-copy strong {
+        font-size: 1.1rem;
+    }
+    .examinations-summary-copy small {
+        font-size: 0.78rem;
+    }
+    .examinations-summary-action {
+        font-size: 0;
+    }
+    .examinations-summary-icon {
+        width: 38px;
+        height: 38px;
+    }
+    .examinations-content {
+        padding: 26px 18px 42px;
+    }
+    .examinations-intro {
+        margin-bottom: 20px;
+        font-size: 0.88rem;
+    }
     .service-chapter,
     .service-chapter--secondary {
         gap: 26px;

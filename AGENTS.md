@@ -121,11 +121,11 @@ sitemap.xml           公開ページのサイトマップ
 
 ## 年次運用
 
-- 休診日カレンダーの祝日データは、内閣府CSVから `JS/holidays-data.js` へ自動生成する。
+- 診療日カレンダーの祝日データは、内閣府CSVから `JS/holidays-data.js` へ自動生成する。
 - `.github/workflows/update-holidays.yml` が毎月、データ変更時だけ `main` に自動反映する。通常の年次作業は不要。
 - 緊急時はGitHub Actionsの手動実行でも更新できる。
 - お盆・年末年始などの臨時休診は、`JS/news-data.js` の該当お知らせに `closures` を記載すると、カレンダーにも自動反映される。
-- 診療状況と休診日カレンダーの判定基準は `Asia/Tokyo`（日本時間）とする。
+- 診療状況と診療日カレンダーの判定基準は `Asia/Tokyo`（日本時間）とする。
 
 ---
 
