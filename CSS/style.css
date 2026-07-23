@@ -58,6 +58,8 @@ html {
 }
 
 body {
+    width: 100%;
+    overflow-x: hidden;
     font-family: var(--font-sans);
     font-size: 16px;
     color: var(--ink);
@@ -312,7 +314,6 @@ html.is-page-zoomed *::after {
 /* カードの上辺に、金の細い線を一本走らせる */
 .segment-card::before,
 .info-panel::before,
-.doctor-card::before,
 .closure-calendar-wrap::before,
 .contact-card::before {
     content: '';
@@ -329,7 +330,6 @@ html.is-page-zoomed *::after {
         rgba(185, 138, 62, 0) 100%);
 }
 .info-panel,
-.doctor-card,
 .closure-calendar-wrap,
 .contact-card {
     position: relative;
@@ -348,9 +348,9 @@ html.is-page-zoomed *::after {
         0 10px 24px rgba(24, 106, 100, 0.32);
 }
 
-/* 院長ごあいさつの署名を金に */
-.greeting-sign { color: var(--accent); }
-.greeting-sign small { color: var(--ink-soft); }
+/* 医院の歩みセクションの署名を金に */
+.home-story-sign { color: var(--accent); }
+.home-story-sign small { color: var(--ink-soft); }
 
 /* 医師の肩書き・資料アイコンの矢印も金で揃える */
 .doctor-role { color: var(--accent); }
@@ -1751,49 +1751,80 @@ html.is-popup-open body { overflow: hidden; }
     color: var(--ink-soft);
 }
 
-/* --- Greeting --- */
-.greeting-body {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-soft);
-    padding: clamp(30px, 5vw, 56px);
+/* --- Home story --- */
+.home-story {
+    border-top: 1px solid var(--line);
 }
 
-.greeting-body .kicker { margin-bottom: 10px; }
+.home-story-grid {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.32fr) minmax(0, 0.68fr);
+    gap: clamp(54px, 8vw, 112px);
+    align-items: start;
+}
 
-.greeting-title {
+.home-story-since {
+    padding-top: 8px;
+    color: var(--accent);
+}
+.home-story-since span {
+    display: block;
+    font-family: var(--font-num);
+    font-size: clamp(3.8rem, 8vw, 6.8rem);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+}
+.home-story-since small {
+    display: block;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+}
+
+.home-story-content .kicker { margin-bottom: 12px; }
+
+.home-story-title {
     font-family: var(--font-serif);
-    font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+    font-size: clamp(1.65rem, 3vw, 2.25rem);
     font-weight: 600;
     letter-spacing: 0.08em;
-    margin-bottom: 20px;
+    line-height: 1.65;
+    margin-bottom: 28px;
 }
 
-.greeting-body p {
-    font-size: 0.96rem;
+.home-story-text {
+    max-width: 48em;
+    font-size: 1rem;
+    line-height: 2;
     color: var(--ink-soft);
 }
-.greeting-body p + p { margin-top: 14px; }
+.home-story-text + .home-story-text { margin-top: 16px; }
 
-.greeting-sign {
-    margin-top: 24px;
+.home-story-sign {
+    margin-top: 26px !important;
     font-family: var(--font-serif);
     font-size: 1.05rem;
     letter-spacing: 0.12em;
 }
-.greeting-sign small {
-    display: block;
+.home-story-sign small {
+    display: inline;
+    margin-right: 12px;
     font-size: 0.78rem;
     color: var(--ink-soft);
     letter-spacing: 0.1em;
-    margin-bottom: 2px;
 }
 
-.greeting-more {
-    margin-top: 18px;
+.home-story-link {
+    margin-top: 20px !important;
 }
-.greeting-more a {
+.home-story-link a {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1802,7 +1833,7 @@ html.is-popup-open body { overflow: hidden; }
     text-decoration: none;
     border-bottom: 1px solid currentColor;
 }
-.greeting-more .icon {
+.home-story-link .icon {
     width: 0.9em;
     height: 0.9em;
 }
@@ -2547,96 +2578,364 @@ html.is-popup-open body { overflow: hidden; }
     background: var(--accent);
 }
 
-/* --- Doctors page --- */
-.doctor-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-soft);
-    padding: clamp(28px, 4vw, 48px);
+/* --- Examinations --- */
+.examinations {
+    scroll-margin-top: calc(var(--header-h) + 18px);
 }
-.doctor-card + .doctor-card { margin-top: clamp(28px, 4vw, 44px); }
+
+.examination-groups {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.examination-group {
+    min-width: 0;
+    padding: clamp(34px, 4vw, 50px) clamp(24px, 3.2vw, 40px);
+}
+.examination-group + .examination-group {
+    border-left: 1px solid var(--line);
+}
+
+.examination-number {
+    color: var(--accent);
+    font-family: var(--font-num);
+    font-size: 1.3rem;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: 0.08em;
+}
+
+.examination-group > h3 {
+    min-height: 3.4em;
+    margin-top: 18px;
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 1.8vw, 1.38rem);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.7;
+}
+
+.examination-list {
+    margin-top: 24px;
+}
+.examination-list > div {
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+}
+.examination-list dt {
+    font-weight: 700;
+    color: var(--ink);
+}
+.examination-list dd {
+    margin-top: 5px;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.examination-checkups {
+    margin-top: 24px;
+    border-top: 1px solid var(--line);
+}
+.examination-checkups li {
+    position: relative;
+    padding: 11px 8px 11px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.94rem;
+}
+.examination-checkups li::before {
+    content: '';
+    position: absolute;
+    left: 1px;
+    top: 50%;
+    width: 7px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.examination-link {
+    margin-top: 22px;
+}
+.examination-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-dark);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+
+.ultrasound-feature {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.34fr) minmax(0, 0.66fr);
+    gap: clamp(48px, 7vw, 88px);
+    margin-top: clamp(58px, 8vw, 92px);
+    padding: clamp(38px, 5vw, 64px);
+    background: var(--primary-tint);
+}
+.ultrasound-feature header {
+    align-self: start;
+}
+.ultrasound-feature h3 {
+    margin-top: 16px;
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+}
+.ultrasound-feature > div {
+    min-width: 0;
+}
+.ultrasound-feature > div p {
+    color: var(--ink-soft);
+    font-size: 1rem;
+    line-height: 2;
+}
+.ultrasound-feature > div p + p {
+    margin-top: 18px;
+}
+
+/* --- Doctors page：顔写真に頼らない人物章 --- */
+.doctor-profiles {
+    padding: 0 0 clamp(80px, 10vw, 128px);
+}
+
+.doctor-profile {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.32fr) minmax(0, 0.68fr);
+    gap: clamp(56px, 8vw, 104px);
+    padding: clamp(78px, 9vw, 116px) 0;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: calc(var(--header-h) + 18px);
+}
+.doctor-profile:first-child {
+    border-top: 1px solid var(--line);
+}
+
+.doctor-profile-identity {
+    min-width: 0;
+    align-self: start;
+}
+
+.doctor-sequence {
+    color: var(--accent);
+    font-family: var(--font-num);
+    font-size: 1.55rem;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: 0.08em;
+}
+
+.doctor-label {
+    margin-top: 5px;
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
 
 .doctor-role {
-    font-size: 0.8rem;
+    margin-top: 34px;
+    color: var(--ink-soft);
+    font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--primary);
+    letter-spacing: 0.16em;
 }
 
 .doctor-name {
+    margin-top: 7px;
     font-family: var(--font-serif);
-    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    font-size: clamp(2rem, 4vw, 2.8rem);
     font-weight: 600;
-    letter-spacing: 0.1em;
-    margin-top: 6px;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
 }
-.doctor-name small {
-    font-size: 0.85rem;
+.doctor-name span {
+    display: block;
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
     font-weight: 500;
-    color: var(--ink-soft);
     letter-spacing: 0.12em;
-    margin-left: 12px;
 }
 
-.doctor-message {
-    margin-top: 16px;
-    font-size: 0.95rem;
-    color: var(--ink-soft);
+.doctor-key-message {
+    margin-top: 34px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-serif);
+    font-size: clamp(1.25rem, 2.2vw, 1.58rem);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    line-height: 1.8;
 }
 
-.doctor-detail {
-    margin-top: 22px;
-    display: grid;
-    gap: 18px;
+.doctor-profile-content {
+    min-width: 0;
 }
-.doctor-detail h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.88rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+.doctor-profile-content h3 {
     color: var(--primary);
-    margin-bottom: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
 }
-.doctor-detail h3::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--line);
+
+.doctor-message-block {
+    max-width: 52em;
 }
-.doctor-detail ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.doctor-detail ul li {
-    padding: 5px 14px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 0.82rem;
-}
-.doctor-detail ol {
-    list-style: none;
-    display: grid;
-    gap: 6px;
-    font-size: 0.9rem;
+.doctor-message-block p {
+    margin-top: 18px;
     color: var(--ink-soft);
+    font-size: 1rem;
+    line-height: 2.05;
 }
-.doctor-detail ol li {
+
+.doctor-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px clamp(30px, 5vw, 56px);
+    margin-top: clamp(48px, 6vw, 68px);
+    padding-top: clamp(36px, 4vw, 48px);
+    border-top: 1px solid var(--line);
+}
+.doctor-specialties {
+    grid-column: 1 / -1;
+}
+
+.doctor-career,
+.doctor-list {
+    margin-top: 15px;
+    border-top: 1px solid var(--line);
+}
+.doctor-career li,
+.doctor-list li {
+    display: grid;
+    grid-template-columns: 5.8em minmax(0, 1fr);
+    gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    line-height: 1.75;
+}
+.doctor-career li > span:only-child {
+    grid-column: 1 / -1;
+}
+.doctor-career time {
+    color: var(--accent);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-weight: 700;
+}
+.doctor-list li {
+    grid-template-columns: 1fr;
+    color: var(--ink);
+}
+.doctor-list--columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.doctor-list--columns li:nth-child(even) {
     padding-left: 18px;
-    position: relative;
+    border-left: 1px solid var(--line);
 }
-.doctor-detail ol li::before {
+
+/* --- Clinic story / principles --- */
+.clinic-story {
+    background: rgba(230, 239, 236, 0.6);
+}
+
+.clinic-story-copy {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 50px);
+}
+.clinic-story-copy p {
+    color: var(--ink-soft);
+    font-size: 0.96rem;
+    line-height: 2;
+}
+
+.story-timeline {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: clamp(52px, 7vw, 76px);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.story-timeline li {
+    position: relative;
+    padding: 34px clamp(22px, 3vw, 38px) 38px;
+}
+.story-timeline li + li {
+    border-left: 1px solid var(--line);
+}
+.story-timeline li::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0.85em;
-    width: 8px;
-    height: 1px;
-    background: var(--primary);
+    top: -3px;
+    left: clamp(22px, 3vw, 38px);
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+}
+.story-year {
+    color: var(--accent);
+    font-family: var(--font-num);
+    font-size: 1.4rem;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: 0.06em;
+}
+.story-timeline h3 {
+    margin-top: 18px;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.7;
+}
+.story-timeline h3 + p {
+    margin-top: 10px;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.principles-editorial {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.principles-editorial article {
+    padding: clamp(34px, 4vw, 50px) clamp(24px, 3.2vw, 40px);
+}
+.principles-editorial article + article {
+    border-left: 1px solid var(--line);
+}
+.principles-editorial span {
+    color: var(--accent);
+    font-family: var(--font-num);
+    font-size: 1.3rem;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+.principles-editorial h3 {
+    min-height: 5.2em;
+    margin-top: 20px;
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.75;
+}
+.principles-editorial p {
+    margin-top: 16px;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.95;
 }
 
 /* --- Access page --- */
@@ -3309,9 +3608,8 @@ a.material-card:hover {
 .contact-tel,
 .footer-tel,
 .price-table .price {
-    font-family: var(--font-sans);
-    font-variant-numeric: lining-nums tabular-nums;
-    font-feature-settings: "lnum" 1, "tnum" 1;
+    font-family: var(--font-num);
+    font-feature-settings: "onum" 1, "palt" 1;
     letter-spacing: 0.02em;
 }
 .hero-card-tel,
@@ -3501,6 +3799,40 @@ html {
     .global-nav { display: none; }
     .nav-toggle { display: flex; }
 
+    .home-story-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+    .home-story-since { max-width: 220px; }
+
+    .examination-groups { grid-template-columns: 1fr; }
+    .examination-group + .examination-group {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+    .examination-group > h3 { min-height: 0; }
+
+    .ultrasound-feature,
+    .doctor-profile,
+    .clinic-story-copy {
+        grid-template-columns: 1fr;
+    }
+    .ultrasound-feature { gap: 30px; }
+    .doctor-profile { gap: 44px; }
+    .doctor-profile-identity { max-width: 560px; }
+    .clinic-story-copy { gap: 18px; }
+
+    .story-timeline,
+    .principles-editorial {
+        grid-template-columns: 1fr;
+    }
+    .story-timeline li + li,
+    .principles-editorial article + article {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+    .principles-editorial h3 { min-height: 0; }
+
     .hero-grid {
         grid-template-columns: 1fr;
         gap: 0;
@@ -3574,6 +3906,48 @@ html {
     :root { --header-h: 64px; }
 
     body { line-height: 1.85; }
+
+    .home-story-grid { gap: 30px; }
+    .home-story-since span {
+        font-size: clamp(3.5rem, 18vw, 5rem);
+    }
+    .home-story-title {
+        font-size: clamp(1.8rem, 8vw, 2.45rem);
+    }
+
+    .examination-group,
+    .story-timeline li,
+    .principles-editorial article {
+        padding: 30px 4px;
+    }
+    .ultrasound-feature { padding: 34px 20px; }
+
+    .doctor-profile {
+        gap: 34px;
+        padding: 58px 0;
+    }
+    .doctor-role { margin-top: 26px; }
+    .doctor-name {
+        font-size: clamp(2rem, 10vw, 2.8rem);
+    }
+    .doctor-key-message {
+        margin-top: 28px;
+        font-size: clamp(1.3rem, 6.8vw, 1.85rem);
+    }
+    .doctor-facts,
+    .doctor-list--columns {
+        grid-template-columns: 1fr;
+    }
+    .doctor-facts { gap: 30px; }
+    .doctor-specialties { grid-column: auto; }
+    .doctor-list--columns li:nth-child(even) {
+        padding-left: 0;
+        border-left: 0;
+    }
+    .doctor-career li {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
 
     .container,
     .container--narrow {
