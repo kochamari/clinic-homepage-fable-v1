@@ -338,9 +338,10 @@ document.addEventListener('DOMContentLoaded', function () {
         let glowX = window.innerWidth / 2, glowY = window.innerHeight / 2;
         let rafPending = false;
 
-        // 院内サインの透かし。ヒーローの写真と同じ流れで見せる。
-        //   現れはじめ … ゆっくり浮かび上がる（初回だけ、時間をかけて寄りが引ける）
-        //   通り過ぎ   … 位置を動かさず、その場でふわっと消えていく（スクロールに追随）
+        // 院内サインの透かし。
+        //   現れはじめ … スクロールに合わせて下から静かに浮かび上がる
+        //   表示中     … 背景より遅い視差で、紙の上をゆるく漂う
+        //   消え際     … 位置を固定し、自然なフェードだけで消える
         // 出はじめる位置は「お知らせ」の下あたり。無いページは画面半分ほど進んだら。
         let signIn = 0, signFull = 0, signHold = 0, signOut = 0;
 
@@ -370,14 +371,37 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // 見えている濃さ（0〜1）
-        function signFadeAt(y) {
-            if (y <= signIn || y >= signOut) return 0;
-            if (y < signFull) return (y - signIn) / (signFull - signIn);
-            if (y <= signHold) return 1;
-            const exit = Math.min((y - signHold) / (signOut - signHold), 1);
-            // smoothstepで消え始めと消え終わりを緩やかにする
-            return 1 - exit * exit * (3 - 2 * exit);
+        function clamp01(value) {
+            return Math.max(0, Math.min(value, 1));
+        }
+
+        function smoothstep(value) {
+            const t = clamp01(value);
+            return t * t * (3 - 2 * t);
+        }
+
+        // 現在の演出状態。消え際は座標を止め、透明度だけを下げる。
+        function signStateAt(y) {
+            if (y <= signIn || y >= signOut) {
+                return { opacity: 0, lift: 44, scale: 0.955, parallaxY: y };
+            }
+
+            if (y < signFull) {
+                const entered = smoothstep((y - signIn) / (signFull - signIn));
+                return {
+                    opacity: entered,
+                    lift: (1 - entered) * 44,
+                    scale: 0.955 + entered * 0.045,
+                    parallaxY: y,
+                };
+            }
+
+            if (y <= signHold) {
+                return { opacity: 1, lift: 0, scale: 1, parallaxY: y };
+            }
+
+            const leaving = smoothstep((y - signHold) / (signOut - signHold));
+            return { opacity: 1 - leaving, lift: 0, scale: 1, parallaxY: signHold };
         }
 
         if (signMark) {
@@ -402,17 +426,24 @@ document.addEventListener('DOMContentLoaded', function () {
             leavesLayer.style.transform =
                 'translate3d(' + leavesX.toFixed(1) + 'px, ' + leavesOffsetY.toFixed(1) + 'px, 0)';
 
-            // 院内サインの透かし：浮かび上がって、その場で自然に消えていく
+            // 院内サイン：入りは浮上、表示中は背景より遅い視差、最後は位置を止めてフェード。
             if (signMark) {
-                // はじめて区間に入った時だけ、ゆっくり寄りが引ける演出を始める
-                if (!signHasEmerged && y >= signIn) {
+                if (!signHasEmerged && y > signIn) {
                     signHasEmerged = true;
                     signMarkImg.classList.add('is-in');
                 }
-                // 親レイヤーの視差を相殺し、消え際に位置や大きさを変えない
+
+                const sign = signStateAt(y);
+                const signParallaxY =
+                    -Math.min(sign.parallaxY * 0.035, vh * 0.5) + pointerY * 7;
+                const desiredSignY = signParallaxY * 0.58;
+                // 親レイヤーを完全には相殺せず、58%だけ背景の流れに乗せる。
+                // 消え際だけは signHold の座標に固定され、移動せずに溶ける。
                 signMark.style.transform =
-                    'translate3d(' + (-leavesX).toFixed(1) + 'px, ' + (-leavesOffsetY).toFixed(1) + 'px, 0)';
-                signMark.style.opacity = signFadeAt(y).toFixed(3);
+                    'translate3d(' + (-leavesX * 0.42).toFixed(1) + 'px, ' +
+                    ((desiredSignY - leavesOffsetY) + sign.lift).toFixed(1) + 'px, 0) scale(' +
+                    sign.scale.toFixed(3) + ')';
+                signMark.style.opacity = sign.opacity.toFixed(3);
             }
 
             const orbsY = -Math.min(y * 0.05, vh * 0.6);

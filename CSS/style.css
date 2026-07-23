@@ -208,6 +208,7 @@ html.is-page-zoomed *::after {
     top: 46%; left: 8%;
     opacity: 0;
     mix-blend-mode: multiply;
+    transform-origin: 44% 50%;
     will-change: transform, opacity;
 }
 .p-sign-img {
@@ -220,8 +221,8 @@ html.is-page-zoomed *::after {
 }
 .js .p-sign-img {
     opacity: 0;
-    transform: scale(1.06);
-    transition: opacity 1.9s var(--ease), transform 3.2s var(--ease);
+    transform: scale(1.04);
+    transition: opacity 1.35s var(--ease), transform 2.2s var(--ease);
 }
 .js .p-sign-img.is-in {
     opacity: var(--sign-peak);
