@@ -2026,10 +2026,53 @@ html.is-popup-open body { overflow: hidden; }
 .footer-bottom {
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     padding: 22px 0;
-    text-align: center;
     font-size: 0.8rem;
     letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.55);
+}
+
+.footer-bottom-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 28px;
+}
+
+.footer-legal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.footer-legal-nav a,
+.footer-cookie-settings {
+    color: rgba(255, 255, 255, 0.78);
+    font: inherit;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+}
+
+.footer-cookie-settings {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.footer-legal-nav a:hover,
+.footer-cookie-settings:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+}
+
+.footer-legal-nav a:focus-visible,
+.footer-cookie-settings:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid #fff;
+    outline-offset: 4px;
 }
 
 /* --- Floating call button (mobile) --- */
@@ -2074,6 +2117,198 @@ html.is-popup-open body { overflow: hidden; }
     max-width: 620px;
     font-size: 0.96rem;
     color: var(--ink-soft);
+}
+
+/* --- Legal and disclosure pages --- */
+.page-hero--legal {
+    padding-block: clamp(48px, 7vw, 76px);
+}
+
+.page-hero--legal .page-hero-lead {
+    max-width: 700px;
+    font-size: 1rem;
+    line-height: 1.9;
+}
+
+.legal-updated {
+    margin-top: 14px;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+}
+
+.legal-section {
+    padding-top: clamp(48px, 7vw, 80px);
+}
+
+.legal-document {
+    max-width: 840px;
+}
+
+.legal-introduction {
+    margin-bottom: clamp(42px, 6vw, 68px);
+    padding: clamp(24px, 4vw, 36px);
+    border-left: 4px solid var(--primary);
+    background: var(--surface);
+}
+
+.legal-introduction p + p,
+.legal-block p + p {
+    margin-top: 0.8em;
+}
+
+.legal-block {
+    padding-block: clamp(30px, 4vw, 44px);
+    border-top: 1px solid var(--line);
+}
+
+.legal-block:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.legal-block h2 {
+    margin-bottom: 20px;
+    color: var(--primary-dark);
+    font-family: var(--font-serif);
+    font-size: clamp(1.35rem, 2.8vw, 1.7rem);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1.55;
+}
+
+.legal-block h3 {
+    margin: 28px 0 12px;
+    font-size: 1.05rem;
+    color: var(--ink);
+}
+
+.legal-block ul {
+    display: grid;
+    gap: 8px;
+    margin: 14px 0 20px;
+    padding-left: 1.4em;
+}
+
+.legal-block li::marker {
+    color: var(--primary);
+}
+
+.legal-external-links a,
+.legal-contact a {
+    color: var(--primary-dark);
+    text-underline-offset: 0.2em;
+}
+
+.legal-contact {
+    font-style: normal;
+    line-height: 2;
+}
+
+.legal-date {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 24px;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+}
+
+.filing-card {
+    margin-top: 20px;
+    padding: clamp(22px, 4vw, 30px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+}
+
+.filing-card h3 {
+    margin-top: 0;
+    color: var(--primary-dark);
+    font-family: var(--font-serif);
+    font-size: 1.18rem;
+}
+
+.filing-details {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.filing-details div {
+    display: grid;
+    grid-template-columns: minmax(8em, 0.38fr) 1fr;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+}
+
+.filing-details dt {
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+}
+
+.filing-details dd {
+    font-weight: 500;
+}
+
+/* --- Analytics consent --- */
+.analytics-consent {
+    position: fixed;
+    right: max(18px, env(safe-area-inset-right));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 1100;
+    width: min(560px, calc(100% - 36px));
+    padding: 18px;
+    border: 1px solid rgba(24, 106, 100, 0.28);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 16px 42px rgba(23, 52, 50, 0.2);
+}
+
+.analytics-consent[hidden] {
+    display: none;
+}
+
+.analytics-consent-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.analytics-consent-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.analytics-consent-button,
+.analytics-consent-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 8px 15px;
+    border: 1px solid var(--primary);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--primary-dark);
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.analytics-consent-button:hover,
+.analytics-consent-details:hover {
+    background: rgba(24, 106, 100, 0.08);
+}
+
+.analytics-consent-button:focus-visible,
+.analytics-consent-details:focus-visible {
+    outline: 3px solid rgba(24, 106, 100, 0.35);
+    outline-offset: 2px;
 }
 
 /* --- Service page --- */
@@ -3266,6 +3501,33 @@ html {
     .large-map iframe { height: 320px; }
 
     .footer-grid { grid-template-columns: 1fr; }
+    .footer-bottom-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+    .footer-legal-nav {
+        justify-content: center;
+        gap: 10px 16px;
+    }
+
+    .filing-details div {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+
+    .analytics-consent {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: calc(84px + env(safe-area-inset-bottom));
+        width: calc(100% - max(24px, env(safe-area-inset-right) + env(safe-area-inset-left)));
+        padding: 16px;
+    }
+    .analytics-consent-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .analytics-consent-details {
+        grid-column: 1 / -1;
+    }
 
     .fab-call { display: inline-flex; }
 
