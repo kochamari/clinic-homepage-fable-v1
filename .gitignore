@@ -1,3 +1,32 @@
+# --- ビルド成果物・デプロイ生成物 ---
 dist/
 .sites-deploy/
+
+# --- 依存関係（現在は未使用。将来 npm install する場合に備える）---
+node_modules/
+
+# --- 環境変数・秘密情報（絶対にコミットしない）---
+.env
+.env.*
+
+# --- ログ ---
+*.log
+npm-debug.log*
+
+# --- OS 固有ファイル ---
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# --- エディタ固有ファイル ---
+.vscode/
+.idea/
+*.swp
+*~
+
+# --- AI ツールのローカル専用設定 ---
+# .claude/launch.json（および将来の共有設定）はコミットする。
+# 端末ごとの個人設定だけを除外する。
 .claude/settings.local.json
+# Codex CLI のローカル専用設定（作られた場合のみ）
+.codex/
