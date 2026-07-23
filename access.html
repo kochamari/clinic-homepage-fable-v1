@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script src="./JS/transition-init.js"></script>
     <title>アクセス・駐車場｜原口消化器内科</title>
     <meta name="description" content="原口消化器内科へのアクセス情報。長崎県佐世保市松浦町5番28号アーバンパレス米春2F。専用駐車場5台、満車時は提携のトラストパーク松浦町をご利用いただけます。">
     <meta name="theme-color" content="#186a64">
@@ -79,7 +80,7 @@
                 <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
                 0956-37-3777
             </a>
-            <p class="drawer-note">受付 9:00–12:30 / 14:00–17:30（水・土は午前のみ）</p>
+            <p class="drawer-note"><span>受付 9:00–12:30 / 14:00–17:30</span><span>水曜・土曜は午前のみ</span></p>
         </nav>
     </div>
 
@@ -128,7 +129,10 @@
                         </ul>
 
                         <figure class="parking-figure">
-                            <img src="images/parking-guide.jpg" width="1448" height="1086" loading="lazy" alt="当院駐車場のご案内。左側屋外駐車場3台（0〜2番）、1階屋内駐車場2台（10・11番）。受付・入口は2階、エレベーターをご利用いただけます。">
+                            <button class="parking-zoom-trigger" type="button" aria-label="駐車場と入口の案内画像を拡大表示">
+                                <img src="images/parking-guide.jpg" width="1448" height="1086" loading="lazy" alt="当院駐車場のご案内。左側屋外駐車場3台（0〜2番）、1階屋内駐車場2台（10・11番）。受付・入口は2階、エレベーターをご利用いただけます。">
+                                <span class="parking-zoom-hint" aria-hidden="true"><span class="parking-zoom-icon"></span>タップで拡大</span>
+                            </button>
                             <figcaption>駐車場と入口のご案内</figcaption>
                         </figure>
 
@@ -143,7 +147,10 @@
                                 駐車券を受付へお持ちください。サービス券をお渡しします。
                             </p>
                             <figure class="parking-figure">
-                                <img src="images/trustpark-matsuura-guide.jpg" width="1484" height="1060" loading="lazy" alt="当院からトラストパーク松浦町までの徒歩ルートと、駐車券を受付へ持参する手順の案内地図">
+                                <button class="parking-zoom-trigger" type="button" aria-label="満車時の提携駐車場案内画像を拡大表示">
+                                    <img src="images/trustpark-matsuura-guide.jpg" width="1484" height="1060" loading="lazy" alt="当院からトラストパーク松浦町までの徒歩ルートと、駐車券を受付へ持参する手順の案内地図">
+                                    <span class="parking-zoom-hint" aria-hidden="true"><span class="parking-zoom-icon"></span>タップで拡大</span>
+                                </button>
                                 <figcaption>満車時の提携駐車場「トラストパーク松浦町」案内</figcaption>
                             </figure>
                         </section>

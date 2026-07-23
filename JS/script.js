@@ -40,6 +40,20 @@ const cameFromInsideSite = (function () {
 // 開幕演出と、重要なお知らせのポップアップは、この時だけ出す。
 window.hgcFreshVisit = !cameFromInsideSite;
 
+// サイト内遷移で到着したページは、出発側と同じ紙色レイヤーから表示する。
+// transition-init.js が描画前に付けたクラスを、描画後にゆっくり解除する。
+if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('is-entering');
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            document.documentElement.classList.add('is-entered');
+            setTimeout(function () {
+                document.documentElement.classList.remove('is-entering', 'is-entered');
+            }, 620);
+        });
+    });
+}
+
 // --- 開幕演出 ---
 // トップページを「直接」開いた時だけ表示する（初回アクセス・リロード・ブックマーク等）。
 // サイト内の他ページから移動してきた場合は出さない。
@@ -222,6 +236,7 @@ document.addEventListener('click', function (e) {
     if (href.charAt(0) === '#') return;
     if (/^(tel:|mailto:|javascript:)/i.test(href)) return;
     if (link.target && link.target !== '_self') return;
+    if (link.hasAttribute('download')) return;
 
     // 同じサイト内のページへの移動だけを対象にする
     if (/^https?:\/\//i.test(href)) {
@@ -232,20 +247,21 @@ document.addEventListener('click', function (e) {
 
     markInternalNav();
 
-    // ふわっと暗転してから移動する（新しいタブで開く操作の時はそのまま）
+    // 紙色のレイヤーで画面をつなげてから移動する（修飾クリックはそのまま）
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (e.defaultPrevented) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     e.preventDefault();
+    if (document.documentElement.classList.contains('is-leaving')) return;
     document.documentElement.classList.add('is-leaving');
     setTimeout(function () {
         window.location.href = link.href;
-    }, 200);
+    }, 420);
 }, true);
 
 // 「戻る」でキャッシュから復帰した時に、暗転したまま残らないようにする
 window.addEventListener('pageshow', function () {
-    document.documentElement.classList.remove('is-leaving');
+    document.documentElement.classList.remove('is-leaving', 'is-entering', 'is-entered');
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -311,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 院内サインの透かし。ヒーローの写真と同じ流れで見せる。
         //   現れはじめ … ゆっくり浮かび上がる（初回だけ、時間をかけて寄りが引ける）
-        //   通り過ぎ   … 奥へ沈みながら消えていく（スクロールに追随）
+        //   通り過ぎ   … 位置を動かさず、その場でふわっと消えていく（スクロールに追随）
         // 出はじめる位置は「お知らせ」の下あたり。無いページは画面半分ほど進んだら。
         let signIn = 0, signFull = 0, signHold = 0, signOut = 0;
 
@@ -346,13 +362,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (y <= signIn || y >= signOut) return 0;
             if (y < signFull) return (y - signIn) / (signFull - signIn);
             if (y <= signHold) return 1;
-            return (signOut - y) / (signOut - signHold);
-        }
-
-        // 奥へ沈んでいく量（0〜1）
-        function signSinkAt(y) {
-            if (y <= signHold) return 0;
-            return Math.min((y - signHold) / (signOut - signHold), 1);
+            const exit = Math.min((y - signHold) / (signOut - signHold), 1);
+            // smoothstepで消え始めと消え終わりを緩やかにする
+            return 1 - exit * exit * (3 - 2 * exit);
         }
 
         if (signMark) {
@@ -372,19 +384,21 @@ document.addEventListener('DOMContentLoaded', function () {
             // 奥ほど遅く、手前ほど速く／マウスにも手前ほど大きく反応させる
             // グリーンの写真はいちばん奥。ほとんど動かず、そっと揺れる程度にする
             const leavesY = -Math.min(y * 0.035, vh * 0.5);
+            const leavesX = pointerX * 7;
+            const leavesOffsetY = leavesY + pointerY * 7;
             leavesLayer.style.transform =
-                'translate3d(' + (pointerX * 7).toFixed(1) + 'px, ' + (leavesY + pointerY * 7).toFixed(1) + 'px, 0)';
+                'translate3d(' + leavesX.toFixed(1) + 'px, ' + leavesOffsetY.toFixed(1) + 'px, 0)';
 
-            // 院内サインの透かし：浮かび上がって、奥へ沈みながら消えていく
+            // 院内サインの透かし：浮かび上がって、その場で自然に消えていく
             if (signMark) {
                 // はじめて区間に入った時だけ、ゆっくり寄りが引ける演出を始める
                 if (!signHasEmerged && y >= signIn) {
                     signHasEmerged = true;
                     signMarkImg.classList.add('is-in');
                 }
-                const sink = signSinkAt(y);
+                // 親レイヤーの視差を相殺し、消え際に位置や大きさを変えない
                 signMark.style.transform =
-                    'translateY(' + (sink * 90).toFixed(1) + 'px) scale(' + (1 + sink * 0.05).toFixed(3) + ')';
+                    'translate3d(' + (-leavesX).toFixed(1) + 'px, ' + (-leavesOffsetY).toFixed(1) + 'px, 0)';
                 signMark.style.opacity = signFadeAt(y).toFixed(3);
             }
 
@@ -522,15 +536,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (navToggle && drawer) {
         function openDrawer() {
             navToggle.setAttribute('aria-expanded', 'true');
+            drawer.setAttribute('aria-hidden', 'false');
             drawer.classList.add('is-open');
+            document.documentElement.classList.add('drawer-open');
             document.body.classList.add('drawer-open');
         }
 
         function closeDrawer() {
             navToggle.setAttribute('aria-expanded', 'false');
+            drawer.setAttribute('aria-hidden', 'true');
             drawer.classList.remove('is-open');
+            document.documentElement.classList.remove('drawer-open');
             document.body.classList.remove('drawer-open');
         }
+
+        drawer.setAttribute('aria-hidden', 'true');
 
         navToggle.addEventListener('click', function () {
             if (drawer.classList.contains('is-open')) {
@@ -554,6 +574,141 @@ document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('resize', function () {
             if (window.innerWidth > 960 && drawer.classList.contains('is-open')) {
                 closeDrawer();
+            }
+        });
+    }
+
+    // --- 駐車場案内画像の拡大表示 ---
+    const imageZoomTriggers = document.querySelectorAll('.parking-zoom-trigger');
+    if (imageZoomTriggers.length > 0) {
+        const imageLightbox = document.createElement('div');
+        imageLightbox.className = 'image-lightbox';
+        imageLightbox.hidden = true;
+        imageLightbox.setAttribute('role', 'dialog');
+        imageLightbox.setAttribute('aria-modal', 'true');
+        imageLightbox.setAttribute('aria-labelledby', 'image-lightbox-title');
+        imageLightbox.setAttribute('aria-describedby', 'image-lightbox-help');
+        imageLightbox.innerHTML =
+            '<div class="image-lightbox-panel">' +
+                '<div class="image-lightbox-toolbar">' +
+                    '<p class="image-lightbox-title" id="image-lightbox-title"></p>' +
+                    '<button class="image-lightbox-close" type="button">' +
+                        '<span class="image-lightbox-close-mark" aria-hidden="true">×</span>閉じる' +
+                    '</button>' +
+                '</div>' +
+                '<div class="image-lightbox-viewport">' +
+                    '<button class="image-lightbox-canvas" type="button" aria-label="画像をさらに拡大する">' +
+                        '<img class="image-lightbox-image" alt="">' +
+                    '</button>' +
+                '</div>' +
+                '<p class="image-lightbox-help" id="image-lightbox-help">画像をタップするとさらに拡大できます。拡大後は指で上下左右に動かせます。</p>' +
+            '</div>';
+        document.body.appendChild(imageLightbox);
+
+        const lightboxTitle = imageLightbox.querySelector('.image-lightbox-title');
+        const lightboxClose = imageLightbox.querySelector('.image-lightbox-close');
+        const lightboxViewport = imageLightbox.querySelector('.image-lightbox-viewport');
+        const lightboxCanvas = imageLightbox.querySelector('.image-lightbox-canvas');
+        const lightboxImage = imageLightbox.querySelector('.image-lightbox-image');
+        const lightboxHelp = imageLightbox.querySelector('.image-lightbox-help');
+        let activeZoomTrigger = null;
+        let closeTimer = null;
+
+        function resetLightboxZoom() {
+            lightboxCanvas.classList.remove('is-zoomed');
+            lightboxCanvas.setAttribute('aria-label', '画像をさらに拡大する');
+            lightboxHelp.textContent = '画像をタップするとさらに拡大できます。拡大後は指で上下左右に動かせます。';
+            lightboxViewport.scrollTop = 0;
+            lightboxViewport.scrollLeft = 0;
+        }
+
+        function openImageLightbox(trigger) {
+            const image = trigger.querySelector('img');
+            const figure = trigger.closest('figure');
+            const caption = figure && figure.querySelector('figcaption');
+            if (!image) return;
+
+            clearTimeout(closeTimer);
+            activeZoomTrigger = trigger;
+            resetLightboxZoom();
+            lightboxImage.src = image.currentSrc || image.src;
+            lightboxImage.alt = image.alt || '';
+            lightboxTitle.textContent = caption ? caption.textContent.trim() : '画像の拡大表示';
+            imageLightbox.hidden = false;
+            document.documentElement.classList.add('is-lightbox-open');
+            requestAnimationFrame(function () {
+                imageLightbox.classList.add('is-open');
+                lightboxClose.focus();
+            });
+        }
+
+        function closeImageLightbox() {
+            if (imageLightbox.hidden) return;
+            imageLightbox.classList.remove('is-open');
+            document.documentElement.classList.remove('is-lightbox-open');
+            closeTimer = setTimeout(function () {
+                imageLightbox.hidden = true;
+                lightboxImage.removeAttribute('src');
+                resetLightboxZoom();
+                if (activeZoomTrigger) activeZoomTrigger.focus();
+                activeZoomTrigger = null;
+            }, 280);
+        }
+
+        imageZoomTriggers.forEach(function (trigger) {
+            trigger.addEventListener('click', function () {
+                openImageLightbox(trigger);
+            });
+        });
+
+        lightboxClose.addEventListener('click', closeImageLightbox);
+
+        lightboxCanvas.addEventListener('click', function (e) {
+            // 画像の外側をタップした時は閉じる。キーボード操作時は拡大操作として扱う。
+            if (e.target === lightboxCanvas && e.detail !== 0) {
+                closeImageLightbox();
+                return;
+            }
+            const isZoomed = lightboxCanvas.classList.toggle('is-zoomed');
+            lightboxCanvas.setAttribute('aria-label', isZoomed ? '画像を全体表示に戻す' : '画像をさらに拡大する');
+            lightboxHelp.textContent = isZoomed
+                ? '拡大表示中です。指で上下左右に動かせます。画像をタップすると全体表示に戻ります。'
+                : '画像をタップするとさらに拡大できます。拡大後は指で上下左右に動かせます。';
+
+            requestAnimationFrame(function () {
+                if (isZoomed) {
+                    lightboxViewport.scrollLeft =
+                        Math.max((lightboxViewport.scrollWidth - lightboxViewport.clientWidth) / 2, 0);
+                    lightboxViewport.scrollTop =
+                        Math.max((lightboxViewport.scrollHeight - lightboxViewport.clientHeight) / 2, 0);
+                } else {
+                    lightboxViewport.scrollTop = 0;
+                    lightboxViewport.scrollLeft = 0;
+                }
+            });
+        });
+
+        imageLightbox.addEventListener('click', function (e) {
+            if (e.target === imageLightbox) closeImageLightbox();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (imageLightbox.hidden) return;
+            if (e.key === 'Escape') {
+                closeImageLightbox();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+
+            const focusable = [lightboxClose, lightboxCanvas];
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
             }
         });
     }

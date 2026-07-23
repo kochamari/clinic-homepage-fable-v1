@@ -23,6 +23,7 @@ const requiredFiles = [
   ...pageFiles,
   "CSS/style.css",
   "JS/script.js",
+  "JS/transition-init.js",
   "JS/holidays-data.js",
   "JS/news-data.js",
   "JS/news-loader.js",
