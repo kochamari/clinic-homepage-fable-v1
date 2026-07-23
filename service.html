@@ -92,18 +92,36 @@
             <div class="container">
                 <p class="kicker">Services</p>
                 <h1 class="page-hero-title">診療案内</h1>
-                <p class="page-hero-lead">お腹の不調やがんが心配な症状のご相談から、胃カメラ、佐世保市のがん検診・特定健診、生活習慣病の管理、ワクチン接種まで。からだのことをまとめて相談できる「かかりつけ医」として、幅広く対応しています。</p>
+                <p class="page-hero-lead">お腹の不調やがんが心配な症状、胃カメラ、佐世保市の検診・健診、生活習慣病まで。消化器の専門医が、からだのことをまとめて診療します。</p>
             </div>
         </section>
 
-        <section class="section">
-            <div class="container service-list">
+        <nav class="service-index" aria-label="診療案内の目次">
+            <div class="container">
+                <p class="service-index-label">診療項目</p>
+                <ol class="service-index-list">
+                    <li><a href="#gastro"><span>01</span>気になる症状・がんが心配な方へ<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                    <li><a href="#endoscopy"><span>02</span>胃カメラ<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                    <li><a href="#checkup"><span>03</span>がん検診・特定健診<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                    <li><a href="#lifestyle"><span>04</span>生活習慣病<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                    <li><a href="#vaccine"><span>05</span>ワクチン・予防接種<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                    <li><a href="#fever"><span>06</span>発熱・かぜ症状<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                    <li><a href="#renkei"><span>07</span>基幹病院との連携<span class="service-index-arrow" aria-hidden="true">→</span></a></li>
+                </ol>
+            </div>
+        </nav>
+
+        <section class="service-body">
+            <div class="container service-chapters">
 
                 <!-- 気になる症状・がんが心配な方へ -->
-                <article class="service-card" id="gastro" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--primary" id="gastro">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">01</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg></span>
                         <h2>気になる症状・がんが心配な方へ</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>「お腹が痛い」「体重が減ってきた」「血便が出た」「便通が変わった」「胸やけや胃もたれが続く」——こうした症状の裏に、がんなどの病気が隠れていないかを見きわめることは、消化器内科のもっとも大切な役割だと考えています。少しでも不安のある方は、どうぞ我慢せずにご相談ください。</p>
                         <p>専門医が症状やこれまでの経過をていねいにうかがったうえで、必要な検査を無理なく進めます。「大げさかな」とためらう必要はありません。心配なところが見つからないと分かること、それ自体が何よりの安心につながります。気になる症状こそ、早めの受診をおすすめします。</p>
                         <ul class="service-tags">
@@ -119,10 +137,13 @@
                 </article>
 
                 <!-- 胃カメラ -->
-                <article class="service-card" id="endoscopy" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-activity"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--primary" id="endoscopy">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">02</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-activity"/></svg></span>
                         <h2>胃カメラ（胃内視鏡検査）</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>経験豊富な医師による、できるだけ苦痛の少ない胃カメラ（上部消化管内視鏡検査）を行っています。経口・経鼻に対応し、ご希望の方には鎮静剤を使った、うとうとした状態での検査も可能です。胃の不調が続く方、健診で指摘された方、ピロリ菌が気になる方は、お気軽にご相談ください。<strong>佐世保市の胃がん検診も、当院の胃カメラで受けられます。</strong></p>
                         <p>大腸カメラ（大腸内視鏡検査）も実施していますが、現在ご予約が大変混み合っております。お急ぎの場合やご予約の状況によっては、連携する近隣の医療機関をご紹介させていただくことがあります。</p>
                         <ul class="service-tags">
@@ -138,10 +159,13 @@
                 </article>
 
                 <!-- がん検診・特定健診 -->
-                <article class="service-card" id="checkup" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-clipboard"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--primary" id="checkup">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">03</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-clipboard"/></svg></span>
                         <h2>佐世保市のがん検診・特定健診</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>当院は佐世保市の検診実施医療機関です。<strong>特定健診・高齢者健診と、胃がん・大腸がん・肺がん検診を、まとめて当院で受けられます。</strong>市の補助が受けられますので、年に1回、からだの点検をぜひ習慣にしましょう。</p>
 
                         <div class="table-scroll">
@@ -186,7 +210,7 @@
                             </ul>
                         </div>
 
-                        <p style="margin-top: 22px;">特定健診（40〜74歳）・後期高齢者健診にも対応しており、<strong>がん検診と同じ日にまとめて受けることができます。</strong>がん検診は受診券不要で、マイナ保険証または資格確認書をお持ちください。特定健診・後期高齢者健診は、受診券とマイナ保険証または資格確認書をお持ちのうえ、お電話でご予約ください。</p>
+                        <p class="service-followup">特定健診（40〜74歳）・後期高齢者健診にも対応しており、<strong>がん検診と同じ日にまとめて受けることができます。</strong>がん検診は受診券不要で、マイナ保険証または資格確認書をお持ちください。特定健診・後期高齢者健診は、受診券とマイナ保険証または資格確認書をお持ちのうえ、お電話でご予約ください。</p>
 
                         <ul class="service-tags">
                             <li>特定健診</li>
@@ -202,10 +226,13 @@
                 </article>
 
                 <!-- 生活習慣病 -->
-                <article class="service-card" id="lifestyle" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-heart"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--primary" id="lifestyle">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">04</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-heart"/></svg></span>
                         <h2>生活習慣病（高血圧・脂質異常症・糖尿病）</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>高血圧・脂質異常症・糖尿病などの生活習慣病を、数多く診療しています。健診で「血圧が高い」「コレステロールが高い」「血糖値が高い」と言われた方、肝機能の異常を指摘された方、バリウム検査でひっかかった方——結果票を持って、まずはご相談ください。</p>
                         <p><strong>生活習慣病は、脂肪肝や肝機能障害、さらには胃がん・大腸がんのリスクとも深く関わっています。</strong>だからこそ、消化器の専門医が、胃カメラなどおなかの状態まで含めて一貫して管理できることが当院の強みです。「生活習慣病はあの病院、胃腸はこの病院」と分けずに、まとめてお任せください。</p>
                         <p>治療は最新のガイドラインに沿った適切な医療を心がけつつ、お仕事や食生活など、お一人おひとりの暮らしに合わせた無理のない方法をご提案します。</p>
@@ -221,10 +248,13 @@
                 </article>
 
                 <!-- ワクチン -->
-                <article class="service-card" id="vaccine" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--secondary" id="vaccine">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">05</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg></span>
                         <h2>ワクチン・予防接種</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>当院はワクチン接種に力を入れています。インフルエンザ、新型コロナ、帯状疱疹などの各種ワクチンに対応。帯状疱疹ワクチンは2種類をご用意しており、それぞれの特徴をご説明したうえで、ご希望に合わせてお選びいただけます。</p>
                         <p>接種はお電話でのご予約をお願いします。市の助成制度が使える場合もありますので、対象かどうか分からない方もお気軽にお尋ねください。</p>
                         <ul class="service-tags">
@@ -237,10 +267,13 @@
                 </article>
 
                 <!-- 発熱・かぜ症状 -->
-                <article class="service-card" id="fever" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--secondary" id="fever">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">06</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg></span>
                         <h2>発熱・かぜ症状のある方へ</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>発熱やかぜ症状の診療も行っていますが、当院にはご高齢の患者さんも多く通院されています。院内での感染を防ぐため、次の点にご協力をお願いいたします。</p>
                         <div class="info-box info-box--amber">
                             <h3><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>ご来院の前に、必ずお電話ください</h3>
@@ -254,10 +287,13 @@
                 </article>
 
                 <!-- 連携 -->
-                <article class="service-card" id="renkei" data-reveal>
-                    <span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#icon-link"/></svg></span>
-                    <div>
+                <article class="service-chapter service-chapter--secondary" id="renkei">
+                    <header class="service-chapter-heading">
+                        <span class="service-chapter-number">07</span>
+                        <span class="service-chapter-icon"><svg class="icon" aria-hidden="true"><use href="#icon-link"/></svg></span>
                         <h2>地域の基幹病院との連携</h2>
+                    </header>
+                    <div class="service-chapter-content">
                         <p>地域の基幹病院と、日頃から綿密に連携しています。緊急性のある疾患や、入院・手術・高度な検査が必要な場合は、ためらわずすみやかにご紹介します。</p>
                         <p>特に力を入れているのが、<strong>胃がん・大腸がんなど消化器のがんの早期発見です。</strong>検診や精密検査から、基幹病院での治療、そして治療後のフォローまで、切れ目なくお付き合いします。10年、20年と安心して通っていただける「かかりつけ医」として、皆様の健康維持のお手伝いをいたします。</p>
                     </div>

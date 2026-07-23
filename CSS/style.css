@@ -310,9 +310,7 @@ html.is-page-zoomed *::after {
 }
 
 /* カードの上辺に、金の細い線を一本走らせる */
-.feature-card::before,
 .segment-card::before,
-.service-card::before,
 .info-panel::before,
 .doctor-card::before,
 .closure-calendar-wrap::before,
@@ -943,6 +941,21 @@ body.drawer-open {
     align-items: center;
 }
 
+.hero-copy {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.hero-actions-block {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.hero-card {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+
 .hero-kicker {
     display: inline-flex;
     align-items: center;
@@ -980,9 +993,29 @@ body.drawer-open {
 .hero-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 14px;
     margin-top: 36px;
 }
+
+.hero-info-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 8px 4px;
+    color: var(--primary-dark);
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+.hero-info-link .icon {
+    width: 0.9em;
+    height: 0.9em;
+    transition: transform 0.25s var(--ease);
+}
+.hero-info-link:hover .icon { transform: translateX(4px); }
 
 .hero-points {
     display: flex;
@@ -1650,58 +1683,71 @@ html.is-popup-open body { overflow: hidden; }
 }
 .news-article-body p + p { margin-top: 12px; }
 
-/* --- Features --- */
-.features-grid {
+/* --- Features：カードではなく一枚の編集面として見せる --- */
+.features-editorial {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: clamp(20px, 3vw, 32px);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
 }
 
-.feature-card {
-    position: relative;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 38px 30px 34px;
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+.feature-editorial-item {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 28px;
+    min-width: 0;
+    padding: clamp(34px, 4vw, 52px) clamp(24px, 3.4vw, 42px);
 }
-/* 特徴カードは押せないので、ホバーで浮かせない */
 
-.feature-num {
-    position: absolute;
-    top: 24px;
-    right: 26px;
-    font-family: var(--font-serif);
-    font-size: 0.85rem;
-    letter-spacing: 0.14em;
+.feature-editorial-item + .feature-editorial-item {
+    border-left: 1px solid var(--line);
+}
+
+.feature-editorial-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.feature-editorial-number {
+    font-family: var(--font-num);
+    font-size: 1.35rem;
+    font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: 0.08em;
     color: var(--accent);
 }
 
-.feature-icon {
-    display: inline-flex;
+.feature-editorial-icon {
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: var(--primary-tint);
     color: var(--primary);
-    margin-bottom: 20px;
 }
-.feature-icon .icon { width: 26px; height: 26px; }
+.feature-editorial-icon .icon {
+    width: 22px;
+    height: 22px;
+}
 
-.feature-card h3 {
+.feature-editorial-content {
+    display: grid;
+    grid-template-rows: minmax(5.4em, auto) auto;
+    align-content: start;
+}
+
+.feature-editorial-content h3 {
     font-family: var(--font-serif);
-    font-size: 1.18rem;
+    font-size: clamp(1.18rem, 1.8vw, 1.42rem);
     font-weight: 600;
     letter-spacing: 0.06em;
-    line-height: 1.6;
-    margin-bottom: 12px;
+    line-height: 1.7;
 }
 
-.feature-card p {
-    font-size: 0.92rem;
+.feature-editorial-content p {
+    max-width: 30em;
+    font-size: 0.95rem;
+    line-height: 2;
     color: var(--ink-soft);
 }
 
@@ -1742,6 +1788,23 @@ html.is-popup-open body { overflow: hidden; }
     color: var(--ink-soft);
     letter-spacing: 0.1em;
     margin-bottom: 2px;
+}
+
+.greeting-more {
+    margin-top: 18px;
+}
+.greeting-more a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-dark);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+.greeting-more .icon {
+    width: 0.9em;
+    height: 0.9em;
 }
 
 /* --- Hours & Access --- */
@@ -2326,62 +2389,162 @@ html.is-popup-open body { overflow: hidden; }
     outline-offset: 2px;
 }
 
-/* --- Service page --- */
-.service-list {
-    display: grid;
-    gap: clamp(24px, 3vw, 36px);
+/* --- Service page：目次と章構成 --- */
+.service-index {
+    padding: clamp(40px, 5vw, 64px) 0;
+    border-bottom: 1px solid var(--line);
 }
 
-.service-card {
-    display: grid;
-    grid-template-columns: 84px 1fr;
-    gap: clamp(20px, 3vw, 36px);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-soft);
-    padding: clamp(28px, 4vw, 44px);
+.service-index-label {
+    margin-bottom: 16px;
+    color: var(--primary);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
 }
 
-.service-icon {
-    display: inline-flex;
+.service-index-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(26px, 4vw, 54px);
+}
+
+.service-index-list li:nth-child(n + 4) a {
+    border-top: 1px solid var(--line);
+}
+
+.service-index-list a {
+    display: grid;
+    grid-template-columns: 2.4em minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 62px;
+    padding: 12px 2px;
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-decoration: none;
+}
+.service-index-list a > span {
+    color: var(--accent);
+    font-family: var(--font-num);
+    font-size: 1rem;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+.service-index-arrow {
+    color: var(--primary);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    transition: transform 0.25s var(--ease);
+}
+.service-index-list a:hover {
+    color: var(--primary-dark);
+}
+.service-index-list a:hover .service-index-arrow {
+    transform: translateX(4px);
+}
+
+.service-body {
+    padding: 0 0 clamp(80px, 10vw, 128px);
+}
+
+.service-chapters {
+    border-top: 1px solid var(--line);
+}
+
+.service-chapter {
+    display: grid;
+    grid-template-columns: minmax(230px, 0.34fr) minmax(0, 0.66fr);
+    gap: clamp(52px, 7vw, 92px);
+    padding: clamp(80px, 9vw, 116px) 0;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: calc(var(--header-h) + 18px);
+}
+
+.service-chapter--secondary {
+    padding-block: clamp(58px, 7vw, 84px);
+}
+
+.service-chapter-heading {
+    align-self: start;
+    min-width: 0;
+}
+
+.service-chapter-number {
+    display: block;
+    margin-bottom: 24px;
+    color: var(--accent);
+    font-family: var(--font-num);
+    font-size: 1.55rem;
+    font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: 0.08em;
+}
+
+.service-chapter-icon {
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 84px;
-    height: 84px;
-    border-radius: 50%;
-    background: var(--primary-tint);
+    width: 30px;
+    height: 30px;
+    margin-bottom: 18px;
     color: var(--primary);
 }
-.service-icon .icon { width: 34px; height: 34px; }
-
-.service-card h2 {
-    font-family: var(--font-serif);
-    font-size: clamp(1.25rem, 2.4vw, 1.5rem);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    margin-bottom: 12px;
+.service-chapter-icon .icon {
+    width: 26px;
+    height: 26px;
 }
 
-.service-card > div > p {
-    font-size: 0.95rem;
+.service-chapter-heading h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 2.5vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.65;
+}
+
+.service-chapter-content > p {
+    font-size: 1rem;
+    line-height: 2;
     color: var(--ink-soft);
-    margin-bottom: 18px;
+}
+.service-chapter-content {
+    min-width: 0;
+}
+.service-chapter-content > p + p {
+    margin-top: 18px;
+}
+.service-chapter-content strong {
+    color: var(--ink);
+}
+.service-followup {
+    margin-top: 26px;
 }
 
 .service-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 28px;
+    border-top: 1px solid var(--line);
 }
 .service-tags li {
-    padding: 6px 16px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 0.83rem;
+    position: relative;
+    padding: 11px 10px 11px 20px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.88rem;
     font-weight: 500;
     color: var(--ink);
+}
+.service-tags li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    width: 7px;
+    height: 1px;
+    background: var(--accent);
 }
 
 /* --- Doctors page --- */
@@ -3145,10 +3308,10 @@ a.material-card:hover {
 .cta-tel,
 .contact-tel,
 .footer-tel,
-.price-table .price,
-.feature-num {
-    font-family: var(--font-num);
-    font-feature-settings: "onum" 1, "palt" 1;
+.price-table .price {
+    font-family: var(--font-sans);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
     letter-spacing: 0.02em;
 }
 .hero-card-tel,
@@ -3156,20 +3319,6 @@ a.material-card:hover {
 .contact-tel,
 .footer-tel {
     font-weight: 600;
-}
-
-/* --- 特徴カードの飾り番号（背景に大きく薄く） --- */
-.feature-card .feature-num {
-    top: auto;
-    right: clamp(14px, 2.5vw, 26px);
-    bottom: -0.32em;
-    font-size: clamp(4.6rem, 9vw, 7.4rem);
-    line-height: 1;
-    font-weight: 400;
-    color: var(--primary);
-    opacity: 0.07;
-    pointer-events: none;
-    user-select: none;
 }
 
 /* --- 本文リンクの下線が左から引かれる --- */
@@ -3258,27 +3407,23 @@ html {
 /* カードのフェードイン（0.8秒）が終わってから描き始めるので、描かれる様子が見える */
 @media (prefers-reduced-motion: no-preference) {
     .js .feature-icon .icon,
-    .js .service-icon .icon,
     .js .contact-card-icon .icon {
         stroke-dasharray: 70;
         stroke-dashoffset: 70;
         transition: stroke-dashoffset 1.6s var(--ease) 0.55s;
     }
     .js [data-reveal].is-visible .feature-icon .icon,
-    .js [data-reveal].is-visible .service-icon .icon,
     .js [data-reveal].is-visible .contact-card-icon .icon {
         stroke-dashoffset: 0;
     }
     /* アイコンの丸い下地も、線を描く前にふわっと開く */
     .js .feature-icon,
-    .js .service-icon,
     .js .contact-card-icon {
         transform: scale(0.82);
         opacity: 0;
         transition: transform 0.8s var(--ease) 0.15s, opacity 0.8s var(--ease) 0.15s;
     }
     .js [data-reveal].is-visible .feature-icon,
-    .js [data-reveal].is-visible .service-icon,
     .js [data-reveal].is-visible .contact-card-icon {
         transform: scale(1);
         opacity: 1;
@@ -3288,9 +3433,7 @@ html {
 /* --- カードのホバー光沢（カーソル位置はJSが --mx / --my で渡す） --- */
 /* クリックできるカード（トップの「こんなときは、当院へ」）だけに付ける。
    押せないカードを光らせると、押せると誤解されるため */
-.feature-card,
 .segment-card,
-.service-card,
 .material-card {
     position: relative;
     overflow: hidden;
@@ -3360,8 +3503,60 @@ html {
 
     .hero-grid {
         grid-template-columns: 1fr;
+        gap: 0;
     }
-    .hero-card { max-width: 480px; }
+    .hero-copy {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    .hero-card {
+        grid-column: 1;
+        grid-row: 2;
+        max-width: 480px;
+        margin-top: 32px;
+    }
+    .hero-actions-block {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .features-editorial { grid-template-columns: 1fr; }
+    .feature-editorial-item {
+        grid-template-columns: 48px minmax(0, 1fr);
+        grid-template-rows: auto;
+        gap: 22px;
+        padding: 34px 8px;
+    }
+    .feature-editorial-item + .feature-editorial-item {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+    .feature-editorial-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 14px;
+    }
+    .feature-editorial-number { font-size: 1.2rem; }
+    .feature-editorial-content {
+        grid-template-rows: auto auto;
+        gap: 12px;
+    }
+
+    .service-index-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 22px;
+    }
+    .service-index-list li:nth-child(n + 3) a {
+        border-top: 1px solid var(--line);
+    }
+    .service-chapters { border-top: 0; }
+    .service-chapter,
+    .service-chapter--secondary {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 64px 0;
+    }
 
     /* 1段組では文字が写真の上に重なるため、紙の膜を全体に濃くかける */
     .hero::after {
@@ -3440,6 +3635,97 @@ html {
         font-size: 0.78rem;
     }
 
+    .hero {
+        padding: 40px 0 58px;
+    }
+    .hero-kicker {
+        gap: 9px;
+        font-size: 0.74rem;
+        line-height: 1.7;
+        letter-spacing: 0.1em;
+    }
+    .hero-kicker::before { width: 20px; }
+    .hero-title {
+        margin-top: 14px;
+        font-size: clamp(1.85rem, 9vw, 2.35rem);
+        line-height: 1.42;
+        letter-spacing: 0.045em;
+    }
+    .hero-lead {
+        margin-top: 18px;
+        font-size: 0.94rem;
+        line-height: 1.85;
+    }
+    .hero-card {
+        width: 100%;
+        max-width: none;
+        margin-top: 24px;
+        padding: 20px 20px 18px;
+        box-shadow: var(--shadow-soft);
+    }
+    .hero-card::before {
+        left: 20px;
+        right: 20px;
+        height: 2px;
+    }
+    .hero-card-mark,
+    .hero-card-label {
+        display: none;
+    }
+    .hero-card .clinic-status {
+        margin-bottom: 8px;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+    }
+    .hero-card-tel {
+        display: flex;
+        width: 100%;
+        min-height: 52px;
+        margin-top: 0;
+        padding: 7px 16px;
+        justify-content: center;
+        border-radius: 999px;
+        background: var(--primary);
+        color: #fff;
+        font-size: clamp(1.35rem, 7.2vw, 1.65rem);
+    }
+    .hero-card-tel .icon { color: rgba(216, 178, 110, 0.95); }
+    .hero-card-tel:hover { color: #fff; background: var(--primary-dark); }
+    .hero-card-hours {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+    .hero-card-hours > div {
+        gap: 10px;
+        font-size: 0.84rem;
+        line-height: 1.65;
+    }
+    .hero-card-hours > div:nth-child(2),
+    .hero-card-hours-note {
+        display: none;
+    }
+    .hero-card-link {
+        margin-top: 12px;
+        font-size: 0.84rem;
+    }
+    .hero-actions {
+        gap: 12px 18px;
+        margin-top: 18px;
+    }
+    .hero-actions .btn {
+        min-height: 48px;
+        padding-inline: 24px;
+    }
+    .hero-info-link {
+        min-height: 44px;
+        font-size: 0.86rem;
+    }
+    .hero-points { display: none; }
+    .hero::after {
+        background-image:
+            linear-gradient(180deg, rgba(250, 249, 245, 0.98) 0%, rgba(250, 249, 245, 0.82) 58%, var(--paper) 96%);
+    }
+
     .hero-card-tel,
     .cta-tel,
     .contact-tel,
@@ -3492,7 +3778,18 @@ html {
         font-size: 0.76rem;
     }
 
-    .features-grid { grid-template-columns: 1fr; }
+    .feature-editorial-item {
+        gap: 18px;
+        padding: 30px 4px;
+    }
+    .feature-editorial-content h3 {
+        font-size: 1.24rem;
+        line-height: 1.65;
+    }
+    .feature-editorial-content p {
+        font-size: 0.94rem;
+        line-height: 1.9;
+    }
     .segment-grid { grid-template-columns: 1fr; }
     .closure-calendar { grid-template-columns: 1fr; }
 
@@ -3505,11 +3802,46 @@ html {
 
     .news-article-meta { flex-wrap: wrap; }
 
-    .service-card {
-        grid-template-columns: 1fr;
+    .service-index {
+        padding: 32px 0 38px;
     }
-    .service-icon { width: 64px; height: 64px; }
-    .service-icon .icon { width: 28px; height: 28px; }
+    .service-index-list { column-gap: 18px; }
+    .service-index-list a {
+        grid-template-columns: 2em minmax(0, 1fr) auto;
+        min-height: 64px;
+        gap: 7px;
+        font-size: 0.88rem;
+    }
+    .service-index-list a > span { font-size: 0.9rem; }
+    .service-chapter,
+    .service-chapter--secondary {
+        gap: 26px;
+        padding: 58px 0;
+    }
+    .service-chapter-number {
+        margin-bottom: 16px;
+        font-size: 1.35rem;
+    }
+    .service-chapter-icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 14px;
+    }
+    .service-chapter-heading h2 {
+        font-size: clamp(1.35rem, 6.6vw, 1.65rem);
+        line-height: 1.6;
+    }
+    .service-chapter-content > p {
+        font-size: 1rem;
+        line-height: 1.95;
+    }
+    .service-tags {
+        grid-template-columns: 1fr;
+        margin-top: 24px;
+    }
+    .service-tags li {
+        padding-block: 10px;
+    }
 
     .access-grid { grid-template-columns: 1fr; }
     .parking-summary { grid-template-columns: 1fr; }
@@ -3558,6 +3890,12 @@ html {
     .drawer {
         padding-right: max(16px, env(safe-area-inset-right));
         padding-left: max(16px, env(safe-area-inset-left));
+    }
+    .service-index-list {
+        grid-template-columns: 1fr;
+    }
+    .service-index-list li:nth-child(n + 2) a {
+        border-top: 1px solid var(--line);
     }
 }
 
