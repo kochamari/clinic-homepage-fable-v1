@@ -245,11 +245,19 @@ document.addEventListener('click', function (e) {
         } catch (err) { return; }
     }
 
-    markInternalNav();
-
     // 紙色のレイヤーで画面をつなげてから移動する（修飾クリックはそのまま）
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (e.defaultPrevented) return;
+
+    // 現在表示しているページへのリンクでは、Safariに不要な再読み込みをさせない。
+    // とくにモバイルで拡大操作の直後に現在地リンクが反応すると、再読み込みが重なることがある。
+    if (link.href === window.location.href) {
+        e.preventDefault();
+        return;
+    }
+
+    markInternalNav();
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     e.preventDefault();
     if (document.documentElement.classList.contains('is-leaving')) return;
@@ -308,7 +316,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.prepend(parallaxBg);
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!prefersReducedMotion.matches) {
+    // 指で操作する端末では、拡大時のSafari描画負荷を抑えるため視差の継続描画を行わない。
+    const canUseParallaxMotion =
+        !prefersReducedMotion.matches &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    if (canUseParallaxMotion) {
         const leavesLayer = parallaxBg.querySelector('.parallax-layer--leaves');
         const signMark = parallaxBg.querySelector('.p-sign');
         const signMarkImg = parallaxBg.querySelector('.p-sign-img');

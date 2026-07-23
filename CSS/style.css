@@ -154,6 +154,20 @@ ul, ol {
         linear-gradient(180deg, var(--paper) 0%, #f3f1e8 100%);
 }
 
+/* ページ拡大中は、iOS Safariで負荷の高い固定背景・マスク画像・変形を止める。 */
+html.is-page-zoomed .parallax-bg,
+html.is-page-zoomed .page-hero-photo,
+html.is-page-zoomed .scroll-progress {
+    display: none !important;
+}
+
+html.is-page-zoomed *,
+html.is-page-zoomed *::before,
+html.is-page-zoomed *::after {
+    animation: none !important;
+    transition-duration: 0ms !important;
+}
+
 .parallax-layer {
     position: absolute;
     inset: -14vh -8vw -62vh;
