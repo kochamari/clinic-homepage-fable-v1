@@ -36,15 +36,21 @@ JS/                   サイトの JavaScript
   news-loader.js      お知らせの読み込み・表示
   news-popup.js       重要なお知らせのポップアップ
   clinic-hours.js     診療時間の「診療中／休診」表示・休診カレンダー
+  holidays-data.js    内閣府CSVから自動生成する祝日データ
 images/               画像
 PDF/                  配布用 PDF
 scripts/
   dev.mjs             ローカル開発サーバー
-  build.mjs           公開用ファイルを dist/ に生成
+  build.mjs           GitHub Pages公開前のファイル検証
+  update-holidays.mjs 内閣府CSVから祝日データを生成
+.github/workflows/
+  update-holidays.yml 祝日データの定期更新
 docs/
   CLINIC_FACTS.md     クリニックの確定情報
   SITE_POLICY.md      文章・デザイン方針
 CNAME                 独自ドメイン（削除・変更しない）
+robots.txt            クローラー向け設定とサイトマップ案内
+sitemap.xml           公開ページのサイトマップ
 .claude/launch.json   Claude Code のプレビュー起動設定（共有）
 ```
 
@@ -54,7 +60,7 @@ CNAME                 独自ドメイン（削除・変更しない）
 |---|---|---|
 | 依存インストール | `npm install` | 依存はゼロ。実行しても何も入らないが害はない |
 | 開発サーバー起動 | `npm run dev` | `http://127.0.0.1:4173`（`PORT` 環境変数で変更可） |
-| ビルド | `npm run build` | 公開用ファイルを `dist/`（gitignore 済）に生成 |
+| 公開前検証 | `npm run build` | 必須ファイル・HTMLリンク・画像・JS構文・HTML基本構造を確認 |
 | JS 構文チェック | `node -c JS/script.js` | 個別ファイルの構文確認に使える簡易手段 |
 
 - **テスト・lint・型チェックのフレームワークは未設定**（存在しない）。
@@ -110,6 +116,16 @@ CNAME                 独自ドメイン（削除・変更しない）
 - 医療効果を保証する表現・過度な比較・誇大表現を勝手に追加しない（`docs/SITE_POLICY.md`）。
 - 患者情報、症例を特定できる情報、スタッフの非公開情報を保存しない。
 - API キー・パスワード・トークン・秘密情報・`.env` の内容をコミットしない。
+
+---
+
+## 年次運用
+
+- 休診日カレンダーの祝日データは、内閣府CSVから `JS/holidays-data.js` へ自動生成する。
+- `.github/workflows/update-holidays.yml` が毎月、データ変更時だけ `main` に自動反映する。通常の年次作業は不要。
+- 緊急時はGitHub Actionsの手動実行でも更新できる。
+- お盆・年末年始などの臨時休診は、`JS/news-data.js` の該当お知らせに `closures` を記載すると、カレンダーにも自動反映される。
+- 診療状況と休診日カレンダーの判定基準は `Asia/Tokyo`（日本時間）とする。
 
 ---
 

@@ -1,14 +1,43 @@
 // 診療時間・休診日の設定と、「今の診療状況」「休診日カレンダー」の表示
 //
 // ============================================================
-// ■ 臨時休診（お盆・年末年始・学会など）を追加するには
-//   下の closures に1行足してください。日付は "西暦-月-日" の形式です。
-//     { "date": "2026-08-13", "label": "お盆休み" },
+// ■ 臨時休診（お盆・年末年始・学会など）は JS/news-data.js の
+//   各お知らせに closures を追加すると、カレンダーにも自動反映されます。
 //
-// ■ 祝日は holidays に列挙しています。
-//   年が変わったら、その年の祝日を追加してください。
-//   （祝日は自動では増えません。追加を忘れると通常営業として表示されます）
+// ■ 祝日は JS/holidays-data.js に記録しています。
+//   このファイルは内閣府CSVから自動生成され、GitHub Actionsが毎月更新を確認します。
+//
+// ■ 時刻基準
+//   診療状況と休診日カレンダーは、閲覧者の端末ではなく
+//   Asia/Tokyo（日本時間）を基準に判定します。
 // ============================================================
+
+const TOKYO_TIME_ZONE = 'Asia/Tokyo';
+const tokyoDateTimeFormatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TOKYO_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+});
+
+function nowInTokyo() {
+    const parts = tokyoDateTimeFormatter.formatToParts(new Date());
+    const values = {};
+    parts.forEach(function (part) {
+        if (part.type !== 'literal') values[part.type] = Number(part.value);
+    });
+    // 東京の年月日時分をUTC上の同じ数値として保持し、以降の計算を端末TZから分離する。
+    return new Date(Date.UTC(
+        values.year,
+        values.month - 1,
+        values.day,
+        values.hour,
+        values.minute
+    ));
+}
 
 const clinicSchedule = {
     // 曜日ごとの受付時間（0=日曜, 1=月曜 … 6=土曜）。[] は休診
@@ -20,43 +49,41 @@ const clinicSchedule = {
         4: [['09:00', '12:30'], ['14:00', '17:30']],  // 木曜
         5: [['09:00', '12:30'], ['14:00', '17:30']],  // 金曜
         6: [['09:00', '12:30']]                       // 土曜：午前のみ
-    },
-
-    // 臨時休診
-    closures: [
-        { date: '2026-08-13', label: 'お盆休み' },
-        { date: '2026-08-14', label: 'お盆休み' },
-        { date: '2026-08-15', label: 'お盆休み' }
-    ],
-
-    // 祝日（休診）
-    holidays: [
-        // 2026年
-        '2026-01-01', '2026-01-12', '2026-02-11', '2026-02-23', '2026-03-20',
-        '2026-04-29', '2026-05-03', '2026-05-04', '2026-05-05', '2026-05-06',
-        '2026-07-20', '2026-08-11', '2026-09-21', '2026-09-22', '2026-09-23',
-        '2026-10-12', '2026-11-03', '2026-11-23',
-        // 2027年（春分・秋分の日は前年2月の官報で確定します）
-        '2027-01-01', '2027-01-11', '2027-02-11', '2027-02-23', '2027-03-21',
-        '2027-03-22', '2027-04-29', '2027-05-03', '2027-05-04', '2027-05-05',
-        '2027-07-19', '2027-08-11', '2027-09-20', '2027-09-23', '2027-10-11',
-        '2027-11-03', '2027-11-23'
-    ]
+    }
 };
 
 (function () {
     'use strict';
 
     const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
-    const holidaySet = new Set(clinicSchedule.holidays);
-    const closureMap = new Map(clinicSchedule.closures.map(c => [c.date, c.label]));
+    const holidaySet = new Set(
+        typeof nationalHolidays === 'undefined' ? [] : nationalHolidays
+    );
+
+    function closureMapFromNews() {
+        const closures = new Map();
+        if (typeof newsData === 'undefined' || !Array.isArray(newsData.news)) return closures;
+
+        newsData.news.forEach(function (item) {
+            if (!item || !Array.isArray(item.closures)) return;
+            item.closures.forEach(function (closure) {
+                if (!closure || !/^\d{4}-\d{2}-\d{2}$/.test(closure.date)) return;
+                if (!closures.has(closure.date)) {
+                    closures.set(closure.date, String(closure.label || item.title || '臨時休診'));
+                }
+            });
+        });
+        return closures;
+    }
+
+    const closureMap = closureMapFromNews();
 
     function pad(n) {
         return String(n).padStart(2, '0');
     }
 
     function ymd(date) {
-        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+        return date.getUTCFullYear() + '-' + pad(date.getUTCMonth() + 1) + '-' + pad(date.getUTCDate());
     }
 
     function toMinutes(hhmm) {
@@ -68,7 +95,7 @@ const clinicSchedule = {
     function sessionsOf(date) {
         const key = ymd(date);
         if (closureMap.has(key) || holidaySet.has(key)) return [];
-        return clinicSchedule.weekly[date.getDay()] || [];
+        return clinicSchedule.weekly[date.getUTCDay()] || [];
     }
 
     // 休診の理由（臨時休診名・祝日・通常の休診日）
@@ -84,14 +111,14 @@ const clinicSchedule = {
         const cursor = new Date(from);
         for (let i = 0; i < 60; i++) {
             const sessions = sessionsOf(cursor);
-            const limit = (i === 0) ? from.getHours() * 60 + from.getMinutes() : -1;
+            const limit = (i === 0) ? from.getUTCHours() * 60 + from.getUTCMinutes() : -1;
             for (let s = 0; s < sessions.length; s++) {
                 if (toMinutes(sessions[s][0]) > limit) {
                     return { date: new Date(cursor), start: sessions[s][0] };
                 }
             }
-            cursor.setDate(cursor.getDate() + 1);
-            cursor.setHours(0, 0, 0, 0);
+            cursor.setUTCDate(cursor.getUTCDate() + 1);
+            cursor.setUTCHours(0, 0, 0, 0);
         }
         return null;
     }
@@ -100,21 +127,21 @@ const clinicSchedule = {
         const next = nextOpening(now);
         if (!next) return '';
         const today = new Date(now);
-        today.setHours(0, 0, 0, 0);
+        today.setUTCHours(0, 0, 0, 0);
         const target = new Date(next.date);
-        target.setHours(0, 0, 0, 0);
+        target.setUTCHours(0, 0, 0, 0);
         const diff = Math.round((target - today) / 86400000);
         let day;
         if (diff === 0) day = '本日';
         else if (diff === 1) day = '明日';
-        else day = (target.getMonth() + 1) + '月' + target.getDate() + '日(' + WEEK[target.getDay()] + ')';
+        else day = (target.getUTCMonth() + 1) + '月' + target.getUTCDate() + '日(' + WEEK[target.getUTCDay()] + ')';
         return '次の受付は' + day + ' ' + next.start + 'から';
     }
 
     // 現在の診療状況を判定する
     function getStatus(now) {
         const sessions = sessionsOf(now);
-        const nowMin = now.getHours() * 60 + now.getMinutes();
+        const nowMin = now.getUTCHours() * 60 + now.getUTCMinutes();
 
         if (!sessions.length) {
             const reason = closureReason(now);
@@ -145,7 +172,7 @@ const clinicSchedule = {
     function renderStatus() {
         const nodes = document.querySelectorAll('[data-clinic-status]');
         if (!nodes.length) return;
-        const status = getStatus(new Date());
+        const status = getStatus(nowInTokyo());
         nodes.forEach(function (node) {
             node.className = 'clinic-status is-' + status.state;
             node.innerHTML =
@@ -157,16 +184,16 @@ const clinicSchedule = {
 
     // 1か月分のカレンダーHTMLをつくる
     function monthHTML(year, month, todayKey) {
-        const first = new Date(year, month, 1);
-        const days = new Date(year, month + 1, 0).getDate();
+        const first = new Date(Date.UTC(year, month, 1));
+        const days = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
         let cells = '';
 
-        for (let i = 0; i < first.getDay(); i++) {
+        for (let i = 0; i < first.getUTCDay(); i++) {
             cells += '<span class="cal-cell is-empty" aria-hidden="true"></span>';
         }
 
         for (let day = 1; day <= days; day++) {
-            const date = new Date(year, month, day);
+            const date = new Date(Date.UTC(year, month, day));
             const sessions = sessionsOf(date);
             const classes = ['cal-cell'];
             let label = '';
@@ -201,20 +228,20 @@ const clinicSchedule = {
         const host = document.querySelector('[data-closure-calendar]');
         if (!host) return;
 
-        const now = new Date();
+        const now = nowInTokyo();
         const todayKey = ymd(now);
         let html = '';
         const notes = [];
 
         for (let offset = 0; offset < 2; offset++) {
-            const base = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-            html += monthHTML(base.getFullYear(), base.getMonth(), todayKey);
+            const base = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset, 1));
+            html += monthHTML(base.getUTCFullYear(), base.getUTCMonth(), todayKey);
 
-            // 表示中の月にある臨時休診をまとめる
-            clinicSchedule.closures.forEach(function (c) {
-                const parts = c.date.split('-').map(Number);
-                if (parts[0] === base.getFullYear() && parts[1] - 1 === base.getMonth()) {
-                    notes.push({ month: parts[1], day: parts[2], label: c.label });
+            // 表示中の月にある、お知らせ由来の臨時休診をまとめる
+            closureMap.forEach(function (label, date) {
+                const parts = date.split('-').map(Number);
+                if (parts[0] === base.getUTCFullYear() && parts[1] - 1 === base.getUTCMonth()) {
+                    notes.push({ month: parts[1], day: parts[2], label: label });
                 }
             });
         }
@@ -251,9 +278,9 @@ const clinicSchedule = {
         const table = document.querySelector('[data-hours-table]');
         if (!table) return;
 
-        const now = new Date();
+        const now = nowInTokyo();
         // 表の列は 0=見出し, 1=月 … 6=土, 7=日祝
-        const col = now.getDay() === 0 ? 7 : now.getDay();
+        const col = now.getUTCDay() === 0 ? 7 : now.getUTCDay();
         const isClosed = sessionsOf(now).length === 0;
 
         table.querySelectorAll('tr').forEach(function (row) {

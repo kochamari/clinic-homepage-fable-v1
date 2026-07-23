@@ -15,7 +15,7 @@
 
 - **ビルドツールなしの静的サイト**（プレーンな HTML / CSS / JavaScript）。
 - フレームワーク・バンドラ・トランスパイラは使っていない。
-- Node.js（**22 以上**）製のスクリプトが 2 本（開発サーバー・ビルド）。
+- Node.js（**22 以上**）製のスクリプトが 2 本（開発サーバー・公開前検証）。
 - npm の依存パッケージは**現状ゼロ**。
 
 ## フォルダ構成
@@ -24,12 +24,16 @@
 /                  各ページの HTML（index / news / service / doctors /
                    access / contact / materials / 404）
 CSS/style.css      サイト全体のスタイル
-JS/                サイトの JavaScript（お知らせ・演出・診療時間表示など）
+JS/                サイトの JavaScript（お知らせ・演出・診療時間表示・祝日データなど）
 images/            画像
 PDF/               配布用 PDF
-scripts/           dev.mjs（開発サーバー） / build.mjs（ビルド）
+scripts/           dev.mjs（開発サーバー） / build.mjs（公開前検証） /
+                   update-holidays.mjs（祝日データ生成）
+.github/workflows/ update-holidays.yml（祝日データの定期更新）
 docs/              CLINIC_FACTS.md（確定情報） / SITE_POLICY.md（方針）
 CNAME              独自ドメイン設定（変更しない）
+robots.txt         クローラー向け設定とサイトマップ案内
+sitemap.xml        公開ページのサイトマップ
 AGENTS.md          AI・開発者共通の運用ルール
 CLAUDE.md          Claude Code 向けルール（AGENTS.md を参照）
 ```
@@ -54,14 +58,25 @@ npm run dev
 PORT=4188 npm run dev
 ```
 
-## ビルド
+## 公開前検証
 
 ```bash
 npm run build
 ```
 
-公開用ファイルが `dist/`（Git 管理外）に生成されます。
-本番公開は GitHub Pages が担うため、通常は動作確認用です。
+GitHub Pages が `main` ブランチのルートを直接配信する構成に合わせ、次を検証します。
+
+- 必須ファイルの存在
+- HTML 内のローカルリンクとページ内アンカー
+- 画像リンクと `alt` 属性
+- JavaScript の構文
+- HTML の基本構造（DOCTYPE、`lang`、主要要素、重複 `id` など）
+
+検証スクリプトは `dist/` や Cloudflare Worker を生成しません。
+
+### 休診カレンダーの年次更新
+
+内閣府の「国民の祝日・休日」CSVから祝日データを生成し、GitHub Actionsが毎月更新を確認します。更新があった場合だけ `main` に自動反映するため、通常の年次作業は不要です。お盆・年末年始などの臨時休診は、該当するお知らせの `closures` に日付を追加するとカレンダーにも自動反映されます。診療状況とカレンダーは `Asia/Tokyo`（日本時間）を基準に表示します。
 
 ## テスト・lint・型チェック
 
