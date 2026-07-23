@@ -26,6 +26,8 @@
     --font-serif: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
     /* 数字専用。数字が美しいだけで仕立てが良く見える */
     --font-num: 'Cormorant Garamond', 'Shippori Mincho', serif;
+    /* 電話番号は、読みやすさを保ちながら端正に見える明朝体を使う */
+    --font-tel: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
 
     /* shape */
     --radius: 14px;
@@ -173,7 +175,6 @@ html.is-page-zoomed *::after {
 .parallax-layer {
     position: absolute;
     inset: -14vh -8vw -62vh;
-    will-change: transform;
 }
 
 /* leaves：窓辺のグリーンの写真を、円形にぼかして水彩のように置く（最奥） */
@@ -211,7 +212,6 @@ html.is-page-zoomed *::after {
     opacity: 0;
     mix-blend-mode: multiply;
     transform-origin: 44% 50%;
-    will-change: transform, opacity;
 }
 .p-sign-img {
     position: absolute;
@@ -235,7 +235,6 @@ html.is-page-zoomed *::after {
 .p-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(42px);
 }
 .p-orb--1 {
     width: 46vw; height: 46vw;
@@ -285,11 +284,59 @@ html.is-page-zoomed *::after {
     background: radial-gradient(circle, rgba(24, 106, 100, 0.10) 0%, rgba(24, 106, 100, 0) 62%);
     opacity: 0;
     transition: opacity 0.6s var(--ease);
-    will-change: transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .parallax-glow { display: none; }
+}
+
+/* GPUレイヤーは実際に視差を動かすPCだけに限定する。
+   タッチ端末では固定レイヤーを軽量化し、Safariのスクロール再描画を抑える。 */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+    .parallax-layer,
+    .p-sign,
+    .parallax-glow,
+    .hero-photo,
+    .page-hero-photo {
+        will-change: transform, opacity;
+    }
+}
+
+@media (max-width: 900px), (hover: none), (pointer: coarse) {
+    .grain,
+    .parallax-layer--orbs,
+    .parallax-layer--dots,
+    .parallax-layer--rings,
+    .parallax-glow,
+    .p-sign,
+    .p-leaf--2 {
+        display: none;
+    }
+
+    .parallax-bg {
+        position: absolute;
+        bottom: auto;
+        height: 100svh;
+    }
+
+    .parallax-layer {
+        inset: -8vh -18vw 0;
+        will-change: auto;
+    }
+
+    .hero-photo,
+    .page-hero-photo {
+        will-change: auto;
+    }
+
+    .p-leaf--1 {
+        width: min(125vw, 560px);
+        height: min(125vw, 560px);
+        top: 18%;
+        right: -34%;
+        opacity: 0.22;
+    }
+
 }
 
 /* 画面が狭いと、サインの透かしが主張しすぎるので控えめにする */
@@ -632,6 +679,14 @@ html.is-entering.is-entered::after {
     box-shadow: 0 6px 24px rgba(31, 54, 58, 0.08);
 }
 
+@media (max-width: 900px), (hover: none), (pointer: coarse) {
+    .site-header {
+        background: rgba(250, 249, 245, 0.985);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+}
+
 .header-inner {
     height: 100%;
     display: flex;
@@ -904,7 +959,6 @@ body.drawer-open {
     inset: 0 0 -14% 0;
     overflow: hidden;
     pointer-events: none;
-    will-change: transform, opacity;
 }
 .hero-photo-img {
     position: absolute;
@@ -2486,6 +2540,7 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .service-chapter {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(230px, 0.34fr) minmax(0, 0.66fr);
     gap: clamp(52px, 7vw, 92px);
@@ -2526,6 +2581,16 @@ html.is-popup-open body { overflow: hidden; }
 .service-chapter-icon .icon {
     width: 26px;
     height: 26px;
+}
+.service-chapter-icon--endoscopy {
+    width: 40px;
+    height: 40px;
+    margin: -5px 0 13px -5px;
+}
+.service-chapter-icon--endoscopy .icon-stomach-scope {
+    width: 40px;
+    height: 40px;
+    overflow: visible;
 }
 
 .service-chapter-heading h2 {
@@ -2669,12 +2734,25 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .ultrasound-feature {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(220px, 0.34fr) minmax(0, 0.66fr);
     gap: clamp(48px, 7vw, 88px);
     margin-top: clamp(58px, 8vw, 92px);
     padding: clamp(38px, 5vw, 64px);
     background: var(--primary-tint);
+}
+.ultrasound-visual {
+    width: clamp(112px, 11vw, 150px);
+    aspect-ratio: 1;
+    margin: -8px 0 24px;
+    color: var(--primary);
+}
+.ultrasound-probe-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 .ultrasound-feature header {
     align-self: start;
@@ -2705,6 +2783,7 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .doctor-profile {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(250px, 0.32fr) minmax(0, 0.68fr);
     gap: clamp(56px, 8vw, 104px);
@@ -3479,29 +3558,12 @@ a.material-card:hover {
 }
 .error-hero .hero-actions { margin-top: 34px; }
 
-/* --- 診療案内カードの写真 --- */
-.service-photo {
-    margin: 20px 0 0;
-    overflow: hidden;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--line);
-}
-.service-photo img {
-    display: block;
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    object-position: center 30%;
-}
-
-/* 記事内の写真は、カードが現れる時にゆっくり寄りが引けて定着する */
+/* 駐車場写真は、表示時にゆっくり寄りが引けて定着する */
 .parking-figure { overflow: hidden; border-radius: var(--radius-sm); }
-.js [data-reveal] .service-photo img,
 .js [data-reveal] .parking-figure img {
     transform: scale(1.06);
     transition: transform 2.4s var(--ease);
 }
-.js [data-reveal].is-visible .service-photo img,
 .js [data-reveal].is-visible .parking-figure img {
     transform: scale(1);
 }
@@ -3516,7 +3578,6 @@ a.material-card:hover {
     inset: 0 0 -14% 0;
     overflow: hidden;
     pointer-events: none;
-    will-change: transform, opacity;
 }
 .page-hero-photo-img {
     position: absolute;
@@ -3602,21 +3663,25 @@ a.material-card:hover {
 }
 
 /* --- 数字を美しく --- */
-/* 電話番号や料金など、数字が主役の箇所はセリフ体のオールドスタイル数字にする */
-.hero-card-tel,
-.cta-tel,
-.contact-tel,
-.footer-tel,
-.price-table .price {
-    font-family: var(--font-num);
-    font-feature-settings: "onum" 1, "palt" 1;
-    letter-spacing: 0.02em;
-}
+/* 電話番号は穏やかな明朝体、料金などの装飾数字は数字専用書体を使う */
+.header-tel,
+.drawer-nav .drawer-tel,
 .hero-card-tel,
 .cta-tel,
 .contact-tel,
 .footer-tel {
+    font-family: var(--font-tel);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1, "palt" 1;
     font-weight: 600;
+    letter-spacing: 0.045em;
+}
+
+.price-table .price {
+    font-family: var(--font-num);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+    letter-spacing: 0.02em;
 }
 
 /* --- 本文リンクの下線が左から引かれる --- */
@@ -3695,14 +3760,183 @@ html {
 .js .split-text .char-inner {
     display: inline-block;
     transform: translateY(105%);
-    transition: transform 1.15s var(--ease);
+    transition: transform 1.6s var(--ease);
 }
-.js .split-text.is-visible .char-inner {
+.js.motion-ready .split-text.is-visible .char-inner {
     transform: translateY(0);
 }
 
-/* --- アイコンの線描き（カードが現れた後、線を引くように表示） --- */
-/* カードのフェードイン（0.8秒）が終わってから描き始めるので、描かれる様子が見える */
+/* --- 下層ページの章立てモーション --- */
+@media (prefers-reduced-motion: no-preference) {
+    /* 診療目次：項目が順番に紙面へ収まる */
+    .js [data-motion="index"] li,
+    .js [data-motion="exam-grid"] .examination-group {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 1.05s var(--ease),
+            transform 1.15s var(--ease);
+    }
+    .js.motion-ready [data-motion="index"].is-visible li,
+    .js.motion-ready [data-motion="exam-grid"].is-visible .examination-group {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .js [data-motion="index"] li:nth-child(2),
+    .js [data-motion="exam-grid"] .examination-group:nth-child(2) { transition-delay: 0.14s; }
+    .js [data-motion="index"] li:nth-child(3),
+    .js [data-motion="exam-grid"] .examination-group:nth-child(3) { transition-delay: 0.28s; }
+    .js [data-motion="index"] li:nth-child(4) { transition-delay: 0.12s; }
+    .js [data-motion="index"] li:nth-child(5) { transition-delay: 0.24s; }
+    .js [data-motion="index"] li:nth-child(6) { transition-delay: 0.36s; }
+    .js [data-motion="index"] li:nth-child(7) { transition-delay: 0.48s; }
+
+    /* 診療案内：左の章タイトルと右の内容を時間差で見せる */
+    .js [data-motion="service"]::before,
+    .js [data-motion="profile"]::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        width: min(130px, 30%);
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 1.25s var(--ease);
+    }
+    .js.motion-ready [data-motion="service"].is-visible::before,
+    .js.motion-ready [data-motion="profile"].is-visible::before {
+        transform: scaleX(1);
+    }
+    .js [data-motion="service"] .service-chapter-heading {
+        opacity: 0;
+        transform: translateX(-34px);
+        transition:
+            opacity 1.05s var(--ease),
+            transform 1.2s var(--ease);
+    }
+    .js.motion-ready [data-motion="service"].is-visible .service-chapter-heading {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .js [data-motion="service"] .service-chapter-content > * {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 1.05s var(--ease),
+            transform 1.2s var(--ease);
+    }
+    .js.motion-ready [data-motion="service"].is-visible .service-chapter-content > * {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .js [data-motion="service"] .service-chapter-content > :nth-child(1) { transition-delay: 0.16s; }
+    .js [data-motion="service"] .service-chapter-content > :nth-child(2) { transition-delay: 0.29s; }
+    .js [data-motion="service"] .service-chapter-content > :nth-child(3) { transition-delay: 0.42s; }
+    .js [data-motion="service"] .service-chapter-content > :nth-child(4) { transition-delay: 0.55s; }
+    .js [data-motion="service"] .service-chapter-content > :nth-child(n + 5) { transition-delay: 0.68s; }
+
+    /* 腹部エコーの紹介面 */
+    .js [data-motion="ultrasound"]::after {
+        content: '';
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent), transparent 86%);
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 1.5s var(--ease);
+    }
+    .js.motion-ready [data-motion="ultrasound"].is-visible::after {
+        transform: scaleX(1);
+    }
+    .js [data-motion="ultrasound"] header > .kicker,
+    .js [data-motion="ultrasound"] header > h3,
+    .js [data-motion="ultrasound"] > div:last-child > p {
+        opacity: 0;
+        transform: translateY(22px);
+        transition:
+            opacity 1.05s var(--ease),
+            transform 1.15s var(--ease);
+    }
+    .js.motion-ready [data-motion="ultrasound"].is-visible header > .kicker,
+    .js.motion-ready [data-motion="ultrasound"].is-visible header > h3,
+    .js.motion-ready [data-motion="ultrasound"].is-visible > div:last-child > p {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .js [data-motion="ultrasound"] header > .kicker { transition-delay: 0.16s; }
+    .js [data-motion="ultrasound"] header > h3 { transition-delay: 0.28s; }
+    .js [data-motion="ultrasound"] > div:last-child > p:nth-child(1) { transition-delay: 0.24s; }
+    .js [data-motion="ultrasound"] > div:last-child > p:nth-child(2) { transition-delay: 0.39s; }
+    .js [data-motion="ultrasound"] > div:last-child > p:nth-child(3) { transition-delay: 0.54s; }
+
+    /* 医師紹介：人物情報と本文を別々の速度で立ち上げる */
+    .js [data-motion="profile"] .doctor-profile-identity > * {
+        opacity: 0;
+        transform: translateX(-28px);
+        transition:
+            opacity 1s var(--ease),
+            transform 1.15s var(--ease);
+    }
+    .js.motion-ready [data-motion="profile"].is-visible .doctor-profile-identity > * {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .js [data-motion="profile"] .doctor-profile-identity > :nth-child(2) { transition-delay: 0.09s; }
+    .js [data-motion="profile"] .doctor-profile-identity > :nth-child(3) { transition-delay: 0.18s; }
+    .js [data-motion="profile"] .doctor-profile-identity > :nth-child(4) { transition-delay: 0.29s; }
+    .js [data-motion="profile"] .doctor-profile-identity > :nth-child(5) { transition-delay: 0.42s; }
+    .js [data-motion="profile"] .doctor-message-block > *,
+    .js [data-motion="profile"] .doctor-facts > section {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 1.05s var(--ease),
+            transform 1.2s var(--ease);
+    }
+    .js.motion-ready [data-motion="profile"].is-visible .doctor-message-block > *,
+    .js.motion-ready [data-motion="profile"].is-visible .doctor-facts > section {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .js [data-motion="profile"] .doctor-message-block > :nth-child(1) { transition-delay: 0.18s; }
+    .js [data-motion="profile"] .doctor-message-block > :nth-child(2) { transition-delay: 0.27s; }
+    .js [data-motion="profile"] .doctor-message-block > :nth-child(3) { transition-delay: 0.36s; }
+    .js [data-motion="profile"] .doctor-message-block > :nth-child(4) { transition-delay: 0.45s; }
+    .js [data-motion="profile"] .doctor-message-block > :nth-child(5) { transition-delay: 0.54s; }
+    .js [data-motion="profile"] .doctor-facts > section:nth-child(1) { transition-delay: 0.54s; }
+    .js [data-motion="profile"] .doctor-facts > section:nth-child(2) { transition-delay: 0.66s; }
+    .js [data-motion="profile"] .doctor-facts > section:nth-child(3) { transition-delay: 0.78s; }
+
+    /* 医院史と診療方針 */
+    .js [data-motion="story"] .clinic-story-copy p,
+    .js [data-motion="story"] .story-timeline li,
+    .js [data-motion="principles"] article {
+        opacity: 0;
+        transform: translateY(28px);
+        transition:
+            opacity 1.05s var(--ease),
+            transform 1.2s var(--ease);
+    }
+    .js.motion-ready [data-motion="story"].is-visible .clinic-story-copy p,
+    .js.motion-ready [data-motion="story"].is-visible .story-timeline li,
+    .js.motion-ready [data-motion="principles"].is-visible article {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .js [data-motion="story"] .clinic-story-copy p:nth-child(2),
+    .js [data-motion="principles"] article:nth-child(2) { transition-delay: 0.16s; }
+    .js [data-motion="story"] .clinic-story-copy p:nth-child(3),
+    .js [data-motion="principles"] article:nth-child(3) { transition-delay: 0.32s; }
+    .js [data-motion="story"] .story-timeline li:nth-child(1) { transition-delay: 0.28s; }
+    .js [data-motion="story"] .story-timeline li:nth-child(2) { transition-delay: 0.44s; }
+    .js [data-motion="story"] .story-timeline li:nth-child(3) { transition-delay: 0.6s; }
+}
+
+/* --- アイコンの線描き（表示後、線を引くように現れる） --- */
 @media (prefers-reduced-motion: no-preference) {
     .js .feature-icon .icon,
     .js .contact-card-icon .icon {
@@ -3710,8 +3944,8 @@ html {
         stroke-dashoffset: 70;
         transition: stroke-dashoffset 1.6s var(--ease) 0.55s;
     }
-    .js [data-reveal].is-visible .feature-icon .icon,
-    .js [data-reveal].is-visible .contact-card-icon .icon {
+    .js.motion-ready [data-reveal].is-visible .feature-icon .icon,
+    .js.motion-ready [data-reveal].is-visible .contact-card-icon .icon {
         stroke-dashoffset: 0;
     }
     /* アイコンの丸い下地も、線を描く前にふわっと開く */
@@ -3721,10 +3955,132 @@ html {
         opacity: 0;
         transition: transform 0.8s var(--ease) 0.15s, opacity 0.8s var(--ease) 0.15s;
     }
-    .js [data-reveal].is-visible .feature-icon,
-    .js [data-reveal].is-visible .contact-card-icon {
+    .js.motion-ready [data-reveal].is-visible .feature-icon,
+    .js.motion-ready [data-reveal].is-visible .contact-card-icon {
         transform: scale(1);
         opacity: 1;
+    }
+
+    /* 診療案内の章アイコンも、スクロールに合わせて一筆書きのように現れる */
+    .js .service-chapter-icon[data-reveal] {
+        opacity: 0;
+        transform: scale(0.82);
+        transition: transform 0.8s var(--ease) 0.1s, opacity 0.8s var(--ease) 0.1s;
+    }
+    .js.motion-ready .service-chapter-icon[data-reveal].is-visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .js .service-chapter-icon[data-reveal] .icon:not(.icon-stomach-scope) {
+        stroke-dasharray: 76;
+        stroke-dashoffset: 76;
+        transition: stroke-dashoffset 1.5s var(--ease) 0.42s;
+    }
+    .js.motion-ready .service-chapter-icon[data-reveal].is-visible .icon:not(.icon-stomach-scope) {
+        stroke-dashoffset: 0;
+    }
+
+    /* 胃カメラは、指定SVGの胃の輪郭からスコープ先端まで順に描く */
+    .js .service-chapter-icon--endoscopy .stomach-wall {
+        stroke-dasharray: 760;
+        stroke-dashoffset: 760;
+        transition: stroke-dashoffset 1.18s var(--ease) 0.32s;
+    }
+    .js .service-chapter-icon--endoscopy .scope-tube {
+        stroke-dasharray: 480;
+        stroke-dashoffset: 480;
+        transition: stroke-dashoffset 1.02s var(--ease) 0.52s;
+    }
+    .js .service-chapter-icon--endoscopy .stomach-curve {
+        stroke-dasharray: 900;
+        stroke-dashoffset: 900;
+        transition: stroke-dashoffset 1.22s var(--ease) 0.66s;
+    }
+    .js .service-chapter-icon--endoscopy .scope-tip {
+        stroke-dasharray: 180;
+        stroke-dashoffset: 180;
+        transition: stroke-dashoffset 0.48s var(--ease) 1.06s;
+    }
+    .js .service-chapter-icon--endoscopy .scope-spark {
+        stroke-dasharray: 90;
+        stroke-dashoffset: 90;
+        transition: stroke-dashoffset 0.42s var(--ease) 1.22s;
+    }
+    .js.motion-ready .service-chapter-icon--endoscopy.is-visible .stomach-wall,
+    .js.motion-ready .service-chapter-icon--endoscopy.is-visible .scope-tube,
+    .js.motion-ready .service-chapter-icon--endoscopy.is-visible .stomach-curve,
+    .js.motion-ready .service-chapter-icon--endoscopy.is-visible .scope-tip,
+    .js.motion-ready .service-chapter-icon--endoscopy.is-visible .scope-spark {
+        stroke-dashoffset: 0;
+    }
+
+    /* 指定SVGの超音波プローブ：本体を描いた後、波が外へ広がる */
+    .js .ultrasound-visual[data-reveal] {
+        opacity: 0;
+        transform: translateY(18px) scale(0.88) rotate(-2deg);
+        transition:
+            opacity 0.9s var(--ease),
+            transform 1.2s var(--ease);
+    }
+    .js.motion-ready .ultrasound-visual[data-reveal].is-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+    }
+    .js .ultrasound-visual .probe-cable {
+        stroke-dasharray: 700;
+        stroke-dashoffset: 700;
+        transition: stroke-dashoffset 1.15s var(--ease) 0.26s;
+    }
+    .js .ultrasound-visual .probe-neck {
+        stroke-dasharray: 300;
+        stroke-dashoffset: 300;
+        transition: stroke-dashoffset 0.62s var(--ease) 0.54s;
+    }
+    .js .ultrasound-visual .probe-body {
+        stroke-dasharray: 1400;
+        stroke-dashoffset: 1400;
+        transition: stroke-dashoffset 1.25s var(--ease) 0.68s;
+    }
+    .js .ultrasound-visual .probe-face {
+        stroke-dasharray: 180;
+        stroke-dashoffset: 180;
+        transition: stroke-dashoffset 0.52s var(--ease) 1.02s;
+    }
+    .js .ultrasound-visual .ultrasound-wave {
+        opacity: 0;
+        transition:
+            stroke-dashoffset 0.9s var(--ease),
+            opacity 0.7s var(--ease);
+    }
+    .js .ultrasound-visual .wave-1 {
+        stroke-dasharray: 500;
+        stroke-dashoffset: 500;
+        transition-delay: 1.08s;
+    }
+    .js .ultrasound-visual .wave-2 {
+        stroke-dasharray: 650;
+        stroke-dashoffset: 650;
+        transition-delay: 1.21s;
+    }
+    .js .ultrasound-visual .wave-3 {
+        stroke-dasharray: 800;
+        stroke-dashoffset: 800;
+        transition-delay: 1.34s;
+    }
+    .js .ultrasound-visual .wave-4 {
+        stroke-dasharray: 950;
+        stroke-dashoffset: 950;
+        transition-delay: 1.47s;
+    }
+    .js.motion-ready .ultrasound-visual.is-visible .probe-cable,
+    .js.motion-ready .ultrasound-visual.is-visible .probe-neck,
+    .js.motion-ready .ultrasound-visual.is-visible .probe-body,
+    .js.motion-ready .ultrasound-visual.is-visible .probe-face,
+    .js.motion-ready .ultrasound-visual.is-visible .ultrasound-wave {
+        stroke-dashoffset: 0;
+    }
+    .js.motion-ready .ultrasound-visual.is-visible .ultrasound-wave {
+        opacity: 0.82;
     }
 }
 
@@ -3769,15 +4125,18 @@ html {
 @media (prefers-reduced-motion: no-preference) {
     .js [data-reveal] {
         opacity: 0;
-        transform: translateY(22px);
-        transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+        transform: translateY(30px);
+        transition:
+            opacity 1.15s var(--ease),
+            transform 1.3s var(--ease);
     }
-    .js [data-reveal].is-visible {
+    .js.motion-ready [data-reveal].is-visible {
         opacity: 1;
         transform: translateY(0);
     }
-    .js [data-reveal="delay-1"].is-visible { transition-delay: 0.1s; }
-    .js [data-reveal="delay-2"].is-visible { transition-delay: 0.2s; }
+    .js.motion-ready [data-reveal="delay-1"].is-visible { transition-delay: 0.18s; }
+    .js.motion-ready [data-reveal="delay-2"].is-visible { transition-delay: 0.36s; }
+    .js.motion-ready [data-reveal="delay-3"].is-visible { transition-delay: 0.54s; }
 }
 
 /* --- Focus --- */
@@ -3921,6 +4280,10 @@ html {
         padding: 30px 4px;
     }
     .ultrasound-feature { padding: 34px 20px; }
+    .ultrasound-visual {
+        width: 108px;
+        margin: -4px 0 20px;
+    }
 
     .doctor-profile {
         gap: 34px;
@@ -4200,6 +4563,15 @@ html {
         width: 28px;
         height: 28px;
         margin-bottom: 14px;
+    }
+    .service-chapter-icon--endoscopy {
+        width: 36px;
+        height: 36px;
+        margin: -4px 0 12px -4px;
+    }
+    .service-chapter-icon--endoscopy .icon-stomach-scope {
+        width: 36px;
+        height: 36px;
     }
     .service-chapter-heading h2 {
         font-size: clamp(1.35rem, 6.6vw, 1.65rem);

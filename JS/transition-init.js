@@ -21,11 +21,24 @@
     const viewport = window.visualViewport;
     if (!viewport) return;
 
+    let zoomed = null;
+    let ticking = false;
+
     function updateZoomState() {
-        document.documentElement.classList.toggle('is-page-zoomed', viewport.scale > 1.01);
+        ticking = false;
+        const nextZoomed = viewport.scale > 1.01;
+        if (nextZoomed === zoomed) return;
+        zoomed = nextZoomed;
+        document.documentElement.classList.toggle('is-page-zoomed', nextZoomed);
     }
 
-    viewport.addEventListener('resize', updateZoomState, { passive: true });
-    viewport.addEventListener('scroll', updateZoomState, { passive: true });
+    function scheduleZoomStateUpdate() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(updateZoomState);
+    }
+
+    viewport.addEventListener('resize', scheduleZoomStateUpdate, { passive: true });
+    viewport.addEventListener('scroll', scheduleZoomStateUpdate, { passive: true });
     updateZoomState();
 })();

@@ -12,7 +12,6 @@ const pageFiles = [
   "doctors.html",
   "access.html",
   "contact.html",
-  "materials.html",
   "privacy.html",
   "facility-standards.html",
   "404.html",

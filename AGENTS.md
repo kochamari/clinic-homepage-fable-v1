@@ -28,7 +28,7 @@ Claude Code は `CLAUDE.md`、Codex は本ファイル（`AGENTS.md`）を入口
 
 ```
 /                     各ページの HTML（index, news, service, doctors,
-                      access, contact, materials, 404）
+                      access, contact, privacy, facility-standards, 404）
 CSS/style.css         サイト全体のスタイル（デザイントークンは :root）
 JS/                   サイトの JavaScript
   script.js           共通スクリプト（演出・メニュー・スクロール連動など）

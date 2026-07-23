@@ -550,13 +550,36 @@ document.addEventListener('DOMContentLoaded', function () {
             requestAnimationFrame(heroPhotoIn);
         }
 
-        if (!prefersReducedMotion.matches) {
+        const canAnimateHeroOnScroll =
+            !prefersReducedMotion.matches &&
+            window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        if (canAnimateHeroOnScroll) {
             let heroRafPending = false;
+            let heroIsHidden = false;
 
             function heroRender() {
                 heroRafPending = false;
                 const y = window.scrollY;
-                const progress = Math.min(y / heroFadeDistance(), 1);
+                const fadeDistance = heroFadeDistance();
+
+                // 消えた後まで全ページで変形を更新し続けない。
+                // 再び上へ戻った時だけレイヤーを復帰させる。
+                if (y >= fadeDistance) {
+                    if (!heroIsHidden) {
+                        heroPhoto.style.opacity = '0';
+                        heroPhoto.style.visibility = 'hidden';
+                        heroIsHidden = true;
+                    }
+                    return;
+                }
+
+                if (heroIsHidden) {
+                    heroPhoto.style.visibility = 'visible';
+                    heroIsHidden = false;
+                }
+
+                const progress = Math.min(y / fadeDistance, 1);
                 // 写真はスクロールの4割の速さで遅れて下がる＝奥に沈んで見える
                 heroPhoto.style.transform =
                     'translateY(' + (y * 0.4).toFixed(1) + 'px) scale(' + (1 + progress * 0.05).toFixed(3) + ')';
@@ -760,10 +783,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- ヘッダーのスクロール状態 ---
     const header = document.querySelector('.site-header');
     if (header) {
+        let headerTicking = false;
+        let headerScrolled = null;
+
         function updateHeader() {
-            header.classList.toggle('is-scrolled', window.scrollY > 20);
+            headerTicking = false;
+            const nextScrolled = window.scrollY > 20;
+            if (nextScrolled === headerScrolled) return;
+            headerScrolled = nextScrolled;
+            header.classList.toggle('is-scrolled', nextScrolled);
         }
-        window.addEventListener('scroll', updateHeader, { passive: true });
+
+        function scheduleHeaderUpdate() {
+            if (headerTicking) return;
+            headerTicking = true;
+            requestAnimationFrame(updateHeader);
+        }
+
+        window.addEventListener('scroll', scheduleHeaderUpdate, { passive: true });
         updateHeader();
     }
 
@@ -806,6 +843,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const frag = document.createDocumentFragment();
                 let index = 0;
                 let lastInner = null;
+                const isHeroTitle = heading.classList.contains('hero-title');
+                const isPageTitle = heading.classList.contains('page-hero-title');
+                const baseDelay = isHeroTitle ? 0.28 : (isPageTitle ? 0.18 : 0.08);
+                const stepDelay = isHeroTitle ? 0.085 : (isPageTitle ? 0.075 : 0.065);
 
                 nodes.forEach(function (node) {
                     if (node.nodeType === 3) {
@@ -825,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const inner = document.createElement('span');
                             inner.className = 'char-inner';
                             inner.textContent = ch;
-                            inner.style.transitionDelay = (index * 0.045).toFixed(3) + 's';
+                            inner.style.transitionDelay = (baseDelay + index * stepDelay).toFixed(3) + 's';
                             index++;
                             mask.appendChild(inner);
                             frag.appendChild(mask);
@@ -844,6 +885,31 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // --- アニメーション開始の同期 ---
+    // 初回の幕やページ遷移が消える前に演出が終わらないよう、
+    // 実際に本文が見えるタイミングでまとめて開始する。
+    const motionRoot = document.documentElement;
+    let motionReadyTimer = null;
+
+    function makeMotionReady() {
+        if (motionRoot.classList.contains('motion-ready')) return;
+        clearTimeout(motionReadyTimer);
+        requestAnimationFrame(function () {
+            motionRoot.classList.add('motion-ready');
+        });
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        makeMotionReady();
+    } else if (window.hgcCurtainPending) {
+        document.addEventListener('hgc:curtain-end', makeMotionReady, { once: true });
+        motionReadyTimer = setTimeout(makeMotionReady, 8000);
+    } else if (motionRoot.classList.contains('is-entering')) {
+        motionReadyTimer = setTimeout(makeMotionReady, 760);
+    } else {
+        motionReadyTimer = setTimeout(makeMotionReady, 260);
+    }
+
     // --- カードのホバー光沢（カーソル位置に淡い光を差す） ---
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
         // 光沢はクリックできるカード（トップの「こんなときは、当院へ」）だけ
@@ -858,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- スクロール連動アニメーション ---
-    const revealTargets = document.querySelectorAll('[data-reveal], .split-text');
+    const revealTargets = document.querySelectorAll('[data-reveal], [data-motion], .split-text');
     if (revealTargets.length > 0 && 'IntersectionObserver' in window) {
         const observer = new IntersectionObserver(
             function (entries) {
@@ -869,7 +935,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             },
-            { rootMargin: '0px 0px -8% 0px', threshold: 0.1 }
+            { rootMargin: '0px 0px -12% 0px', threshold: 0.08 }
         );
         revealTargets.forEach(function (el) {
             observer.observe(el);

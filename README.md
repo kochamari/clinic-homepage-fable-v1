@@ -22,7 +22,7 @@
 
 ```
 /                  各ページの HTML（index / news / service / doctors /
-                   access / contact / materials / privacy /
+                   access / contact / privacy /
                    facility-standards / 404）
 CSS/style.css      サイト全体のスタイル
 JS/                サイトの JavaScript（お知らせ・演出・診療時間表示・祝日データなど）
