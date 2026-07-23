@@ -1,0 +1,14 @@
+{
+  "name": "原口消化器内科",
+  "short_name": "原口消化器内科",
+  "lang": "ja",
+  "description": "佐世保市松浦町の消化器内科・内視鏡クリニック",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#faf9f5",
+  "theme_color": "#186a64",
+  "icons": [
+    { "src": "/images/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/images/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
