@@ -292,6 +292,79 @@ document.addEventListener('DOMContentLoaded', function () {
     sideLabel.textContent = 'HARAGUCHI GASTROENTEROLOGY — SASEBO';
     document.body.appendChild(sideLabel);
 
+    // --- 検査一覧の開閉 ---
+    // details の標準動作は高さが一瞬で切り替わるため、外枠の高さを明示的に補間する。
+    // 開く時も閉じる時も、内容量にかかわらず同じ穏やかなテンポで動かす。
+    document.querySelectorAll('.examinations-disclosure').forEach(function (details) {
+        const summary = details.querySelector('summary');
+        if (!summary) return;
+
+        const duration = 1350;
+        let fallbackTimer = 0;
+        let heightBeforeToggle = 0;
+
+        function finishAnimation() {
+            clearTimeout(fallbackTimer);
+            details.style.height = '';
+            details.classList.remove('is-height-animating');
+        }
+
+        function waitForHeightTransition() {
+            let finished = false;
+            const finish = function () {
+                if (finished) return;
+                finished = true;
+                details.removeEventListener('transitionend', onTransitionEnd);
+                finishAnimation();
+            };
+            const onTransitionEnd = function (event) {
+                if (event.target === details && event.propertyName === 'height') finish();
+            };
+
+            details.addEventListener('transitionend', onTransitionEnd);
+            fallbackTimer = window.setTimeout(finish, duration + 180);
+        }
+
+        function rememberCurrentHeight() {
+            if (details.classList.contains('is-height-animating')) return;
+            heightBeforeToggle = details.getBoundingClientRect().height;
+        }
+
+        // pointerdown / keydown の時点なら、ブラウザが details を切り替える直前の高さを取得できる。
+        summary.addEventListener('pointerdown', rememberCurrentHeight);
+        summary.addEventListener('mousedown', rememberCurrentHeight);
+        summary.addEventListener('touchstart', rememberCurrentHeight, { passive: true });
+        // 一部のブラウザや補助操作は pointerdown を通らないため、click の捕捉段階も保険にする。
+        summary.addEventListener('click', rememberCurrentHeight, true);
+        summary.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') rememberCurrentHeight();
+        });
+
+        details.addEventListener('toggle', function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+            const endHeight = details.getBoundingClientRect().height;
+            const startHeight = heightBeforeToggle || endHeight;
+            heightBeforeToggle = 0;
+            if (Math.abs(endHeight - startHeight) < 2) return;
+
+            details.classList.add('is-height-animating');
+            // 標準の開閉が画面に描かれる前に、開閉前の高さへ戻してから終点へ向かわせる。
+            // 始点を置く一瞬だけ transition を止め、auto 高さからの補間で終点へ跳ねないようにする。
+            details.style.transition = 'none';
+            details.style.height = startHeight + 'px';
+            void details.offsetHeight;
+            details.style.transition = '';
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    details.style.height = endHeight + 'px';
+                });
+            });
+            waitForHeightTransition();
+        });
+    });
+
     // --- パララックス背景 ---
     // 奥行きの異なる複数レイヤーを body 先頭に挿入し、
     // スクロール量とマウス位置に応じて別々の速度で動かして立体感を出す。

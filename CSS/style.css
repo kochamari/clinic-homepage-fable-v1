@@ -431,14 +431,27 @@ html.is-page-zoomed *::after {
 .footer-tel .icon { color: rgba(216, 178, 110, 0.95); }
 
 /* --- 和紙の質感 --- */
-/* 画面全体にごく薄いノイズを重ね、単色の面を「紙」に見せる。動きはない */
+/* 細かな粒子と、方向の異なる長い繊維を重ねて、生成りの紙らしいざらつきを出す。 */
 .grain {
     position: fixed;
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.068;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='176' height='176'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='176' height='176' filter='url(%23n)' opacity='.82'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='460' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.18' numOctaves='3' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='460' height='300' filter='url(%23f)' opacity='.68'/%3E%3C/svg%3E");
+    background-size: 176px 176px, 460px 300px;
+    background-position: 0 0, 37px 61px;
+    background-blend-mode: multiply;
+    mix-blend-mode: multiply;
+}
+
+@media (max-width: 760px) {
+    .grain {
+        /* 小さな画面では文字の輪郭を守りながら、紙の表情は残す */
+        opacity: 0.058;
+    }
 }
 
 /* --- 画面左端の縦書きラベル（広い画面の余白を使う） --- */
@@ -2765,25 +2778,92 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .examinations-disclosure {
+    position: relative;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: rgba(255, 255, 255, 0.72);
     box-shadow: var(--shadow-soft);
+    isolation: isolate;
+    transition:
+        height 1.35s cubic-bezier(0.45, 0, 0.15, 1),
+        border-color 0.55s var(--ease),
+        box-shadow 0.65s var(--ease);
+}
+
+.examinations-disclosure.is-height-animating {
+    will-change: height;
+}
+
+.examinations-disclosure[open] {
+    border-color: rgba(24, 106, 100, 0.28);
+    box-shadow:
+        0 1px 2px rgba(31, 54, 58, 0.04),
+        0 14px 34px rgba(31, 54, 58, 0.08),
+        0 34px 72px rgba(31, 54, 58, 0.08);
 }
 
 .examinations-disclosure > summary {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 24px;
     min-height: 116px;
     padding: clamp(22px, 3vw, 32px) clamp(22px, 4vw, 42px);
+    overflow: hidden;
     list-style: none;
+    background:
+        linear-gradient(112deg, rgba(255, 255, 255, 0.88), rgba(247, 250, 248, 0.72)),
+        var(--surface);
     cursor: pointer;
     transition:
-        background-color 0.3s var(--ease),
-        color 0.3s var(--ease);
+        background 0.55s var(--ease),
+        color 0.35s var(--ease);
+}
+
+.examinations-disclosure > summary::before {
+    content: '';
+    position: absolute;
+    top: -75%;
+    bottom: -75%;
+    left: -32%;
+    width: 24%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.74),
+        rgba(216, 178, 110, 0.18),
+        transparent
+    );
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-180%) skewX(-18deg);
+    transition:
+        transform 1.15s var(--ease),
+        opacity 0.28s ease;
+}
+
+.examinations-disclosure > summary::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        rgba(24, 106, 100, 0.55) 48%,
+        var(--accent)
+    );
+    opacity: 0.55;
+    transform: scaleX(0.16);
+    transform-origin: left center;
+    transition:
+        transform 1.2s cubic-bezier(0.45, 0, 0.15, 1),
+        opacity 0.6s ease;
 }
 
 .examinations-disclosure > summary::-webkit-details-marker {
@@ -2791,7 +2871,15 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .examinations-disclosure > summary:hover {
-    background: var(--primary-tint);
+    background:
+        linear-gradient(112deg, rgba(235, 246, 242, 0.96), rgba(255, 248, 235, 0.7)),
+        var(--primary-tint);
+}
+
+.examinations-disclosure > summary:hover::before,
+.examinations-disclosure[open] > summary::before {
+    opacity: 1;
+    transform: translateX(650%) skewX(-18deg);
 }
 
 .examinations-disclosure > summary:focus-visible {
@@ -2800,6 +2888,8 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .examinations-summary-copy {
+    position: relative;
+    z-index: 1;
     display: grid;
     gap: 7px;
 }
@@ -2819,14 +2909,26 @@ html.is-popup-open body { overflow: hidden; }
 }
 
 .examinations-summary-action {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 12px;
+    padding: 5px 6px 5px 15px;
+    border: 1px solid rgba(24, 106, 100, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.58);
     color: var(--primary-dark);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     white-space: nowrap;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    transition:
+        border-color 0.55s cubic-bezier(0.45, 0, 0.15, 1),
+        background-color 0.55s cubic-bezier(0.45, 0, 0.15, 1),
+        box-shadow 0.7s cubic-bezier(0.45, 0, 0.15, 1),
+        transform 0.7s cubic-bezier(0.45, 0, 0.15, 1);
 }
 
 .examinations-summary-action .is-open-label {
@@ -2839,7 +2941,15 @@ html.is-popup-open body { overflow: hidden; }
     height: 40px;
     border: 1px solid rgba(24, 106, 100, 0.28);
     border-radius: 50%;
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow:
+        inset 0 0 0 5px rgba(227, 239, 236, 0.52),
+        0 3px 10px rgba(31, 54, 58, 0.07);
+    transition:
+        border-color 0.65s cubic-bezier(0.45, 0, 0.15, 1),
+        background-color 0.65s cubic-bezier(0.45, 0, 0.15, 1),
+        box-shadow 0.8s cubic-bezier(0.45, 0, 0.15, 1),
+        transform 1s cubic-bezier(0.45, 0, 0.15, 1);
 }
 
 .examinations-summary-icon::before,
@@ -2852,16 +2962,45 @@ html.is-popup-open body { overflow: hidden; }
     height: 1px;
     background: var(--primary);
     transform: translate(-50%, -50%);
-    transition: transform 0.35s var(--ease);
+    transition: transform 0.65s cubic-bezier(0.45, 0, 0.15, 1);
 }
 
 .examinations-summary-icon::after {
     transform: translate(-50%, -50%) rotate(90deg);
 }
 
+.examinations-disclosure > summary:hover .examinations-summary-action {
+    border-color: rgba(24, 106, 100, 0.3);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 8px 22px rgba(31, 54, 58, 0.09);
+    transform: translateY(-2px);
+}
+
+.examinations-disclosure > summary:hover .examinations-summary-icon {
+    border-color: rgba(185, 138, 62, 0.58);
+    box-shadow:
+        inset 0 0 0 5px rgba(253, 246, 236, 0.8),
+        0 6px 16px rgba(31, 54, 58, 0.11);
+    transform: rotate(90deg);
+}
+
 .examinations-disclosure[open] > summary {
     border-bottom: 1px solid var(--line);
-    background: var(--primary-tint);
+    background:
+        linear-gradient(112deg, rgba(227, 239, 236, 0.98), rgba(253, 246, 236, 0.78)),
+        var(--primary-tint);
+}
+
+.examinations-disclosure[open] > summary::after {
+    opacity: 0.9;
+    transform: scaleX(1);
+}
+
+.examinations-disclosure[open] .examinations-summary-action {
+    border-color: rgba(24, 106, 100, 0.24);
+    background: rgba(255, 255, 255, 0.72);
 }
 
 .examinations-disclosure[open] .is-closed-label {
@@ -2876,8 +3015,86 @@ html.is-popup-open body { overflow: hidden; }
     transform: translate(-50%, -50%) rotate(0);
 }
 
+.examinations-disclosure[open] .examinations-summary-icon {
+    border-color: var(--primary);
+    background: var(--primary);
+    box-shadow:
+        inset 0 0 0 5px rgba(255, 255, 255, 0.08),
+        0 7px 18px rgba(24, 106, 100, 0.2);
+    transform: rotate(180deg);
+}
+
+.examinations-disclosure[open] .examinations-summary-icon::before,
+.examinations-disclosure[open] .examinations-summary-icon::after {
+    background: #fff;
+}
+
 .examinations-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    padding: 0 clamp(20px, 4vw, 42px);
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(250, 249, 245, 0.54));
+    transition:
+        grid-template-rows 1.35s cubic-bezier(0.45, 0, 0.15, 1),
+        padding 1.35s cubic-bezier(0.45, 0, 0.15, 1),
+        visibility 0s linear 1.35s;
+}
+
+/* detailsの初期スタイルで非表示になる内容を、グリッドの高さで静かに開閉する。 */
+.examinations-disclosure:not([open]) > .examinations-content {
+    display: grid;
+}
+
+.examinations-content-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.examinations-disclosure[open] .examinations-content {
+    grid-template-rows: 1fr;
     padding: clamp(30px, 5vw, 54px) clamp(20px, 4vw, 42px) clamp(38px, 6vw, 68px);
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s, 0s, 0s;
+}
+
+.examinations-disclosure[open] .examinations-content-inner {
+    animation: examinations-content-in 1.35s cubic-bezier(0.45, 0, 0.15, 1) 0.08s both;
+}
+
+@keyframes examinations-content-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .examinations-disclosure,
+    .examinations-disclosure > summary,
+    .examinations-summary-action,
+    .examinations-summary-icon,
+    .examinations-summary-icon::before,
+    .examinations-summary-icon::after {
+        transition: none;
+    }
+    .examinations-disclosure > summary::before {
+        display: none;
+    }
+    .examinations-content {
+        transition: none;
+    }
+    .examinations-disclosure[open] .examinations-content-inner {
+        animation: none;
+    }
 }
 
 .examinations-intro {
