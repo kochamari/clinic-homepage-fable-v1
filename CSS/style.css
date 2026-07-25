@@ -533,8 +533,8 @@ html.is-entering.is-entered::after {
     align-items: center;
     justify-content: center;
     background: var(--paper);
-    /* 幕はゆっくり静かに消えていく（スクロール時は上へめくれながら） */
-    transition: opacity 1.8s var(--ease), transform 1.8s var(--ease);
+    /* 未操作時は、1秒かけて静かに消える */
+    transition: opacity 1s var(--ease), transform 1s var(--ease);
     transform-origin: top center;
 }
 /* スクロールで指の動きに追従させている間は、なめらかさより即応性を優先 */
@@ -554,11 +554,17 @@ html.is-entering.is-entered::after {
     /* 消えはじめたらすぐ操作できるようにする */
     pointer-events: none;
 }
+.curtain.is-quick-lifting {
+    transition: opacity 0.18s var(--ease), transform 0.18s var(--ease);
+}
 /* 中のロゴは、少しだけ上に流れながら先に消える */
 .curtain.is-lifting .curtain-inner {
     opacity: 0;
     transform: translateY(-10px) scale(1.03);
-    transition: opacity 1.2s var(--ease), transform 1.6s var(--ease);
+    transition: opacity 0.65s var(--ease), transform 0.9s var(--ease);
+}
+.curtain.is-quick-lifting .curtain-inner {
+    transition: opacity 0.14s var(--ease), transform 0.18s var(--ease);
 }
 
 .curtain-inner {
@@ -568,7 +574,7 @@ html.is-entering.is-entered::after {
     gap: 18px;
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
 }
 .curtain.is-shown .curtain-inner {
     opacity: 1;
@@ -1039,7 +1045,7 @@ body.drawer-open {
 
 .hero-card {
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 1;
 }
 
 .hero-kicker {
@@ -1196,15 +1202,36 @@ body.drawer-open {
     color: var(--accent);
 }
 
+.hero-card-visit-note {
+    display: grid;
+    gap: 5px;
+    margin-top: 16px;
+    padding: 13px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-tint);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.65;
+}
+.hero-card-visit-note strong {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
 .hero-card-link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-top: 20px;
     font-size: 0.88rem;
     font-weight: 700;
     color: var(--primary);
     text-decoration: none;
+}
+.hero-card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 20px;
 }
 .hero-card-link .icon {
     width: 0.9em; height: 0.9em;
@@ -1446,7 +1473,7 @@ body.drawer-open {
 
 /* --- 診療日カレンダー --- */
 .closure-calendar-wrap {
-    margin-top: clamp(24px, 3.5vw, 40px);
+    margin-top: 0;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -1460,12 +1487,80 @@ body.drawer-open {
     gap: clamp(24px, 4vw, 52px);
 }
 
+.calendar-today {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.72fr) minmax(0, 1.28fr);
+    gap: clamp(18px, 3vw, 34px);
+    align-items: center;
+    margin: 4px 0 26px;
+    padding: clamp(18px, 2.7vw, 26px);
+    border: 1px solid rgba(24, 106, 100, 0.2);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(110deg, rgba(227, 239, 236, 0.96), rgba(250, 249, 245, 0.94));
+}
+.calendar-today-heading {
+    padding-right: clamp(18px, 2.6vw, 30px);
+    border-right: 1px solid rgba(24, 106, 100, 0.18);
+}
+.calendar-today-kicker {
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+}
+.calendar-today-status {
+    margin-top: 5px;
+    color: var(--primary-dark);
+    font-family: var(--font-serif);
+    font-size: clamp(1.08rem, 2vw, 1.36rem);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1.5;
+}
+.calendar-today-details {
+    display: grid;
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    gap: 10px 22px;
+}
+.calendar-today-details div {
+    min-width: 0;
+}
+.calendar-today-details dt {
+    margin-bottom: 3px;
+    color: var(--ink-soft);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+.calendar-today-details dd {
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.65;
+}
+.calendar-today.is-morning-only {
+    border-color: rgba(185, 138, 62, 0.34);
+    background: linear-gradient(110deg, #fdf6ec, rgba(250, 249, 245, 0.94));
+}
+.calendar-today.is-morning-only .calendar-today-kicker,
+.calendar-today.is-morning-only .calendar-today-status {
+    color: #8a6120;
+}
+.calendar-today.is-closed {
+    border-color: rgba(181, 74, 70, 0.22);
+    background: linear-gradient(110deg, var(--danger-tint), rgba(250, 249, 245, 0.94));
+}
+.calendar-today.is-closed .calendar-today-kicker,
+.calendar-today.is-closed .calendar-today-status {
+    color: var(--danger);
+}
+
 .calendar-doctor-highlight {
     display: flex;
     align-items: center;
     gap: 10px 14px;
     width: fit-content;
-    margin: 4px 0 22px;
+    margin: 18px 0 0;
     padding: 9px 14px 9px 10px;
     border: 1px solid rgba(24, 106, 100, 0.2);
     border-radius: 999px;
@@ -1487,6 +1582,28 @@ body.drawer-open {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
+}
+
+@media (max-width: 700px) {
+    .calendar-today {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 18px;
+    }
+    .calendar-today-heading {
+        padding-right: 0;
+        padding-bottom: 14px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(24, 106, 100, 0.18);
+    }
+    .calendar-today-details {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .calendar-today-details div + div {
+        padding-top: 10px;
+        border-top: 1px dashed var(--line);
+    }
 }
 
 .cal-title {
@@ -2017,10 +2134,10 @@ html.is-popup-open body { overflow: hidden; }
     height: 0.9em;
 }
 
-/* --- Hours & Access --- */
+/* --- 診療時間・カレンダー・アクセス --- */
 .info-grid {
     display: grid;
-    grid-template-columns: 1.15fr 1fr;
+    grid-template-columns: 1fr;
     gap: clamp(28px, 4vw, 48px);
     align-items: start;
 }
@@ -2044,6 +2161,13 @@ html.is-popup-open body { overflow: hidden; }
     margin-bottom: 22px;
 }
 .info-panel-title .icon { color: var(--primary); }
+
+.hours-panel-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.9fr);
+    gap: clamp(28px, 4vw, 52px);
+    align-items: start;
+}
 
 .hours-table {
     width: 100%;
@@ -2117,9 +2241,8 @@ html.is-popup-open body { overflow: hidden; }
 .hours-notes .mark { color: var(--accent); font-weight: 700; }
 
 .doctor-days {
-    margin-top: 24px;
-    border-top: 1px dashed var(--line);
-    padding-top: 20px;
+    padding-left: clamp(24px, 3.4vw, 40px);
+    border-left: 1px dashed var(--line);
 }
 .doctor-days h4 {
     font-size: 0.92rem;
@@ -2158,6 +2281,14 @@ html.is-popup-open body { overflow: hidden; }
     color: var(--ink-soft);
     margin-bottom: 18px;
 }
+
+.access-panel-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+    gap: clamp(28px, 4vw, 52px);
+    align-items: center;
+}
+.access-panel-layout .map-frame { margin-bottom: 0; }
 
 .map-frame {
     border-radius: var(--radius-sm);
@@ -3872,6 +4003,160 @@ html.is-lightbox-open body {
     text-align: left;
 }
 
+/* --- 初めての方へ --- */
+.first-visit-summary {
+    margin-bottom: clamp(28px, 4vw, 42px);
+    padding: clamp(22px, 3vw, 30px);
+    border: 1px solid rgba(24, 106, 100, 0.22);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(228, 242, 239, 0.86), var(--surface));
+    box-shadow: var(--shadow-soft);
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    line-height: 1.9;
+}
+.first-visit-summary strong { color: var(--primary-dark); }
+
+.visit-section-head {
+    margin-bottom: 20px;
+    font-family: var(--font-serif);
+    font-size: clamp(1.3rem, 2.5vw, 1.65rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+}
+
+.visit-guidance-grid,
+.visit-pack-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.visit-guidance-card,
+.visit-pack-item,
+.visit-access-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+}
+.visit-guidance-card {
+    padding: clamp(24px, 3vw, 32px);
+}
+.visit-guidance-card::before,
+.visit-pack-item::before,
+.visit-access-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+.visit-guidance-card h3,
+.visit-pack-item h3 {
+    margin-bottom: 10px;
+    color: var(--primary-dark);
+    font-size: 1.02rem;
+    letter-spacing: 0.05em;
+}
+.visit-guidance-card p,
+.visit-pack-item p {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    line-height: 1.8;
+}
+.visit-guidance-card--phone {
+    background: linear-gradient(135deg, var(--primary-tint), var(--surface));
+}
+.visit-pack-item {
+    padding: 24px;
+}
+.visit-pack-item strong {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.visit-fever-notice {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: clamp(24px, 3vw, 32px);
+    border: 1px solid #e7c995;
+    border-radius: var(--radius);
+    background: #fdf6ec;
+    box-shadow: var(--shadow-soft);
+}
+.visit-fever-notice .icon {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: #9a6d22;
+}
+.visit-fever-notice h2 {
+    margin-bottom: 8px;
+    color: #77501a;
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    letter-spacing: 0.06em;
+}
+.visit-fever-notice p {
+    color: #765f43;
+    font-size: 0.94rem;
+    line-height: 1.85;
+}
+
+.visit-access-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: clamp(24px, 3vw, 32px);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.visit-access-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+.visit-access-card > .icon { color: var(--primary); width: 1.55rem; height: 1.55rem; }
+.visit-access-card h2 {
+    margin-bottom: 4px;
+    color: var(--primary-dark);
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    letter-spacing: 0.07em;
+}
+.visit-access-card p { color: var(--ink-soft); font-size: 0.9rem; }
+.visit-access-card .visit-access-arrow { color: var(--primary); width: 1.2rem; height: 1.2rem; }
+
+@media (max-width: 700px) {
+    .visit-guidance-grid,
+    .visit-pack-list {
+        grid-template-columns: 1fr;
+    }
+    .visit-guidance-card,
+    .visit-pack-item {
+        padding: 22px 20px;
+    }
+    .first-visit-summary {
+        padding: 22px 20px;
+        font-size: 0.93rem;
+    }
+    .visit-fever-notice {
+        gap: 12px;
+        padding: 24px 20px;
+    }
+    .visit-access-card {
+        gap: 14px;
+        padding: 24px 20px;
+    }
+}
+
 /* FAQ */
 .faq-list {
     display: grid;
@@ -4894,18 +5179,23 @@ html {
         font-size: 0.84rem;
         line-height: 1.65;
     }
-    .hero-card-hours > div:nth-child(2) {
-        display: none;
-    }
     .hero-card-hours-note {
-        display: block;
-        margin-top: 5px;
-        font-size: 0.76rem;
+        display: inline;
+        margin-top: 0;
+        font-size: inherit;
         line-height: 1.5;
     }
-    .hero-card-link {
+    .hero-card-visit-note {
         margin-top: 12px;
+        padding: 11px 12px;
+        font-size: 0.78rem;
+    }
+    .hero-card-link {
         font-size: 0.84rem;
+    }
+    .hero-card-links {
+        gap: 8px 16px;
+        margin-top: 12px;
     }
     .hero-actions {
         gap: 12px 18px;
@@ -5110,6 +5400,18 @@ html {
     }
 
     .fab-call { display: inline-flex; }
+
+    .hours-panel-layout,
+    .access-panel-layout {
+        grid-template-columns: 1fr;
+    }
+    .doctor-days {
+        padding-top: 20px;
+        padding-left: 0;
+        border-top: 1px dashed var(--line);
+        border-left: 0;
+    }
+    .access-panel-layout .map-frame { margin-top: 4px; }
 
     .hours-table { font-size: 0.85rem; }
     .hours-table th, .hours-table td { padding: 10px 3px; }

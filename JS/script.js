@@ -132,15 +132,16 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
             removeCurtain();
         }
 
-        // 何もしなかった時・クリックされた時：その場でふわっと消える
-        function fadeOut() {
+        // 未操作時は1秒後から1秒かけて消える。クリック・キー操作はすぐに退場する。
+        function fadeOut(immediate) {
             if (done) return;
             done = true;
             cleanup();
             curtain.classList.remove('is-pulling');
             curtain.classList.add('is-lifting');
+            if (immediate) curtain.classList.add('is-quick-lifting');
             curtain.style.opacity = '0';
-            setTimeout(removeCurtain, 2000);
+            setTimeout(removeCurtain, immediate ? 180 : 1000);
         }
 
         // スクロール量ぶんだけ、そのままめくる（マイナスなら戻る）
@@ -185,7 +186,7 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
             curtain.style.opacity = '1';
             // 戻したまま放置されないよう、自動で消すタイマーをかけ直す
             clearTimeout(autoTimer);
-            autoTimer = setTimeout(fadeOut, 4000);
+            autoTimer = setTimeout(fadeOut, 1000);
         }
 
         let touchStartY = 0;
@@ -216,11 +217,11 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
         curtain.addEventListener('touchend', onTouchEnd, { passive: true });
         curtain.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
-        // 何もしなければ4秒ほど見せてから、ふわっと消える
-        autoTimer = setTimeout(fadeOut, 4000);
-        // クリックやキー操作でいつでも飛ばせる
-        curtain.addEventListener('click', fadeOut);
-        window.addEventListener('keydown', fadeOut, { once: true });
+        // 何もしなければ1秒後に消え始め、合計約2秒で退場する
+        autoTimer = setTimeout(fadeOut, 1000);
+        // クリックやキー操作では、待たずに退場する
+        curtain.addEventListener('click', function () { fadeOut(true); });
+        window.addEventListener('keydown', function () { fadeOut(true); }, { once: true });
     }
 
     if (document.body) mount();

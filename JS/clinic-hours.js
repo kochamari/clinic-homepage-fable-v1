@@ -173,6 +173,58 @@ const clinicSchedule = {
         return { state: 'after', label: '本日の受付終了', detail: nextOpeningText(now) };
     }
 
+    // 当日の担当医（診療日カレンダー上部の案内用）
+    // 第4土曜日は小田医師、それ以外の月・水・金・土曜は原口 紘医師。
+    // 火・木曜は原口 紘医師と原口 増穂医師の2名体制です。
+    function doctorsOf(date, sessions) {
+        if (!sessions.length) return [];
+        const day = date.getUTCDay();
+        if (isFourthSaturday(date)) return ['小田 英俊医師'];
+        if (day === 2 || day === 4) return ['原口 紘（こう）医師', '原口 増穂（ますほ）医師'];
+        return ['原口 紘（こう）医師'];
+    }
+
+    function displayTime(hhmm) {
+        return hhmm.charAt(0) === '0' ? hhmm.slice(1) : hhmm;
+    }
+
+    function sessionsText(sessions) {
+        return sessions.map(function (session) {
+            return displayTime(session[0]) + '–' + displayTime(session[1]);
+        }).join(' / ');
+    }
+
+    // カレンダー上部の「本日の診療案内」を描画する
+    function renderCalendarToday() {
+        const host = document.querySelector('[data-calendar-today]');
+        if (!host) return;
+
+        const now = nowInTokyo();
+        const sessions = sessionsOf(now);
+        const doctors = doctorsOf(now, sessions);
+        const isClosed = sessions.length === 0;
+        const isMorningOnly = sessions.length === 1;
+        const status = isClosed
+            ? '本日は休診日です'
+            : isMorningOnly
+                ? '本日は午前のみの診察です'
+                : '本日は診療日です';
+        const doctorText = doctors.length
+            ? '本日は' + doctors.join('、') + 'の診察です'
+            : '本日の診察はありません';
+
+        host.className = 'calendar-today' + (isClosed ? ' is-closed' : isMorningOnly ? ' is-morning-only' : ' is-open');
+        host.innerHTML =
+            '<div class="calendar-today-heading">' +
+                '<p class="calendar-today-kicker">本日の診療案内</p>' +
+                '<p class="calendar-today-status">' + status + '</p>' +
+            '</div>' +
+            '<dl class="calendar-today-details">' +
+                '<div><dt>受付時間</dt><dd>' + (isClosed ? '休診' : sessionsText(sessions)) + '</dd></div>' +
+                '<div><dt>担当医</dt><dd>' + doctorText + '</dd></div>' +
+            '</dl>';
+    }
+
     // 「今の診療状況」を描画する
     function renderStatus() {
         const nodes = document.querySelectorAll('[data-clinic-status]');
@@ -314,8 +366,12 @@ const clinicSchedule = {
     document.addEventListener('DOMContentLoaded', function () {
         renderStatus();
         renderCalendar();
+        renderCalendarToday();
         highlightToday();
         // 時間の経過で表示が古くならないよう、1分ごとに更新する
-        setInterval(renderStatus, 60000);
+        setInterval(function () {
+            renderStatus();
+            renderCalendarToday();
+        }, 60000);
     });
 })();
