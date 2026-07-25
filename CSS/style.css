@@ -15,7 +15,11 @@
     --primary: #186a64;
     --primary-dark: #0f4b47;
     --primary-tint: #e3efec;
+    /* 金は2種類。--accent は線や記号などの装飾用。
+       文字に使うと明るい紙の上でコントラストが 2.95:1 しか出ないため、
+       意味のある文字には必ず --accent-text（紙の上で 5.2:1）を使う。 */
     --accent: #b98a3e;
+    --accent-text: #8a6120;
     --danger: #b4453c;
     --danger-tint: #f7e9e7;
     --white: #ffffff;
@@ -418,8 +422,9 @@ html.is-page-zoomed *::after {
 .home-story-sign { color: var(--ink); }
 .home-story-sign small { color: var(--ink-soft); }
 
-/* 医師の肩書き・資料アイコンの矢印も金で揃える */
-.doctor-role { color: var(--accent); }
+/* 医師の肩書き・資料アイコンの矢印も金で揃える。
+   肩書きは読ませる文字なので、濃い方の金を使う */
+.doctor-role { color: var(--accent-text); }
 .material-arrow { color: var(--accent); }
 
 /* フッターの見出しラベルを金に */
@@ -1199,7 +1204,8 @@ body.drawer-open {
     display: inline-block;
     margin-top: 3px;
     font-size: 0.78rem;
-    color: var(--accent);
+    /* 診療時間の例外を伝える大切な一文なので、読みやすい金を使う */
+    color: var(--accent-text);
 }
 
 .hero-card-visit-note {
@@ -1258,7 +1264,7 @@ body.drawer-open {
     flex-shrink: 0;
     align-self: center;
 }
-.notice-band strong { color: #8a6120; }
+.notice-band strong { color: var(--accent-text); }
 .notice-band a {
     color: var(--primary-dark);
     font-weight: 700;
@@ -1396,7 +1402,7 @@ body.drawer-open {
 }
 .info-box--amber > h3 .icon,
 .info-box--amber > h4 .icon {
-    color: #8a6120;
+    color: var(--accent-text);
 }
 .info-box--amber .check-list {
     margin-top: 16px;
@@ -1442,7 +1448,8 @@ body.drawer-open {
     padding: 8px 16px;
     margin-bottom: 16px;
     border-radius: 999px;
-    font-size: 0.84rem;
+    /* 「今なら診てもらえるか」を伝える一番大切な行なので、小さくしすぎない */
+    font-size: 0.9rem;
     background: var(--surface-tint);
     color: var(--ink-soft);
 }
@@ -1454,7 +1461,7 @@ body.drawer-open {
     flex-shrink: 0;
 }
 .clinic-status-label { font-weight: 700; letter-spacing: 0.04em; }
-.clinic-status-detail { font-size: 0.78rem; opacity: 0.8; }
+.clinic-status-detail { font-size: 0.85rem; opacity: 0.85; }
 
 .clinic-status.is-open {
     background: var(--primary-tint);
@@ -1463,7 +1470,7 @@ body.drawer-open {
 .clinic-status.is-before,
 .clinic-status.is-lunch {
     background: #fdf6ec;
-    color: #8a6120;
+    color: var(--accent-text);
 }
 .clinic-status.is-after,
 .clinic-status.is-closed {
@@ -1504,9 +1511,9 @@ body.drawer-open {
 }
 .calendar-today-kicker {
     color: var(--primary);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
 }
 .calendar-today-status {
     margin-top: 5px;
@@ -1544,7 +1551,7 @@ body.drawer-open {
 }
 .calendar-today.is-morning-only .calendar-today-kicker,
 .calendar-today.is-morning-only .calendar-today-status {
-    color: #8a6120;
+    color: var(--accent-text);
 }
 .calendar-today.is-closed {
     border-color: rgba(181, 74, 70, 0.22);
@@ -1644,7 +1651,7 @@ body.drawer-open {
 .cal-cell.is-empty { visibility: hidden; }
 .cal-cell.is-half {
     background: #fdf6ec;
-    color: #8a6120;
+    color: var(--accent-text);
     font-weight: 700;
 }
 .cal-cell.is-closed {
@@ -1661,7 +1668,7 @@ body.drawer-open {
     padding-bottom: 10px;
     background: linear-gradient(145deg, #e7f3ef, #fff7e8);
     color: var(--primary-dark);
-    font-weight: 800;
+    font-weight: 700;
     box-shadow: inset 0 0 0 1px rgba(24, 106, 100, 0.34);
 }
 .cal-cell.is-oda.is-today {
@@ -1678,9 +1685,10 @@ body.drawer-open {
     border-radius: 4px;
     background: var(--primary);
     color: #fff;
-    font-size: 0.5rem;
+    /* 担当医を示す文字。8px では高齢の方が読み取れないため 10px を下限にする */
+    font-size: 0.625rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.02em;
     line-height: 1.15;
     text-align: center;
     transform: translateX(-50%);
@@ -1720,9 +1728,10 @@ body.drawer-open {
     background: linear-gradient(145deg, #e7f3ef, #fff7e8);
     color: var(--primary-dark);
     box-shadow: inset 0 0 0 1px rgba(24, 106, 100, 0.34);
-    font-size: 0.5rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
+    /* カレンダー内の担当医バッジと同じ大きさに揃える */
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
 .closure-notes {
@@ -2198,10 +2207,13 @@ html.is-popup-open body { overflow: hidden; }
     font-weight: 700;
 }
 .hours-table .partial {
-    color: var(--accent);
+    /* 「午前のみ」を示す記号。診療時間そのものを伝えるので読みやすい金を使う */
+    color: var(--accent-text);
     font-weight: 700;
 }
-.hours-table .closed { color: #c1beb2; }
+/* 休診を示す横棒。薄すぎると休診かどうか読み取れないため、
+   控えめさを保ちながら判別できる濃さにする */
+.hours-table .closed { color: #918e83; }
 .hours-table .day-off { color: var(--danger); }
 
 /* 今日の曜日の列を目立たせる（JSが is-today-col を付与） */
@@ -2223,9 +2235,9 @@ html.is-popup-open body { overflow: hidden; }
     border-radius: 999px;
     background: var(--primary);
     color: #fff;
-    font-size: 0.6rem;
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
 }
 .today-badge.is-closed {
     background: var(--danger);
@@ -2238,7 +2250,7 @@ html.is-popup-open body { overflow: hidden; }
     font-size: 0.85rem;
     color: var(--ink-soft);
 }
-.hours-notes .mark { color: var(--accent); font-weight: 700; }
+.hours-notes .mark { color: var(--accent-text); font-weight: 700; }
 
 .doctor-days {
     padding-left: clamp(24px, 3.4vw, 40px);
@@ -3494,7 +3506,8 @@ html.is-popup-open body { overflow: hidden; }
     grid-column: 1 / -1;
 }
 .doctor-career time {
-    color: var(--accent);
+    /* 経歴の年は読ませる情報なので、濃い方の金を使う */
+    color: var(--accent-text);
     font-variant-numeric: lining-nums tabular-nums;
     font-weight: 700;
 }
@@ -4881,6 +4894,26 @@ html {
     .js.motion-ready [data-reveal="delay-3"].is-visible { transition-delay: 0.54s; }
 }
 
+/* --- タップ領域 --- */
+/* 指で操作する端末では、押せるものを 44px 以上の高さにする。
+   高齢の方が押し間違えないための余裕（WCAG 2.5.8）。
+   文章の途中にあるリンクは行の流れが崩れるため対象外にする。 */
+@media (pointer: coarse) {
+    .hero-card-link,
+    .hero-info-link {
+        min-height: 44px;
+    }
+    .footer-nav a,
+    .footer-legal-nav a,
+    .footer-cookie-settings {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+    }
+    /* 行間で稼いだ分、リスト自体の隙間は詰めて見た目の間隔を保つ */
+    .footer-nav ul { gap: 0; }
+}
+
 /* --- Focus --- */
 :focus-visible {
     outline: 2px solid var(--primary);
@@ -5153,8 +5186,9 @@ html {
     }
     .hero-card .clinic-status {
         margin-bottom: 8px;
-        padding: 6px 12px;
-        font-size: 0.78rem;
+        padding: 7px 12px;
+        /* 開いた瞬間に「今日診てもらえるか」が読み取れる大きさを保つ */
+        font-size: 0.85rem;
     }
     .hero-card-tel {
         display: flex;
@@ -5441,4 +5475,138 @@ html {
     }
     .drawer-tel { margin-top: 12px; }
     .drawer-note { font-size: 0.74rem; }
+}
+
+/* ==========================================================================
+   Print
+   患者さんが診療時間・住所・電話番号を紙に印刷して持ち帰る場面を想定する。
+   画面用の演出と操作用のUIを落とし、情報だけが読みやすく残るようにする。
+   ========================================================================== */
+@media print {
+    /* 背景の演出やインクを無駄に使う装飾は印刷しない */
+    .parallax-bg,
+    .grain,
+    .side-label,
+    .curtain,
+    .news-popup,
+    .analytics-consent,
+    .scroll-progress,
+    .hero-photo,
+    .page-hero-photo,
+    .p-sign {
+        display: none !important;
+    }
+
+    /* 画面を操作するためのUIは紙では意味がないので落とす */
+    .site-header,
+    .drawer,
+    .nav-toggle,
+    .skip-link,
+    .fab-call,
+    .footer-nav,
+    .footer-legal-nav,
+    .footer-cookie-settings,
+    .service-index,
+    .news-more,
+    .hero-actions,
+    .segment-card-link,
+    .examinations-summary-action {
+        display: none !important;
+    }
+
+    /* 地図は紙にうまく出ないため、住所の文字情報を残して枠を省く */
+    .map-frame,
+    .large-map,
+    iframe {
+        display: none !important;
+    }
+
+    html,
+    body {
+        background: #fff !important;
+        color: #000;
+        font-size: 11pt;
+    }
+
+    /* 影・角丸・枠の塗りを落として、線だけで構造を伝える */
+    * {
+        background-image: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    .info-panel,
+    .contact-card,
+    .service-chapter,
+    .doctor-card,
+    .closure-calendar-wrap,
+    .examination-group,
+    .greeting-body {
+        background: #fff !important;
+        border: 1px solid #999 !important;
+        border-radius: 0 !important;
+        padding: 10pt !important;
+    }
+
+    /* 暗い面は紙では反転させ、文字が読めるようにする */
+    .statement,
+    .cta-band,
+    .site-footer {
+        background: #fff !important;
+        color: #000 !important;
+        border-top: 1px solid #999;
+    }
+    .statement *,
+    .cta-band *,
+    .site-footer * {
+        color: #000 !important;
+    }
+
+    /* 診療時間表は罫線をはっきりさせる */
+    .hours-table th,
+    .hours-table td {
+        border: 1px solid #999 !important;
+        color: #000 !important;
+    }
+
+    /* 表・カード・見出しが紙の途中で切れないようにする */
+    table,
+    figure,
+    .info-panel,
+    .service-chapter,
+    .doctor-card,
+    .examination-group {
+        break-inside: avoid;
+    }
+    h1, h2, h3 {
+        break-after: avoid;
+    }
+
+    /* 画面用の出現アニメーションは、印刷時は必ず表示済みの状態にする */
+    .js [data-reveal],
+    .js [data-motion],
+    .js [data-motion] * {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .js .split-text .char-inner {
+        transform: none !important;
+    }
+    /* 折りたたんである検査一覧も、紙では開いた状態で出す */
+    .examinations-disclosure > .examinations-content,
+    .examinations-content-inner {
+        display: block !important;
+        height: auto !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+    }
+
+    /* 紙にはリンク先が見えないので、電話番号と院名だけは文字で残す */
+    a {
+        color: #000 !important;
+        text-decoration: none !important;
+    }
+
+    @page {
+        margin: 14mm;
+    }
 }
