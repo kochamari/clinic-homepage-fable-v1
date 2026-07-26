@@ -88,27 +88,102 @@
             <div class="container">
                 <p class="kicker">First Visit</p>
                 <h1 class="page-hero-title">初めての方へ</h1>
-                <p class="page-hero-lead">受診方法・お電話が必要なケース・持ち物をご案内します。</p>
+                <p class="page-hero-lead">受診方法・持ち物・お支払いなど、はじめてのご来院前に知っておいていただきたいことをご案内します。</p>
             </div>
         </section>
 
-        <section class="section">
+        <section class="section" aria-labelledby="visit-method-heading">
             <div class="container--narrow">
-                <p class="first-visit-summary" data-reveal><strong>通常の診察は予約不要です。</strong> 発熱・風邪症状のある方、がん検診・特定健診・後期高齢者健診をご希望の方は、事前にお電話ください。症状があり胃カメラをご希望の場合も、予約枠の状況により当日対応できないことがあるため、事前にご連絡いただくとスムーズです。</p>
+                <h2 class="visit-section-head" id="visit-method-heading" data-reveal>受診方法</h2>
+                <p class="visit-answer" data-reveal>通常の診察は、<strong>予約不要</strong>です。<br>診療時間内に、そのままご来院ください。</p>
 
-                <section aria-labelledby="visit-method-heading">
-                    <h2 class="visit-section-head" id="visit-method-heading">受診方法</h2>
-                    <div class="visit-guidance-grid">
-                        <article class="visit-guidance-card" data-reveal>
-                            <h3>通常の診察</h3>
-                            <p>基本的には予約は不要です。診察時間内にご来院ください。受診当日に胃カメラなどの検査をご希望の場合は、予約枠の状況により当日対応できないことがあります。事前にお電話いただけるとスムーズです。</p>
-                        </article>
-                        <article class="visit-guidance-card visit-guidance-card--phone" data-reveal="delay-1">
-                            <h3>事前に電話が必要なケース</h3>
-                            <p>ご来院前にお電話ください。発熱・風邪症状がある方、定期通院されていない方のがん検診、特定健診、後期高齢者健診などが対象です。</p>
-                        </article>
+                <aside class="visit-fever-notice" data-reveal aria-labelledby="fever-heading">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
+                    <div>
+                        <h3 id="fever-heading">発熱・かぜ症状のある方へ</h3>
+                        <p>ご来院の前に<strong>必ずお電話ください。</strong>感染対策のため来院時間をご案内し、別室での診察や、インフルエンザ・新型コロナなどの検査後に診察する場合があります。</p>
                     </div>
-                </section>
+                </aside>
+
+                <article class="visit-guidance-card visit-guidance-card--phone" data-reveal="delay-1">
+                    <h3>そのほか、事前にお電話が必要な場合</h3>
+                    <ul class="visit-phone-list">
+                        <li>がん検診・特定健診・後期高齢者健診をご希望の方</li>
+                        <li>受診当日に胃カメラをご希望の方<small>予約枠の状況により、当日は対応できないことがあります</small></li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="section section--tint" aria-labelledby="bring-heading">
+            <div class="container--narrow">
+                <h2 class="visit-section-head" id="bring-heading" data-reveal>持ち物</h2>
+                <dl class="visit-pack-list" data-reveal>
+                    <div>
+                        <dt>通常の診察</dt>
+                        <dd>マイナ保険証または資格確認書、お薬手帳、健診結果、紹介状などをお持ちください。</dd>
+                    </div>
+                    <div>
+                        <dt>がん検診</dt>
+                        <dd>受診券は不要です。マイナ保険証または資格確認書をお持ちください。</dd>
+                    </div>
+                    <div>
+                        <dt>特定健診・後期高齢者健診</dt>
+                        <dd><strong>受診券を必ずお持ちください。</strong>受診券と、マイナ保険証または資格確認書が必要です。</dd>
+                    </div>
+                </dl>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="payment-heading">
+            <div class="container--narrow">
+                <h2 class="visit-section-head" id="payment-heading" data-reveal>お支払い</h2>
+                <p class="visit-answer" data-reveal>お支払いは、<strong>現金のみ</strong>となります。</p>
+                <p class="visit-note" data-reveal>クレジットカード・電子マネー・QRコード決済などのキャッシュレス決済には対応しておりません。ご不便をおかけしますが、ご了承ください。</p>
+            </div>
+        </section>
+
+        <section class="section section--tint" aria-labelledby="visit-access-heading">
+            <div class="container--narrow">
+                <a class="visit-access-card" href="access.html" data-reveal>
+                    <svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>
+                    <span>
+                        <h2 id="visit-access-heading">アクセス・駐車場</h2>
+                        <p>所在地、専用駐車場・提携駐車場、バスでお越しの方へのご案内をご確認いただけます。</p>
+                    </span>
+                    <svg class="icon visit-access-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                </a>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="faq-heading">
+            <div class="container--narrow">
+                <div class="section-head section-head--center" data-reveal>
+                    <p class="kicker">FAQ</p>
+                    <h2 class="section-title" id="faq-heading">よくあるご質問</h2>
+                </div>
+                <div class="faq-list">
+                    <div class="faq-item" data-reveal>
+                        <p class="faq-q">予約は必要ですか？</p>
+                        <p class="faq-a">通常の診察は予約不要です。診療時間内に、そのままご来院ください。発熱・かぜ症状のある方、がん検診・特定健診・後期高齢者健診をご希望の方、受診当日に胃カメラをご希望の方は、事前にお電話ください。詳しくは<a href="#visit-method-heading">受診方法</a>をご覧ください。</p>
+                    </div>
+                    <div class="faq-item" data-reveal>
+                        <p class="faq-q">発熱やかぜ症状があります。受診できますか？</p>
+                        <p class="faq-a">受診いただけますが、ご来院の前に必ずお電話ください。ご高齢の患者さんも多く通院されているため、感染対策として別室にご案内し、インフルエンザ・新型コロナなどの検査を行ってからの診察になる場合があります。詳しくは<a href="#fever-heading">発熱・かぜ症状のある方へ</a>をご覧ください。</p>
+                    </div>
+                    <div class="faq-item" data-reveal>
+                        <p class="faq-q">佐世保市のがん検診や特定健診は受けられますか？</p>
+                        <p class="faq-a">はい。特定健診・後期高齢者健診と、胃がん・大腸がん・肺がん検診に対応しており、同じ日にまとめて受けることもできます。がん検診は受診券不要で、マイナ保険証または資格確認書をお持ちください。特定健診・後期高齢者健診は、受診券とマイナ保険証または資格確認書をお持ちのうえ、お電話でご予約ください。料金のめやすは<a href="service.html#checkup">がん検診・健診のご案内</a>をご覧ください。</p>
+                    </div>
+                    <div class="faq-item" data-reveal>
+                        <p class="faq-q">健康保険は使えますか？</p>
+                        <p class="faq-a">はい、各種健康保険を取り扱っております。ご来院の際は、マイナ保険証または資格確認書を必ずお持ちください。</p>
+                    </div>
+                    <div class="faq-item" data-reveal>
+                        <p class="faq-q">駐車場はありますか？</p>
+                        <p class="faq-a">はい、当院専用の駐車場を5台分ご用意しています（屋外3台・1階屋内2台）。満車の場合は、徒歩約1分の提携駐車場「トラストパーク松浦町」をご利用のうえ、駐車券を受付へお持ちください。詳しくは<a href="access.html">アクセスページ</a>をご確認ください。</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -131,82 +206,6 @@
                     <p style="margin-top: 26px;">
                         <a href="index.html#clinic-info" class="btn btn-ghost">診療時間を確認する</a>
                     </p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section" aria-labelledby="bring-heading">
-            <div class="container--narrow">
-                <h2 class="visit-section-head" id="bring-heading" data-reveal>持ち物</h2>
-                <div class="visit-pack-list">
-                    <article class="visit-pack-item" data-reveal>
-                        <h3>通常の診察</h3>
-                        <p>マイナ保険証または資格確認書、お薬手帳、健診結果、紹介状などをお持ちください。</p>
-                    </article>
-                    <article class="visit-pack-item" data-reveal="delay-1">
-                        <h3>がん検診</h3>
-                        <p>受診券は不要です。マイナ保険証または資格確認書をお持ちください。</p>
-                    </article>
-                    <article class="visit-pack-item" data-reveal>
-                        <h3>特定健診・後期高齢者健診</h3>
-                        <p><strong>受診券を必ずお持ちください。</strong> 受診券と、マイナ保険証または資格確認書が必要です。</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section class="section section--tint" aria-labelledby="fever-heading">
-            <div class="container--narrow">
-                <aside class="visit-fever-notice" data-reveal>
-                    <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
-                    <div>
-                        <h2 id="fever-heading">発熱・風邪症状のある方へ</h2>
-                        <p>ご来院の前に必ずお電話ください。感染対策のため来院時間をご案内し、別室での診察や、インフルエンザ・新型コロナなどの検査後に診察する場合があります。</p>
-                    </div>
-                </aside>
-            </div>
-        </section>
-
-        <section class="section" aria-labelledby="visit-access-heading">
-            <div class="container--narrow">
-                <a class="visit-access-card" href="access.html" data-reveal>
-                    <svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>
-                    <span>
-                        <h2 id="visit-access-heading">アクセス・駐車場</h2>
-                        <p>所在地、専用駐車場・提携駐車場、バスでお越しの方へのご案内をご確認いただけます。</p>
-                    </span>
-                    <svg class="icon visit-access-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                </a>
-            </div>
-        </section>
-
-        <section class="section section--tint" aria-labelledby="faq-heading">
-            <div class="container--narrow">
-                <div class="section-head section-head--center" data-reveal>
-                    <p class="kicker">FAQ</p>
-                    <h2 class="section-title" id="faq-heading">よくあるご質問</h2>
-                </div>
-                <div class="faq-list">
-                    <div class="faq-item" data-reveal>
-                        <p class="faq-q">予約は必要ですか？</p>
-                        <p class="faq-a">通常の診察は、基本的に予約不要です。発熱外来はお電話での予約が必要です。定期通院されていない方の胃カメラを含むがん検診、特定健診、ワクチン接種などは、事前にお電話でご予約ください。受診当日に胃カメラなどの検査をご希望の場合、予約枠が埋まっていると当日に対応できないことがあります。事前にお電話でご相談いただくとスムーズです。</p>
-                    </div>
-                    <div class="faq-item" data-reveal>
-                        <p class="faq-q">発熱やかぜ症状があります。受診できますか？</p>
-                        <p class="faq-a">受診いただけますが、ご来院の前に必ずお電話ください。ご高齢の患者さんも多く通院されているため、感染対策として別室にご案内し、インフルエンザ・新型コロナなどの検査を行ってからの診察になる場合があります。詳しくは<a href="service.html#fever">こちら</a>をご覧ください。</p>
-                    </div>
-                    <div class="faq-item" data-reveal>
-                        <p class="faq-q">佐世保市のがん検診や特定健診は受けられますか？</p>
-                        <p class="faq-a">はい。特定健診・後期高齢者健診と、胃がん・大腸がん・肺がん検診に対応しており、同じ日にまとめて受けることもできます。がん検診は受診券不要で、マイナ保険証または資格確認書をお持ちください。特定健診・後期高齢者健診は、受診券とマイナ保険証または資格確認書をお持ちのうえ、お電話でご予約ください。料金のめやすは<a href="service.html#checkup">がん検診・健診のご案内</a>をご覧ください。</p>
-                    </div>
-                    <div class="faq-item" data-reveal>
-                        <p class="faq-q">健康保険は使えますか？</p>
-                        <p class="faq-a">はい、各種健康保険を取り扱っております。ご来院の際は、マイナ保険証または資格確認書を必ずお持ちください。</p>
-                    </div>
-                    <div class="faq-item" data-reveal>
-                        <p class="faq-q">駐車場はありますか？</p>
-                        <p class="faq-a">はい、当院専用の駐車場を5台分ご用意しています（屋外3台・1階屋内2台）。満車の場合は、徒歩約1分の提携駐車場「トラストパーク松浦町」をご利用のうえ、駐車券を受付へお持ちください。詳しくは<a href="access.html">アクセスページ</a>をご確認ください。</p>
-                    </div>
                 </div>
             </div>
         </section>
