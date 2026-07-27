@@ -9,6 +9,7 @@ const pageFiles = [
   "index.html",
   "news.html",
   "service.html",
+  "gastroscopy.html",
   "doctors.html",
   "access.html",
   "contact.html",
