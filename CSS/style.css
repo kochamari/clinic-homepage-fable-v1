@@ -2477,30 +2477,20 @@ html.is-popup-open body { overflow: hidden; }
     gap: 8px 20px;
 }
 
-.footer-legal-nav a,
-.footer-cookie-settings {
+.footer-legal-nav a {
     color: rgba(255, 255, 255, 0.78);
     font: inherit;
     letter-spacing: 0.04em;
     text-decoration: none;
 }
 
-.footer-cookie-settings {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-}
-
-.footer-legal-nav a:hover,
-.footer-cookie-settings:hover {
+.footer-legal-nav a:hover {
     color: #fff;
     text-decoration: underline;
     text-underline-offset: 0.25em;
 }
 
-.footer-legal-nav a:focus-visible,
-.footer-cookie-settings:focus-visible {
+.footer-legal-nav a:focus-visible {
     border-radius: 2px;
     outline: 2px solid #fff;
     outline-offset: 4px;
@@ -2679,67 +2669,6 @@ html.is-popup-open body { overflow: hidden; }
 
 .filing-details dd {
     font-weight: 500;
-}
-
-/* --- Analytics consent --- */
-.analytics-consent {
-    position: fixed;
-    right: max(18px, env(safe-area-inset-right));
-    bottom: max(18px, env(safe-area-inset-bottom));
-    z-index: 1100;
-    width: min(560px, calc(100% - 36px));
-    padding: 18px;
-    border: 1px solid rgba(24, 106, 100, 0.28);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow: 0 16px 42px rgba(23, 52, 50, 0.2);
-}
-
-.analytics-consent[hidden] {
-    display: none;
-}
-
-.analytics-consent-text {
-    font-size: 0.9rem;
-    line-height: 1.7;
-}
-
-.analytics-consent-actions {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.analytics-consent-button,
-.analytics-consent-details {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    padding: 8px 15px;
-    border: 1px solid var(--primary);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--primary-dark);
-    font: inherit;
-    font-size: 0.86rem;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.analytics-consent-button:hover,
-.analytics-consent-details:hover {
-    background: rgba(24, 106, 100, 0.08);
-}
-
-.analytics-consent-button:focus-visible,
-.analytics-consent-details:focus-visible {
-    outline: 3px solid rgba(24, 106, 100, 0.35);
-    outline-offset: 2px;
 }
 
 /* --- Service page：目次と章構成 --- */
@@ -5170,8 +5099,7 @@ html {
         min-height: 44px;
     }
     .footer-nav a,
-    .footer-legal-nav a,
-    .footer-cookie-settings {
+    .footer-legal-nav a {
         display: inline-flex;
         align-items: center;
         min-height: 44px;
@@ -5685,20 +5613,6 @@ html {
         gap: 3px;
     }
 
-    .analytics-consent {
-        right: max(12px, env(safe-area-inset-right));
-        bottom: calc(84px + env(safe-area-inset-bottom));
-        width: calc(100% - max(24px, env(safe-area-inset-right) + env(safe-area-inset-left)));
-        padding: 16px;
-    }
-    .analytics-consent-actions {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .analytics-consent-details {
-        grid-column: 1 / -1;
-    }
-
     .fab-call { display: inline-flex; }
 
     .hours-panel-layout,
@@ -5755,7 +5669,6 @@ html {
     .side-label,
     .curtain,
     .news-popup,
-    .analytics-consent,
     .scroll-progress,
     .hero-photo,
     .page-hero-photo,
@@ -5771,7 +5684,6 @@ html {
     .fab-call,
     .footer-nav,
     .footer-legal-nav,
-    .footer-cookie-settings,
     .service-index,
     .news-more,
     .hero-actions,
