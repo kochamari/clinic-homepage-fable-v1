@@ -1097,7 +1097,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- スクロール連動アニメーション ---
     const revealTargets = document.querySelectorAll('[data-reveal], [data-motion], .split-text');
-    if (revealTargets.length > 0 && 'IntersectionObserver' in window) {
+    const iconRevealTargets = document.querySelectorAll('[data-icon-reveal]');
+    if ((revealTargets.length > 0 || iconRevealTargets.length > 0) && 'IntersectionObserver' in window) {
         const observer = new IntersectionObserver(
             function (entries) {
                 entries.forEach(function (entry) {
@@ -1112,9 +1113,63 @@ document.addEventListener('DOMContentLoaded', function () {
         revealTargets.forEach(function (el) {
             observer.observe(el);
         });
+
+        // カード本体より少し画面内に入ってから、SVGを描き始める。
+        // 先に文章を読めるようにして、アイコンの動きが急に始まる印象を抑える。
+        if (iconRevealTargets.length > 0) {
+            const iconObserver = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            iconObserver.unobserve(entry.target);
+                        }
+                    });
+                },
+                { rootMargin: '0px 0px -28% 0px', threshold: 0.15 }
+            );
+            iconRevealTargets.forEach(function (el) {
+                iconObserver.observe(el);
+            });
+        }
     } else {
         revealTargets.forEach(function (el) {
             el.classList.add('is-visible');
         });
+        iconRevealTargets.forEach(function (el) {
+            el.classList.add('is-visible');
+        });
     }
+
+    // --- FAQのアコーディオン ---
+    // 質問だけを一覧で見せ、回答は必要な項目だけ展開できるようにする。
+    document.querySelectorAll('.faq-item').forEach(function (item, index) {
+        const question = item.querySelector('.faq-q');
+        const answer = item.querySelector('.faq-a');
+        if (!question || !answer) return;
+
+        const answerId = 'faq-answer-' + (index + 1);
+        question.classList.add('faq-toggle');
+        question.setAttribute('role', 'button');
+        question.setAttribute('tabindex', '0');
+        question.setAttribute('aria-expanded', 'false');
+        question.setAttribute('aria-controls', answerId);
+        answer.id = answerId;
+        answer.hidden = true;
+
+        function toggleAnswer() {
+            const isOpen = question.getAttribute('aria-expanded') === 'true';
+            question.setAttribute('aria-expanded', String(!isOpen));
+            item.classList.toggle('is-open', !isOpen);
+            answer.hidden = isOpen;
+        }
+
+        question.addEventListener('click', toggleAnswer);
+        question.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleAnswer();
+            }
+        });
+    });
 });
