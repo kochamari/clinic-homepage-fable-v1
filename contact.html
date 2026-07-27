@@ -26,6 +26,7 @@
         <defs>
             <symbol id="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
             <symbol id="icon-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+            <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
             <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
             <symbol id="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
         </defs>
@@ -92,67 +93,98 @@
             </div>
         </section>
 
-        <section class="section" aria-labelledby="visit-method-heading">
-            <div class="container--narrow">
-                <h2 class="visit-section-head" id="visit-method-heading" data-reveal>受診方法</h2>
-                <p class="visit-answer" data-reveal>通常の診察は、<strong>予約不要</strong>です。<br>診療時間内に、そのままご来院ください。</p>
+        <section class="section" aria-labelledby="prepare-heading">
+            <div class="container">
+                <div class="section-head section-head--center" data-reveal>
+                    <p class="kicker">Before Your Visit</p>
+                    <h2 class="section-title" id="prepare-heading">ご来院前に</h2>
+                    <p class="section-lead">受診のしかた・持ち物・お支払いを、順にご案内します。</p>
+                </div>
 
-                <aside class="visit-fever-notice" data-reveal aria-labelledby="fever-heading">
-                    <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
-                    <div>
-                        <h3 id="fever-heading">発熱・かぜ症状のある方へ</h3>
-                        <p>ご来院の前に<strong>必ずお電話ください。</strong>感染対策のため来院時間をご案内し、別室での診察や、インフルエンザ・新型コロナなどの検査後に診察する場合があります。</p>
-                    </div>
-                </aside>
+                <div class="visit-steps">
+                    <article class="visit-step" data-motion="visit-step">
+                        <header class="visit-step-head">
+                            <span class="visit-step-number" aria-hidden="true">01</span>
+                            <h3 id="visit-method-heading">受診方法</h3>
+                        </header>
+                        <div class="visit-step-body">
+                            <p class="visit-answer">通常の診察は、<strong>予約不要</strong>です。<br>診療時間内に、そのままご来院ください。</p>
 
-                <article class="visit-guidance-card visit-guidance-card--phone" data-reveal="delay-1">
-                    <h3>そのほか、事前にお電話が必要な場合</h3>
-                    <ul class="visit-phone-list">
-                        <li>がん検診・特定健診・後期高齢者健診をご希望の方</li>
-                        <li>受診当日に胃カメラをご希望の方<small>予約枠の状況により、当日は対応できないことがあります</small></li>
-                    </ul>
-                </article>
+                            <aside class="visit-fever-notice" aria-labelledby="fever-heading">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
+                                <div>
+                                    <h4 id="fever-heading">発熱・かぜ症状のある方へ</h4>
+                                    <p>ご来院の前に<strong>必ずお電話ください。</strong>感染対策のため来院時間をご案内し、別室での診察や、インフルエンザ・新型コロナなどの検査後に診察する場合があります。</p>
+                                </div>
+                            </aside>
+
+                            <div class="visit-subblock">
+                                <h4 class="visit-subhead">そのほか、事前にお電話が必要な場合</h4>
+                                <ul class="visit-phone-list">
+                                    <li>がん検診・特定健診・後期高齢者健診をご希望の方</li>
+                                    <li>受診当日に胃カメラをご希望の方<small>予約枠の状況により、当日は対応できないことがあります</small></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="visit-step" data-motion="visit-step">
+                        <header class="visit-step-head">
+                            <span class="visit-step-number" aria-hidden="true">02</span>
+                            <h3 id="bring-heading">持ち物</h3>
+                        </header>
+                        <div class="visit-step-body">
+                            <dl class="visit-pack-list">
+                                <div>
+                                    <dt>通常の診察</dt>
+                                    <dd>マイナ保険証または資格確認書、お薬手帳、健診結果、紹介状などをお持ちください。</dd>
+                                </div>
+                                <div>
+                                    <dt>がん検診</dt>
+                                    <dd>受診券は不要です。マイナ保険証または資格確認書をお持ちください。</dd>
+                                </div>
+                                <div>
+                                    <dt>特定健診・後期高齢者健診</dt>
+                                    <dd><strong>受診券を必ずお持ちください。</strong>受診券と、マイナ保険証または資格確認書が必要です。</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </article>
+
+                    <article class="visit-step" data-motion="visit-step">
+                        <header class="visit-step-head">
+                            <span class="visit-step-number" aria-hidden="true">03</span>
+                            <h3 id="payment-heading">お支払い</h3>
+                        </header>
+                        <div class="visit-step-body">
+                            <p class="visit-answer">お支払いは、<strong>現金のみ</strong>となります。</p>
+                            <p class="visit-note">クレジットカード・電子マネー・QRコード決済などのキャッシュレス決済には対応しておりません。ご不便をおかけしますが、ご了承ください。</p>
+                        </div>
+                    </article>
+                </div>
             </div>
         </section>
 
-        <section class="section section--tint" aria-labelledby="bring-heading">
+        <section class="section section--tint" aria-label="診療時間とアクセスのご案内">
             <div class="container--narrow">
-                <h2 class="visit-section-head" id="bring-heading" data-reveal>持ち物</h2>
-                <dl class="visit-pack-list" data-reveal>
-                    <div>
-                        <dt>通常の診察</dt>
-                        <dd>マイナ保険証または資格確認書、お薬手帳、健診結果、紹介状などをお持ちください。</dd>
-                    </div>
-                    <div>
-                        <dt>がん検診</dt>
-                        <dd>受診券は不要です。マイナ保険証または資格確認書をお持ちください。</dd>
-                    </div>
-                    <div>
-                        <dt>特定健診・後期高齢者健診</dt>
-                        <dd><strong>受診券を必ずお持ちください。</strong>受診券と、マイナ保険証または資格確認書が必要です。</dd>
-                    </div>
-                </dl>
-            </div>
-        </section>
-
-        <section class="section" aria-labelledby="payment-heading">
-            <div class="container--narrow">
-                <h2 class="visit-section-head" id="payment-heading" data-reveal>お支払い</h2>
-                <p class="visit-answer" data-reveal>お支払いは、<strong>現金のみ</strong>となります。</p>
-                <p class="visit-note" data-reveal>クレジットカード・電子マネー・QRコード決済などのキャッシュレス決済には対応しておりません。ご不便をおかけしますが、ご了承ください。</p>
-            </div>
-        </section>
-
-        <section class="section section--tint" aria-labelledby="visit-access-heading">
-            <div class="container--narrow">
-                <a class="visit-access-card" href="access.html" data-reveal>
-                    <svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>
-                    <span>
-                        <h2 id="visit-access-heading">アクセス・駐車場</h2>
-                        <p>所在地、専用駐車場・提携駐車場、バスでお越しの方へのご案内をご確認いただけます。</p>
-                    </span>
-                    <svg class="icon visit-access-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                </a>
+                <div class="visit-links">
+                    <a class="visit-access-card" href="index.html#clinic-info" data-reveal>
+                        <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                        <span>
+                            <h2>診療時間・カレンダー</h2>
+                            <p>曜日ごとの診療時間、医師別の診察日、休診日カレンダーをご確認いただけます。</p>
+                        </span>
+                        <svg class="icon visit-access-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                    <a class="visit-access-card" href="access.html" data-reveal="delay-1">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>
+                        <span>
+                            <h2>アクセス・駐車場</h2>
+                            <p>所在地、専用駐車場・提携駐車場、バスでお越しの方へのご案内をご確認いただけます。</p>
+                        </span>
+                        <svg class="icon visit-access-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -202,9 +234,6 @@
                     <p class="contact-note">
                         当院では、ウェブサイトからの予約やお問い合わせフォームは設けておりません。<br>
                         お手数をおかけしますが、上記の電話番号までご連絡いただきますようお願い申し上げます。
-                    </p>
-                    <p style="margin-top: 26px;">
-                        <a href="index.html#clinic-info" class="btn btn-ghost">診療時間を確認する</a>
                     </p>
                 </div>
             </div>

@@ -140,7 +140,7 @@ const clinicSchedule = {
         if (diff === 0) day = '本日';
         else if (diff === 1) day = '明日';
         else day = (target.getUTCMonth() + 1) + '月' + target.getUTCDate() + '日(' + WEEK[target.getUTCDay()] + ')';
-        return '次の受付は' + day + ' ' + next.start + 'から';
+        return '次の受付は' + day + ' ' + displayTime(next.start) + 'から';
     }
 
     // 現在の診療状況を判定する
@@ -162,11 +162,20 @@ const clinicSchedule = {
             const end = toMinutes(sessions[i][1]);
             if (nowMin < start) {
                 return i === 0
-                    ? { state: 'before', label: '開院前', detail: sessions[i][0] + 'から受付開始' }
-                    : { state: 'lunch', label: '休憩中', detail: sessions[i][0] + 'から受付再開' };
+                    ? { state: 'before', label: '開院前', detail: displayTime(sessions[i][0]) + 'から受付開始' }
+                    : { state: 'lunch', label: '休憩中', detail: displayTime(sessions[i][0]) + 'から受付再開' };
             }
             if (nowMin < end) {
-                return { state: 'open', label: '診療中', detail: sessions[i][1] + 'まで受付' };
+                const later = sessions[i + 1];
+                // このあとも診療がある日は、次の受付開始も一緒に伝える。
+                // 「12:30まで受付」とだけ書くと、午後は休診だと誤解されるため。
+                return {
+                    state: 'open',
+                    label: '診療中',
+                    detail: later
+                        ? '午前は' + displayTime(sessions[i][1]) + 'まで受付・午後は' + displayTime(later[0]) + 'から'
+                        : displayTime(sessions[i][1]) + 'まで受付'
+                };
             }
         }
 
