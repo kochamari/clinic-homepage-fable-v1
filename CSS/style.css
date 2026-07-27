@@ -3987,12 +3987,17 @@ html.is-lightbox-open body {
     max-width: 560px;
     margin: 0 auto 8px;
 }
+.contact-card > .clinic-status {
+    display: flex;
+    width: fit-content;
+    margin: 18px auto 0;
+}
 
 .contact-tel {
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    margin: 18px 0 6px;
+    margin: 12px 0 6px;
     font-family: var(--font-serif);
     font-size: clamp(2rem, 6vw, 2.6rem);
     font-weight: 700;
@@ -4275,6 +4280,34 @@ html.is-lightbox-open body {
 }
 
 /* FAQ */
+.faq-groups {
+    display: grid;
+    gap: clamp(46px, 6vw, 72px);
+}
+
+.faq-group {
+    scroll-margin-top: calc(var(--header-h) + 28px);
+}
+
+.faq-group-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    color: var(--primary-dark);
+    font-family: var(--font-serif);
+    font-size: clamp(1.3rem, 2.4vw, 1.65rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+.faq-group-title::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
 .faq-list {
     display: grid;
     gap: 16px;
@@ -4293,19 +4326,48 @@ html.is-lightbox-open body {
    アイコンは絶対配置にし、本文は字下げしたふつうの段落として流す */
 .faq-q {
     position: relative;
-    padding-left: 44px;
+    padding: 0 42px 0 44px;
     font-size: 1.02rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     margin-bottom: 10px;
 }
+.faq-toggle {
+    cursor: pointer;
+    margin-bottom: 0;
+    outline: none;
+}
+.faq-toggle::after {
+    content: '＋';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    color: var(--primary);
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1;
+    transform: translateY(-50%);
+    transition: transform 0.3s var(--ease), color 0.3s var(--ease);
+}
+.faq-item.is-open .faq-toggle::after {
+    content: '−';
+    color: var(--accent);
+}
+.faq-toggle:focus-visible {
+    border-radius: 6px;
+    box-shadow: 0 0 0 3px rgba(24, 106, 100, 0.18);
+}
 .faq-a {
     position: relative;
     padding-left: 44px;
+    margin-top: 16px;
     font-size: 0.93rem;
     line-height: 1.9;
     color: var(--ink-soft);
 }
+.faq-a[hidden] { display: none; }
+.faq-a p + p { margin-top: 14px; }
 .faq-q::before,
 .faq-a::before {
     position: absolute;
@@ -4329,6 +4391,28 @@ html.is-lightbox-open body {
     content: 'A';
     background: var(--primary-tint);
     color: var(--primary-dark);
+}
+
+@media (max-width: 700px) {
+    .faq-groups { gap: 44px; }
+    .faq-group-title {
+        gap: 10px;
+        margin-bottom: 16px;
+        font-size: 1.25rem;
+    }
+    .faq-group-title::before { width: 20px; }
+    .faq-item { padding: 22px 20px; }
+    .faq-q,
+    .faq-a { padding-left: 38px; }
+    .faq-q { padding-right: 34px; }
+    .faq-q { font-size: 0.98rem; }
+    .faq-a { font-size: 0.9rem; }
+    .faq-q::before,
+    .faq-a::before {
+        width: 28px;
+        height: 28px;
+        font-size: 0.84rem;
+    }
 }
 
 /* --- Materials page --- */
@@ -4839,13 +4923,16 @@ html {
 /* --- アイコンの線描き（表示後、線を引くように現れる） --- */
 @media (prefers-reduced-motion: no-preference) {
     .js .feature-icon .icon,
-    .js .contact-card-icon .icon {
+    .js .contact-card-icon .icon,
+    .js .feature-editorial-icon[data-icon-reveal] .icon {
         stroke-dasharray: 70;
         stroke-dashoffset: 70;
-        transition: stroke-dashoffset 1.6s var(--ease) 0.55s;
+        transition: stroke-dashoffset 2.1s var(--ease) 0.72s;
     }
-    .js.motion-ready [data-reveal].is-visible .feature-icon .icon,
-    .js.motion-ready [data-reveal].is-visible .contact-card-icon .icon {
+    .js.motion-ready [data-reveal].is-visible .feature-icon:not([data-icon-reveal]) .icon,
+    .js.motion-ready [data-reveal].is-visible .contact-card-icon .icon,
+    .js.motion-ready .feature-icon[data-icon-reveal].is-visible .icon,
+    .js.motion-ready .feature-editorial-icon[data-icon-reveal].is-visible .icon {
         stroke-dashoffset: 0;
     }
     /* アイコンの丸い下地も、線を描く前にふわっと開く */
@@ -4853,13 +4940,47 @@ html {
     .js .contact-card-icon {
         transform: scale(0.82);
         opacity: 0;
-        transition: transform 0.8s var(--ease) 0.15s, opacity 0.8s var(--ease) 0.15s;
+        transition: transform 1.1s var(--ease) 0.22s, opacity 1.1s var(--ease) 0.22s;
     }
-    .js.motion-ready [data-reveal].is-visible .feature-icon,
-    .js.motion-ready [data-reveal].is-visible .contact-card-icon {
+    .js.motion-ready [data-reveal].is-visible .feature-icon:not([data-icon-reveal]),
+    .js.motion-ready [data-reveal].is-visible .contact-card-icon,
+    .js.motion-ready .feature-icon[data-icon-reveal].is-visible {
         transform: scale(1);
         opacity: 1;
     }
+
+    /* 「当院の特徴」のアイコンも、本文とは別のタイミングで静かに描き出す */
+    .js .feature-editorial-icon[data-icon-reveal] {
+        transform: translateY(5px) scale(0.8) rotate(-5deg);
+        opacity: 0;
+        transition: transform 1.15s var(--ease) 0.18s, opacity 1.15s var(--ease) 0.18s;
+    }
+    .js.motion-ready .feature-editorial-icon[data-icon-reveal].is-visible {
+        transform: translateY(0) scale(1) rotate(0);
+        opacity: 1;
+    }
+
+    /* 目的別カードは、左上 → 右上 → 左下 → 右下の順に一枚ずつ。 */
+    .js .segment-grid .segment-card[data-reveal] {
+        transition-duration: 1.4s, 1.6s;
+    }
+    .js.motion-ready .segment-grid .segment-card[data-reveal="delay-1"].is-visible { transition-delay: 0.3s; }
+    .js.motion-ready .segment-grid .segment-card[data-reveal="delay-2"].is-visible { transition-delay: 0.6s; }
+    .js.motion-ready .segment-grid .segment-card[data-reveal="delay-3"].is-visible { transition-delay: 0.9s; }
+    .js .segment-grid .segment-card:nth-child(2) .feature-icon { transition-delay: 0.52s; }
+    .js .segment-grid .segment-card:nth-child(3) .feature-icon { transition-delay: 0.82s; }
+    .js .segment-grid .segment-card:nth-child(4) .feature-icon { transition-delay: 1.12s; }
+    .js .segment-grid .segment-card:nth-child(2) .feature-icon .icon { transition-delay: 1.02s; }
+    .js .segment-grid .segment-card:nth-child(3) .feature-icon .icon { transition-delay: 1.32s; }
+    .js .segment-grid .segment-card:nth-child(4) .feature-icon .icon { transition-delay: 1.62s; }
+
+    /* 当院の特徴は、左から右へ読み進める順に揃える。 */
+    .js.motion-ready .features-editorial .feature-editorial-item[data-reveal="delay-1"].is-visible { transition-delay: 0.3s; }
+    .js.motion-ready .features-editorial .feature-editorial-item[data-reveal="delay-2"].is-visible { transition-delay: 0.6s; }
+    .js .features-editorial .feature-editorial-item:nth-child(2) .feature-editorial-icon { transition-delay: 0.48s; }
+    .js .features-editorial .feature-editorial-item:nth-child(3) .feature-editorial-icon { transition-delay: 0.78s; }
+    .js .features-editorial .feature-editorial-item:nth-child(2) .feature-editorial-icon .icon { transition-delay: 1.02s; }
+    .js .features-editorial .feature-editorial-item:nth-child(3) .feature-editorial-icon .icon { transition-delay: 1.32s; }
 
     /* 診療案内の章アイコンも、スクロールに合わせて一筆書きのように現れる */
     .js .service-chapter-icon[data-reveal] {
