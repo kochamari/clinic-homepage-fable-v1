@@ -1,5 +1,5 @@
 'use strict';
 
 window.HGC_SITE_CONFIG = Object.freeze({
-    gaMeasurementId: '',
+    gaMeasurementId: 'G-7ZLDWCR83Q',
 });

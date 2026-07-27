@@ -81,9 +81,9 @@ GitHub Pages が `main` ブランチのルートを直接配信する構成に�
 
 ### Google Analytics 4
 
-計測IDは `JS/site-config.js` の `gaMeasurementId` に1か所だけ設定します。空文字の間はGoogle Analyticsのスクリプトを読み込まず、解析通信、Cookie同意バナー、フッターの「Cookie設定」はすべて無効です。
+計測IDは `JS/site-config.js` の `gaMeasurementId` に1か所だけ設定します。空文字の間はGoogle Analyticsのスクリプトを読み込まず、解析通信も行いません。
 
-有効な計測IDを設定すると、初回訪問時に同意バナーが表示されます。「同意する」を選んだ場合だけ計測を開始し、「拒否する」を選んだ場合は読み込みません。選択内容はブラウザの `localStorage` に保存され、フッターの「Cookie設定」から変更できます。同意を撤回した場合は、当サイトの `_ga` および `_ga_` で始まるCookieを可能な範囲で削除します。
+有効な計測IDを設定すると、ページ表示時にGoogle Analytics 4を開始します。計測用のCookieバナーおよびフッターの「Cookie設定」は使用しません。
 
 ## テスト・lint・型チェック
 
