@@ -59,25 +59,25 @@
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Thursday", "Friday"],
           "opens": "09:00",
-          "closes": "12:30"
+          "closes": "13:00"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Thursday", "Friday"],
           "opens": "14:00",
-          "closes": "17:30"
+          "closes": "18:00"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": "Wednesday",
           "opens": "09:00",
-          "closes": "12:00"
+          "closes": "12:30"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": "Saturday",
           "opens": "09:00",
-          "closes": "12:30"
+          "closes": "13:00"
         }
       ],
       "availableService": [
@@ -156,7 +156,7 @@
                 <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
                 0956-37-3777
             </a>
-            <p class="drawer-note"><span>受付 9:00–12:30 / 14:00–17:30</span><span>水曜・土曜は午前のみ</span></p>
+            <p class="drawer-note"><span>診療 9:00–13:00 / 14:00–18:00</span><span>受付は診療終了の30分前まで</span><span>水曜・土曜は午前のみ</span></p>
         </nav>
     </div>
 
@@ -181,11 +181,11 @@
                     <dl class="hero-card-hours">
                         <div>
                             <dt>午前</dt>
-                            <dd>9:00–12:30 <span class="hero-card-hours-note">水曜は12:00まで</span></dd>
+                            <dd>9:00–13:00 <span class="hero-card-hours-note">受付は12:30まで（水曜は診療12:30・受付12:00まで）</span></dd>
                         </div>
                         <div>
                             <dt>午後</dt>
-                            <dd>14:00–17:30</dd>
+                            <dd>14:00–18:00 <span class="hero-card-hours-note">受付は17:30まで</span></dd>
                         </div>
                         <div>
                             <dt>休診</dt>
@@ -369,17 +369,17 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <th scope="row">午前 9:00–12:30</th>
+                                            <th scope="row">午前 9:00–13:00<span class="hours-reception">受付 9:00–12:30</span></th>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="partial"><span aria-hidden="true">▲</span><span class="visually-hidden">12:00まで</span></td>
+                                            <td class="partial"><span aria-hidden="true">▲</span><span class="visually-hidden">12:30まで（受付12:00まで）</span></td>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
                                             <td class="day-off"><span aria-hidden="true">休</span><span class="visually-hidden">休診</span></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">午後 14:00–17:30</th>
+                                            <th scope="row">午後 14:00–18:00<span class="hours-reception">受付 14:00–17:30</span></th>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
                                             <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
                                             <td class="closed"><span aria-hidden="true">−</span><span class="visually-hidden">休診</span></td>
@@ -391,7 +391,8 @@
                                     </tbody>
                                 </table>
                                 <div class="hours-notes">
-                                    <p><span class="mark">▲</span> 水曜の午前は 9:00–12:00 です。</p>
+                                    <p><span class="mark">▲</span> 水曜の午前は 9:00–12:30（受付は12:00まで）です。</p>
+                                    <p>受付は、いずれも診療終了の30分前までです。</p>
                                     <p>休診日：水曜午後・土曜午後・日曜・祝日</p>
                                 </div>
                             </div>
@@ -477,7 +478,7 @@
                     <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
                     0956-37-3777
                 </a>
-                <p class="cta-note">受付時間は診療時間に準じます。</p>
+                <p class="cta-note">受付は診療終了の30分前までです。</p>
             </div>
         </section>
     </main>
@@ -501,8 +502,9 @@
             <div class="footer-hours">
                 <h4 class="footer-head">診療時間</h4>
                 <ul class="footer-hours-list">
-                    <li><span class="label">午前</span><span>9:00–12:30（水曜は12:00まで）</span></li>
-                    <li><span class="label">午後</span><span>14:00–17:30</span></li>
+                    <li><span class="label">午前</span><span>9:00–13:00（水曜は12:30まで）</span></li>
+                    <li><span class="label">午後</span><span>14:00–18:00</span></li>
+                    <li><span class="label">受付</span><span>診療終了の30分前まで</span></li>
                     <li><span class="label">休診</span><span>水曜午後・土曜午後・日曜・祝日</span></li>
                 </ul>
             </div>

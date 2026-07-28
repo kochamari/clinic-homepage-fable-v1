@@ -2208,6 +2208,14 @@ html.is-popup-open body { overflow: hidden; }
     white-space: nowrap;
     font-size: 0.88rem;
 }
+/* 診療時間の下に受付時間を添える。診療時間より控えめに見せる */
+.hours-table tbody th .hours-reception {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.76rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+}
 .hours-table .open {
     color: var(--primary);
     font-weight: 700;
