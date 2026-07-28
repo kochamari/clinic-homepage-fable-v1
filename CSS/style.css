@@ -659,6 +659,12 @@ html.is-entering.is-entered::after {
     color: var(--ink-soft);
     font-size: 0.98rem;
 }
+
+/* 「胃カメラは〜選べます」の見出しは1行に収める。
+   .section-titleの字間だと860px幅であふれて折り返してしまうため、この見出しだけ字間を詰める */
+#route-heading {
+    letter-spacing: 0.06em;
+}
 .section-head--center .section-lead { margin-inline: auto; }
 
 /* --- Buttons --- */
@@ -4129,6 +4135,10 @@ html.is-lightbox-open body {
     color: var(--ink-soft);
     font-size: 0.94rem;
     line-height: 1.9;
+}
+/* 補足が続くときは、結論に寄せるための負の余白を打ち消して読みやすく離す */
+.visit-note + .visit-note {
+    margin-top: clamp(14px, 1.8vw, 22px);
 }
 
 /* 手順の中に置く小見出し。持ち物の項目名と同じ強さにして、
