@@ -1326,6 +1326,25 @@ body.drawer-open {
 }
 .segment-card:hover .segment-more .icon { transform: translateX(4px); }
 
+/* リンクを2つ以上置くカード。カード全体ではなく、各リンクを押してもらう */
+.segment-links {
+    margin-top: auto;
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+.segment-links .segment-more {
+    margin-top: 0;
+    padding-top: 0;
+    text-decoration: none;
+}
+.segment-links .segment-more:hover .icon,
+.segment-links .segment-more:focus-visible .icon { transform: translateX(4px); }
+/* カード自体は押せないので、持ち上げる演出はしない */
+.segment-card--links:hover { transform: none; box-shadow: var(--shadow-soft); }
+
 /* --- Price table (がん検診の自己負担) --- */
 .table-scroll { overflow-x: auto; }
 
@@ -5359,6 +5378,8 @@ html {
         rgba(24, 106, 100, 0.12) 45%,
         transparent 75%);
 }
+/* リンクが複数あるカードは全体を押せないため、光らせない */
+.segment-card--links::after { content: none; }
 @media (hover: hover) and (pointer: fine) {
     .segment-card:hover::after {
         opacity: 1;
@@ -5367,6 +5388,10 @@ html {
     .segment-card:hover {
         border-color: var(--primary);
         box-shadow: 0 8px 20px rgba(24, 106, 100, 0.1);
+    }
+    .segment-card--links:hover {
+        border-color: var(--line);
+        box-shadow: var(--shadow-soft);
     }
 }
 
