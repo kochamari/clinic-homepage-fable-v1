@@ -189,7 +189,7 @@ const clinicSchedule = {
         if (!sessions.length) return [];
         const day = date.getUTCDay();
         if (isFourthSaturday(date)) return ['小田 英俊医師'];
-        if (day === 2 || day === 4) return ['原口 紘（こう）医師', '原口 増穂（ますほ）医師'];
+        if (day === 2 || day === 4) return ['原口 増穂（ますほ）医師', '原口 紘（こう）医師'];
         return ['原口 紘（こう）医師'];
     }
 
