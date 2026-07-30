@@ -1234,7 +1234,9 @@ body.drawer-open {
     padding: 13px 14px;
     border-radius: var(--radius-sm);
     background: var(--primary-tint);
-    color: var(--ink-soft);
+    /* 淡い緑の上に --ink-soft を置くとコントラスト比が 4.49 で AA(4.5) にわずかに届かないため、
+       この枠の中だけ少し濃くする */
+    color: #5a686e;
     font-size: 0.8rem;
     line-height: 1.65;
 }
@@ -5721,9 +5723,10 @@ html {
     }
     .hero-kicker {
         gap: 9px;
-        font-size: 0.74rem;
+        /* 診療科目と場所を伝える本文なので、高齢の方でも読める大きさを確保する */
+        font-size: 0.8rem;
         line-height: 1.7;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
     }
     .hero-kicker::before { width: 20px; }
     .hero-title {
