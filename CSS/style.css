@@ -653,6 +653,19 @@ html.is-entering.is-entered::after {
     color: var(--ink);
 }
 
+/* 見出しと本文中のリスト項目は、行の長さを揃えて折り返す。
+   そのままだとスマホ幅で「特定健診」→「診」のように
+   最終行に1文字だけ残り、読みにくく崩れて見えるため。
+   ヘッダー・フッターのナビは1行に収まるので対象外。 */
+h1, h2, h3, h4,
+.section-title,
+.page-hero-title,
+.cta-title,
+.faq-q,
+main li {
+    text-wrap: balance;
+}
+
 .section-lead {
     margin-top: 18px;
     max-width: 640px;
@@ -1486,7 +1499,9 @@ body.drawer-open {
     flex-shrink: 0;
 }
 .clinic-status-label { font-weight: 700; letter-spacing: 0.04em; }
-.clinic-status-detail { font-size: 0.85rem; opacity: 0.85; }
+/* 「午前は12:30まで受付・午後は14:00から」のように長くなる日があり、
+   スマホ幅だと最後の1文字だけが次の行に落ちるため行の長さを揃える */
+.clinic-status-detail { font-size: 0.85rem; opacity: 0.85; text-wrap: balance; }
 
 .clinic-status.is-open {
     background: var(--primary-tint);
@@ -1569,6 +1584,8 @@ body.drawer-open {
     font-size: 0.9rem;
     font-weight: 700;
     line-height: 1.65;
+    /* 医師2名の日は行が長くなり、最後の1文字だけが次の行に落ちるため */
+    text-wrap: balance;
 }
 .calendar-today.is-morning-only {
     border-color: rgba(185, 138, 62, 0.34);
@@ -4104,9 +4121,12 @@ html.is-lightbox-open body {
 }
 .visit-step-head h3 {
     font-family: var(--font-serif);
-    font-size: clamp(1.3rem, 2.4vw, 1.62rem);
+    /* 2段組のとき見出しは幅の狭い左カラムに入る。
+       文字が大きいままだと「治療の負担も軽くなります」の「す」だけが
+       次の行に落ちるため、カラム幅に合わせて少しだけ小さくする。 */
+    font-size: clamp(1.24rem, 2.15vw, 1.62rem);
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     line-height: 1.6;
     color: var(--ink);
 }
@@ -4340,6 +4360,18 @@ html.is-lightbox-open body {
     gap: clamp(18px, 2.4vw, 28px);
     align-items: start;
 }
+/* セクションの途中に置く小見出し。前のブロックとの間隔を空ける */
+.sedation-head {
+    margin-top: clamp(48px, 6vw, 76px);
+}
+.sedation-head h3 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 1.2rem + 0.9vw, 1.8rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    color: var(--ink);
+}
 .route-card {
     padding: clamp(26px, 3vw, 36px);
     border: 1px solid var(--line);
@@ -4360,7 +4392,9 @@ html.is-lightbox-open body {
     font-size: 0.88rem;
     letter-spacing: 0.1em;
 }
-.route-card-head h3 {
+/* 鎮静剤の比較カードは節見出し(h3)の下に入るため h4 を使う */
+.route-card-head h3,
+.route-card-head h4 {
     color: var(--primary-dark);
     font-family: var(--font-serif);
     font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.6rem);
@@ -4428,6 +4462,7 @@ html.is-lightbox-open body {
     font-size: 0.98rem;
     line-height: 1.95;
 }
+.callout-block > p + p { margin-top: 14px; }
 .callout-block > p + ul { margin-top: 14px; }
 .callout-block > ul + p { margin-top: 18px; }
 .callout-block .visit-note { margin-top: 20px; }
