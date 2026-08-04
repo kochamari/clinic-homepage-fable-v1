@@ -59,25 +59,25 @@
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Thursday", "Friday"],
           "opens": "09:00",
-          "closes": "13:00"
+          "closes": "12:30"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Thursday", "Friday"],
           "opens": "14:00",
-          "closes": "18:00"
+          "closes": "17:30"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": "Wednesday",
           "opens": "09:00",
-          "closes": "12:30"
+          "closes": "12:00"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": "Saturday",
           "opens": "09:00",
-          "closes": "13:00"
+          "closes": "12:30"
         }
       ],
       "availableService": [
@@ -156,7 +156,7 @@
                 <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
                 0956-37-3777
             </a>
-            <p class="drawer-note"><span>診療 9:00–13:00 / 14:00–18:00</span><span>受付は12:30・17:30まで</span><span>水曜・土曜は午前のみ</span></p>
+            <p class="drawer-note"><span>受付時間 9:00–12:30 / 14:00–17:30</span><span>水曜の午前は12:00まで</span><span>水曜・土曜は午前のみ</span></p>
         </nav>
     </div>
 
@@ -170,7 +170,7 @@
                     <h1 class="hero-title">笑顔とまごころの、<br>まちの消化器内科。</h1>
                     <p class="hero-lead" data-reveal="delay-1">お腹の不調やがんが心配な症状のご相談から、胃カメラ・がん検診、生活習慣病の管理まで。消化器の専門医が、からだをまとめて診る地域のかかりつけ医です。</p>
                 </div>
-                <aside class="hero-card" aria-label="ご予約・診療時間のご案内" data-reveal="delay-2">
+                <aside class="hero-card" aria-label="ご予約・受付時間のご案内" data-reveal="delay-2">
                     <img src="images/logo.PNG" alt="" class="hero-card-mark" width="58" height="58">
                     <p class="clinic-status" data-clinic-status role="status" aria-live="polite"></p>
                     <p class="hero-card-label">ご予約・ご相談</p>
@@ -178,14 +178,15 @@
                         <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
                         0956-37-3777
                     </a>
+                    <p class="hero-card-hours-label">受付時間</p>
                     <dl class="hero-card-hours">
                         <div>
                             <dt>午前</dt>
-                            <dd>9:00–13:00 <span class="hero-card-hours-note">受付は12:30まで</span><br><span class="hero-card-hours-note">水曜は9:00–12:30 受付12:00まで</span></dd>
+                            <dd>9:00–12:30 <span class="hero-card-hours-note">水曜は12:00まで</span></dd>
                         </div>
                         <div>
                             <dt>午後</dt>
-                            <dd>14:00–18:00 <span class="hero-card-hours-note">受付は17:30まで</span></dd>
+                            <dd>14:00–17:30</dd>
                         </div>
                         <div>
                             <dt>休診</dt>
@@ -195,7 +196,7 @@
                     <p class="hero-card-visit-note"><span><strong>通常の診察</strong> 基本的に予約不要です</span><span><strong>事前に電話予約</strong> 胃カメラ・健診・発熱症状など</span></p>
                     <div class="hero-card-links">
                         <a href="#clinic-info" class="hero-card-link">
-                            診療時間・カレンダー
+                            受付時間・カレンダー
                             <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg>
                         </a>
                         <a href="access.html" class="hero-card-link">
@@ -347,20 +348,20 @@
             <div class="container">
                 <div class="section-head section-head--center" data-reveal>
                     <p class="kicker">Clinic Guide</p>
-                    <h2 class="section-title" id="info-heading">診療時間・カレンダー・アクセス</h2>
+                    <h2 class="section-title" id="info-heading">受付時間・カレンダー・アクセス</h2>
                 </div>
                 <div class="info-grid">
                     <div class="info-panel hours-panel" data-reveal>
                         <h3 class="info-panel-title">
                             <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
-                            診療時間
+                            受付時間
                         </h3>
                         <div class="hours-panel-layout">
                             <div>
                                 <table class="hours-table" data-hours-table>
                                     <thead>
                                         <tr>
-                                            <th scope="col">診療時間</th>
+                                            <th scope="col">受付時間</th>
                                             <th scope="col">月</th>
                                             <th scope="col">火</th>
                                             <th scope="col">水</th>
@@ -372,30 +373,31 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <th scope="row">午前 9:00–13:00<span class="hours-reception">受付 9:00–12:30</span></th>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="partial"><span aria-hidden="true">▲</span><span class="visually-hidden">12:30まで（受付12:00まで）</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
+                                            <th scope="row">午前 9:00–12:30</th>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
+                                            <td class="partial"><span aria-hidden="true">▲</span><span class="visually-hidden">12:00まで</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
                                             <td class="day-off"><span aria-hidden="true">休</span><span class="visually-hidden">休診</span></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">午後 14:00–18:00<span class="hours-reception">受付 14:00–17:30</span></th>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
+                                            <th scope="row">午後 14:00–17:30</th>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
                                             <td class="closed"><span aria-hidden="true">−</span><span class="visually-hidden">休診</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
-                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">診療</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
+                                            <td class="open"><span aria-hidden="true">●</span><span class="visually-hidden">受付</span></td>
                                             <td class="closed"><span aria-hidden="true">−</span><span class="visually-hidden">休診</span></td>
                                             <td class="day-off"><span aria-hidden="true">休</span><span class="visually-hidden">休診</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div class="hours-notes">
-                                    <p><span class="mark">▲</span> 水曜の午前は 9:00–12:30（受付は12:00まで）です。</p>
+                                    <p><span class="mark">▲</span> 水曜の午前の受付は 12:00 までです。</p>
                                     <p>休診日：水曜午後・土曜午後・日曜・祝日</p>
+                                    <p class="hours-note-lead">表の時間は<strong>受付時間</strong>です。この時間内にご来院ください。</p>
                                 </div>
                             </div>
                             <div class="doctor-days">
@@ -480,7 +482,7 @@
                     <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
                     0956-37-3777
                 </a>
-                <p class="cta-note">受付は12:30・17:30までです。</p>
+                <p class="cta-note">受付時間は 9:00–12:30 / 14:00–17:30 です（水曜の午前は12:00まで）。</p>
             </div>
         </section>
     </main>
@@ -502,10 +504,10 @@
                 </a>
             </div>
             <div class="footer-hours">
-                <h4 class="footer-head">診療時間</h4>
+                <h4 class="footer-head">受付時間</h4>
                 <ul class="footer-hours-list">
-                    <li><span class="label">午前</span><span>9:00–13:00 受付は12:30まで<br>（水曜は9:00–12:30 受付は12:00まで）</span></li>
-                    <li><span class="label">午後</span><span>14:00–18:00 受付は17:30まで</span></li>
+                    <li><span class="label">午前</span><span>9:00–12:30（水曜は12:00まで）</span></li>
+                    <li><span class="label">午後</span><span>14:00–17:30</span></li>
                     <li><span class="label">休診</span><span>水曜午後・土曜午後・日曜・祝日</span></li>
                 </ul>
             </div>

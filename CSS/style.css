@@ -1200,10 +1200,18 @@ body.drawer-open {
 .hero-card-tel:hover { color: var(--primary); }
 .hero-card-tel .icon { color: var(--primary); width: 0.85em; height: 0.85em; }
 
-.hero-card-hours {
+/* 掲載しているのが診療時間ではなく受付時間であることを、表の上で明示する */
+.hero-card-hours-label {
     margin-top: 18px;
     border-top: 1px dashed var(--line);
     padding-top: 16px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--primary);
+}
+.hero-card-hours {
+    margin-top: 12px;
     display: grid;
     gap: 10px;
 }
@@ -1240,6 +1248,8 @@ body.drawer-open {
     font-size: 0.8rem;
     line-height: 1.65;
 }
+/* スマホ幅で最後の1文字だけが次の行に落ちるため、行の長さを揃える */
+.hero-card-visit-note span { text-wrap: balance; }
 .hero-card-visit-note strong {
     color: var(--primary-dark);
     font-weight: 700;
@@ -2252,14 +2262,6 @@ html.is-popup-open body { overflow: hidden; }
     white-space: nowrap;
     font-size: 0.88rem;
 }
-/* 診療時間の下に受付時間を添える。診療時間より控えめに見せる */
-.hours-table tbody th .hours-reception {
-    display: block;
-    margin-top: 3px;
-    font-size: 0.76rem;
-    font-weight: 400;
-    color: var(--ink-soft);
-}
 .hours-table .open {
     color: var(--primary);
     font-weight: 700;
@@ -2309,6 +2311,14 @@ html.is-popup-open body { overflow: hidden; }
     color: var(--ink-soft);
 }
 .hours-notes .mark { color: var(--accent-text); font-weight: 700; }
+/* 表の数字が診療時間ではなく受付時間であることを、表のすぐ下で念押しする */
+.hours-note-lead {
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    color: var(--ink);
+}
+.hours-note-lead strong { color: var(--primary-dark); font-weight: 700; }
 
 .doctor-days {
     padding-left: clamp(24px, 3.4vw, 40px);
@@ -5776,9 +5786,12 @@ html {
     }
     .hero-card-tel .icon { color: rgba(216, 178, 110, 0.95); }
     .hero-card-tel:hover { color: #fff; background: var(--primary-dark); }
-    .hero-card-hours {
+    .hero-card-hours-label {
         margin-top: 12px;
         padding-top: 12px;
+    }
+    .hero-card-hours {
+        margin-top: 10px;
     }
     .hero-card-hours > div {
         gap: 10px;
