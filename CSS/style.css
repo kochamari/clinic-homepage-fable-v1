@@ -1249,7 +1249,52 @@ body.drawer-open {
     line-height: 1.65;
 }
 /* スマホ幅で最後の1文字だけが次の行に落ちるため、行の長さを揃える */
-.hero-card-visit-note span { text-wrap: balance; }
+.hero-card-visit-note > span { text-wrap: balance; }
+.hero-card-warning {
+    display: grid;
+    grid-template-columns: max-content auto;
+    justify-content: start;
+    gap: 2px 12px;
+    align-items: baseline;
+    text-wrap: initial;
+}
+.hero-card-warning > strong {
+    grid-column: 1 / -1;
+}
+.hero-card-warning-text {
+    display: block;
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 0;
+    white-space: nowrap;
+}
+.hero-card-note-link {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    margin-top: 0;
+    white-space: nowrap;
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+.hero-card-note-link:hover { color: var(--primary-dark); }
+@media (max-width: 380px) {
+    .hero-card-warning {
+        grid-template-columns: 1fr;
+    }
+    .hero-card-warning-text {
+        grid-column: 1;
+        white-space: normal;
+    }
+    .hero-card-note-link {
+        grid-column: 1;
+        grid-row: 3;
+    }
+}
 .hero-card-visit-note strong {
     color: var(--primary-dark);
     font-weight: 700;
@@ -2319,6 +2364,36 @@ html.is-popup-open body { overflow: hidden; }
     color: var(--ink);
 }
 .hours-note-lead strong { color: var(--primary-dark); font-weight: 700; }
+.hours-note-alert {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid #e7c995;
+    border-radius: var(--radius-sm);
+    background: #fdf6ec;
+}
+.hours-note-alert .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 2px;
+    color: #9a6d22;
+}
+.hours-note-alert h4 {
+    margin-bottom: 6px;
+    color: #77501a;
+    font-family: var(--font-serif);
+    font-size: 0.98rem;
+    letter-spacing: 0.05em;
+}
+.hours-note-alert p {
+    color: #765f43;
+    font-size: 0.84rem;
+    line-height: 1.8;
+}
+.hours-note-alert p + p { margin-top: 8px; }
 
 .doctor-days {
     padding-left: clamp(24px, 3.4vw, 40px);
