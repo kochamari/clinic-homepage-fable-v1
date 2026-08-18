@@ -1249,7 +1249,22 @@ body.drawer-open {
     line-height: 1.65;
 }
 /* スマホ幅で最後の1文字だけが次の行に落ちるため、行の長さを揃える */
-.hero-card-visit-note span { text-wrap: balance; }
+.hero-card-visit-note > span { text-wrap: balance; }
+.hero-card-warning { text-wrap: initial; }
+.hero-card-warning-text {
+    display: block;
+    margin-top: 2px;
+}
+.hero-card-note-link {
+    display: inline-block;
+    margin-top: 2px;
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+.hero-card-note-link:hover { color: var(--primary-dark); }
 .hero-card-visit-note strong {
     color: var(--primary-dark);
     font-weight: 700;
