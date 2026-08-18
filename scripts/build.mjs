@@ -170,16 +170,19 @@ function resolveLocalReference(sourceFile, reference) {
 
   const target = decodedPath === ""
     ? absolutePath(sourceFile)
+    : decodedPath === "/"
+      ? absolutePath("index.html")
     : path.resolve(
         root,
         decodedPath.startsWith("/")
           ? decodedPath.slice(1)
           : path.join(path.dirname(sourceFile), decodedPath),
       );
-  if (target !== root && !target.startsWith(`${root}${path.sep}`)) {
+  const resolvedTarget = path.extname(target) === "" ? `${target}.html` : target;
+  if (resolvedTarget !== root && !resolvedTarget.startsWith(`${root}${path.sep}`)) {
     return { error: "サイト外のパスです" };
   }
-  return { target, fragment: decodedFragment };
+  return { target: resolvedTarget, fragment: decodedFragment };
 }
 
 async function checkReference(sourceFile, reference, kind, source, index) {

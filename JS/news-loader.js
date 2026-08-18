@@ -20,7 +20,7 @@ function categoryClass(category) {
 // お知らせ1件分のHTML（ホームのダイジェスト用）
 function createNewsItemHTML(item) {
     return `
-        <a class="news-row" href="news.html#news-${item.id}">
+        <a class="news-row" href="news#news-${item.id}">
             <time class="news-row-date" datetime="${item.date}">${formatDate(item.date)}</time>
             <span class="${categoryClass(item.category)}">${item.category}</span>
             <span class="news-row-title">${item.title}</span>
@@ -73,7 +73,7 @@ function loadAllNews() {
         newsContainer.innerHTML = newsData.news.map(createNewsDetailHTML).join('');
         // 動的に追加した要素にも表示アニメーションを適用
         newsContainer.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
-        // ハッシュ付きURL（news.html#news-9 など）で直接開かれた場合のスクロール
+        // ハッシュ付きURL（news#news-9 など）で直接開かれた場合のスクロール
         if (window.location.hash) {
             const target = document.querySelector(window.location.hash);
             if (target) target.scrollIntoView();
@@ -86,7 +86,7 @@ function loadAllNews() {
 
 // ページ読み込み時に実行
 document.addEventListener('DOMContentLoaded', function () {
-    // 公開環境では /news.html が /news のような拡張子なしURLになるため、
+    // 公開環境では /news.html が /news にリダイレクトされるため、
     // 最後のパス名から .html を除いてページを判定する
     const pageName = window.location.pathname
         .replace(/\/$/, '')

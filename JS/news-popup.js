@@ -85,7 +85,7 @@
                 '<div class="news-popup-body">' + bodyHTML(item.content) + '</div>' +
                 '<div class="news-popup-actions">' +
                     '<button type="button" class="btn btn-primary" data-popup-close>閉じる</button>' +
-                    '<a class="btn btn-ghost" href="news.html#news-' + escapeHTML(item.id) + '">お知らせ一覧を見る</a>' +
+                    '<a class="btn btn-ghost" href="news#news-' + escapeHTML(item.id) + '">お知らせ一覧を見る</a>' +
                 '</div>' +
             '</div>';
 
