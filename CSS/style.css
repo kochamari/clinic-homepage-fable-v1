@@ -1250,14 +1250,31 @@ body.drawer-open {
 }
 /* スマホ幅で最後の1文字だけが次の行に落ちるため、行の長さを揃える */
 .hero-card-visit-note > span { text-wrap: balance; }
-.hero-card-warning { text-wrap: initial; }
+.hero-card-warning {
+    display: grid;
+    grid-template-columns: max-content auto;
+    justify-content: start;
+    gap: 2px 12px;
+    align-items: baseline;
+    text-wrap: initial;
+}
+.hero-card-warning > strong {
+    grid-column: 1 / -1;
+}
 .hero-card-warning-text {
     display: block;
-    margin-top: 2px;
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 0;
+    white-space: nowrap;
 }
 .hero-card-note-link {
-    display: inline-block;
-    margin-top: 2px;
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    margin-top: 0;
+    white-space: nowrap;
     color: var(--primary);
     font-weight: 700;
     text-decoration: underline;
@@ -1265,6 +1282,19 @@ body.drawer-open {
     text-underline-offset: 3px;
 }
 .hero-card-note-link:hover { color: var(--primary-dark); }
+@media (max-width: 380px) {
+    .hero-card-warning {
+        grid-template-columns: 1fr;
+    }
+    .hero-card-warning-text {
+        grid-column: 1;
+        white-space: normal;
+    }
+    .hero-card-note-link {
+        grid-column: 1;
+        grid-row: 3;
+    }
+}
 .hero-card-visit-note strong {
     color: var(--primary-dark);
     font-weight: 700;
