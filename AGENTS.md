@@ -41,14 +41,14 @@ images/               画像
 PDF/                  配布用 PDF
 scripts/
   dev.mjs             ローカル開発サーバー
-  build.mjs           GitHub Pages公開前のファイル検証
+  build.mjs           公開前のファイル検証
   update-holidays.mjs 内閣府CSVから祝日データを生成
 .github/workflows/
   update-holidays.yml 祝日データの定期更新
 docs/
   CLINIC_FACTS.md     クリニックの確定情報
   SITE_POLICY.md      文章・デザイン方針
-CNAME                 独自ドメイン（削除・変更しない）
+CNAME                 旧GitHub Pages由来のファイル（勝手に削除・変更しない）
 robots.txt            クローラー向け設定とサイトマップ案内
 sitemap.xml           公開ページのサイトマップ
 .claude/launch.json   Claude Code のプレビュー起動設定（共有）
@@ -65,8 +65,9 @@ sitemap.xml           公開ページのサイトマップ
 
 - **テスト・lint・型チェックのフレームワークは未設定**（存在しない）。
   勝手に導入せず、必要な場合はユーザーに提案する。
-- 公開（デプロイ）は **GitHub Pages**。`main` ブランチのルート（`/`）をそのまま配信する。
-  `main` に push された内容がそのまま本番になる。
+- 公開（デプロイ）は **Cloudflare Pages**。GitHub リポジトリと連携し、Production branch は **`main`**。
+  `main` への push は Cloudflare Pages の本番デプロイを自動的にトリガーする。
+- GitHub Pages は使用しない。勝手に再有効化しない。
 
 ---
 
@@ -100,6 +101,17 @@ sitemap.xml           公開ページのサイトマップ
 - 大規模変更・全面リニューアル・実験的変更のときは、作業ブランチを**提案**する。
 - ユーザーの指示なくブランチを作成・削除・マージしない。
 - ユーザーの指示なく Pull Request を作成しない。
+
+### Cloudflare Pages プレビュー運用（重要）
+
+- ユーザーが「ブランチで作業してプレビューURLを見せて」など、**Cloudflare Pages のプレビュー確認を明示的に依頼した場合**は、その依頼を「作業ブランチの作成・commit・Preview Deployment の確認、およびPreview URLを確実に取得するために必要な Pull Request 作成」までの許可とみなしてよい。
+- ただし、**Pull Request の merge、`main` への反映、本番公開は別操作**であり、ユーザーの明示的な許可なしに実行しない。
+- Cloudflare Pages の `*.pages.dev` URLを、**プロジェクト名・ブランチ名・commit SHA などから推測、組み立て、類推して提示してはならない**。ブランチaliasが存在するとは限らず、各Deploymentのhash URLも推測不能である。
+- ユーザーに渡すPreview URLは、**Cloudflare Pages が実際に発行したURLを確認できたものだけ**にする。GitHub PRのDeployment / Check / Status / コメントなど、Cloudflare連携が返した実データを優先して取得する。
+- 実URLを取得できない場合は、推測URLを代わりに出さず、**「Preview Deploymentは作成されたがURLをこちらから検証できない」など、確認できた範囲を正確に報告する**。
+- 可能な環境では、URL提示前にHTTPで実際にアクセスし、少なくともページが正常応答することを確認する。さらに可能なら、依頼した変更がPreview上に表示されていることまで確認する。
+- Cloudflare管理画面へのログインをユーザーに求めるのは最後の手段とする。GitHub側から取得・検証できる情報がある場合は、AI側で完結させる。
+- 一時的なデプロイ発火用ファイルなどを作成した場合は、**最終差分に不要物を残さない**。作業終了時に `main` との差分を確認し、依頼された変更だけが残っていることを確認する。
 
 ---
 
@@ -166,9 +178,9 @@ sitemap.xml           公開ページのサイトマップ
 
 - remote は `origin`（= `kochamari/clinic-homepage-fable-v1`）のみを使う。
   古いリポジトリ `haraguchi-clinic-home-page-codex-ver` は使わない・接続しない。
-- `CNAME`（`haraguchishoukakinaika.jp`）は削除・変更しない。
-- GitHub Pages の設定・独自ドメイン設定を勝手に変更しない。
-- 現在、全ページが `noindex`（検索非登録）。解除の判断はユーザーに委ねる。
+- `CNAME`（`haraguchishoukakinaika.jp`）は勝手に削除・変更しない。
+- Cloudflare Pages、Cloudflare DNS、独自ドメイン設定を勝手に変更しない。
+- GitHub Pages は無効のまま維持し、勝手に再有効化しない。
 
 ---
 
