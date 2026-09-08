@@ -4,6 +4,9 @@
 // ■ 臨時休診（お盆・年末年始・学会など）は JS/news-data.js の
 //   各お知らせに closures を追加すると、カレンダーにも自動反映されます。
 //
+// ■ 担当医の臨時変更は JS/news-data.js の各お知らせに doctorChanges を
+//   追加すると、該当日の担当医表示とカレンダーの医師バッジに反映されます。
+//
 // ■ 祝日は JS/holidays-data.js に記録しています。
 //   このファイルは内閣府CSVから自動生成され、GitHub Actionsが毎月更新を確認します。
 //
@@ -76,7 +79,29 @@ const clinicSchedule = {
         return closures;
     }
 
+    function doctorChangeMapFromNews() {
+        const changes = new Map();
+        if (typeof newsData === 'undefined' || !Array.isArray(newsData.news)) return changes;
+
+        newsData.news.forEach(function (item) {
+            if (!item || !Array.isArray(item.doctorChanges)) return;
+            item.doctorChanges.forEach(function (change) {
+                if (!change || !/^\d{4}-\d{2}-\d{2}$/.test(change.date)) return;
+                if (!Array.isArray(change.doctors) || !change.doctors.length) return;
+                if (!changes.has(change.date)) {
+                    changes.set(change.date, {
+                        doctors: change.doctors.map(String),
+                        badge: String(change.badge || ''),
+                        label: String(change.label || '担当医変更')
+                    });
+                }
+            });
+        });
+        return changes;
+    }
+
     const closureMap = closureMapFromNews();
+    const doctorChangeMap = doctorChangeMapFromNews();
 
     function pad(n) {
         return String(n).padStart(2, '0');
@@ -183,10 +208,13 @@ const clinicSchedule = {
     }
 
     // 当日の担当医（診療日カレンダー上部の案内用）
+    // news-data.js に臨時の担当医変更があれば最優先。
     // 第4土曜日は小田医師、それ以外の月・水・金・土曜は原口 紘医師。
     // 火・木曜は原口 紘医師と原口 増穂医師の2名体制です。
     function doctorsOf(date, sessions) {
         if (!sessions.length) return [];
+        const change = doctorChangeMap.get(ymd(date));
+        if (change) return change.doctors;
         const day = date.getUTCDay();
         if (isFourthSaturday(date)) return ['小田 英俊医師'];
         if (day === 2 || day === 4) return ['原口 増穂（ますほ）医師', '原口 紘（こう）医師'];
@@ -260,8 +288,12 @@ const clinicSchedule = {
 
         for (let day = 1; day <= days; day++) {
             const date = new Date(Date.UTC(year, month, day));
+            const key = ymd(date);
             const sessions = sessionsOf(date);
             const classes = ['cal-cell'];
+            const doctorChange = doctorChangeMap.get(key);
+            // 過去日の一時的な担当医変更は、翌日からカレンダー上でも自動的に消す。
+            const showDoctorChange = Boolean(sessions.length && doctorChange && key >= todayKey);
             let label = '';
 
             if (!sessions.length) {
@@ -271,18 +303,24 @@ const clinicSchedule = {
                 classes.push('is-half');
                 label = '午前のみ';
             }
-            if (sessions.length && isFourthSaturday(date)) {
+            if (showDoctorChange) {
+                label += (label ? '・' : '') + doctorChange.label;
+            } else if (sessions.length && isFourthSaturday(date)) {
                 classes.push('is-oda');
                 label += (label ? '・' : '') + '小田先生診察';
             }
-            if (ymd(date) === todayKey) classes.push('is-today');
+            if (key === todayKey) classes.push('is-today');
+
+            const doctorBadge = showDoctorChange
+                ? doctorChange.badge
+                : (classes.includes('is-oda') ? '小田' : '');
 
             cells += '<span class="' + classes.join(' ') + '">' + day +
                 (!sessions.length ? '<span class="cal-session-label" aria-hidden="true">休</span>' :
                     sessions.length === 1
                         ? '<span class="cal-session-label" aria-hidden="true">午前</span>' : '') +
-                (classes.includes('is-oda')
-                    ? '<span class="cal-doctor-badge" aria-hidden="true">小田</span>'
+                (doctorBadge
+                    ? '<span class="cal-doctor-badge" aria-hidden="true">' + doctorBadge + '</span>'
                     : '') +
                 (label ? '<span class="visually-hidden">（' + label + '）</span>' : '') +
                 '</span>';
