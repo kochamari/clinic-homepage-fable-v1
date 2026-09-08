@@ -6130,7 +6130,7 @@ html {
     text-decoration: none;
 }
 .page-links a:hover { color: var(--primary); background: var(--primary-tint); }
-.map-open { margin-top: 20px; }
+.map-open { margin-block: 20px; }
 .notice-band a { display: inline-flex; align-items: center; min-height: 44px; margin-inline-start: 16px; }
 .hero-card-hours dd { min-width: 0; }
 .hero-card-visit-note > span { text-wrap: initial; }
