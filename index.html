@@ -168,6 +168,10 @@
                     <p class="hero-kicker" data-reveal>アーケードから歩いてすぐ、佐世保市松浦町の内科・消化器・内視鏡</p>
                     <h1 class="hero-title">笑顔とまごころの、<br>まちの消化器内科。</h1>
                     <p class="hero-lead" data-reveal="delay-1">お腹の不調やがんが心配な症状のご相談から、胃カメラ・がん検診、生活習慣病の管理まで。消化器の専門医が、からだをまとめて診る地域のかかりつけ医です。</p>
+                    <div class="hero-actions">
+                        <a href="contact" class="btn btn-primary">初めて受診される方へ<svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+                        <a href="gastroscopy" class="hero-info-link">胃カメラのご案内<svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+                    </div>
                 </div>
                 <aside class="hero-card" aria-label="ご予約・受付時間のご案内" data-reveal="delay-2">
                     <img src="images/logo.PNG" alt="" class="hero-card-mark" width="58" height="58">
@@ -219,6 +223,14 @@
             </div>
         </section>
 
+        <!-- 発熱・かぜ症状の方へ -->
+        <div class="notice-band" role="note">
+            <div class="container">
+                <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
+                <p><strong>発熱・かぜ症状のある方へ：</strong>ご来院の前に必ずお電話ください。感染対策のため、別室のご案内や検査後の診察となる場合があります。<a href="tel:0956-37-3777">電話する</a><a href="service#fever">詳しい受診方法</a></p>
+            </div>
+        </div>
+
         <!-- News -->
         <section class="section section--tint" aria-labelledby="news-heading">
             <div class="container">
@@ -234,14 +246,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- 発熱・かぜ症状の方へ -->
-        <div class="notice-band" role="note">
-            <div class="container">
-                <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
-                <p><strong>発熱・かぜ症状のある方へ：</strong>ご来院の前に必ずお電話ください。感染対策のため、別室のご案内や検査後の診察となる場合があります。<a href="service#fever">詳しくはこちら</a></p>
-            </div>
-        </div>
 
         <!-- 目的別のご案内 -->
         <section class="section" aria-labelledby="segments-heading">
@@ -549,10 +553,20 @@
         </div>
     </footer>
 
-    <a href="tel:0956-37-3777" class="fab-call" aria-label="電話をかける">
-        <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
-        お電話
-    </a>
+    <nav class="mobile-actions" aria-label="来院時によく使うメニュー">
+        <a href="/#clinic-info">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span>受付時間</span>
+        </a>
+        <a href="/access">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span>アクセス</span>
+        </a>
+        <a href="tel:0956-37-3777" class="mobile-actions-call" aria-label="電話する：0956-37-3777">
+            <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
+            <span>電話する</span>
+        </a>
+    </nav>
 
     <script src="./JS/site-config.js"></script>
     <script src="./JS/analytics-consent.js"></script>

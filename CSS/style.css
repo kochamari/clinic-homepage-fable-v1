@@ -1058,6 +1058,7 @@ body.drawer-open {
 }
 
 .hero-copy {
+    min-width: 0;
     grid-column: 1;
     grid-row: 1;
 }
@@ -1068,6 +1069,7 @@ body.drawer-open {
 }
 
 .hero-card {
+    min-width: 0;
     grid-column: 2;
     grid-row: 1;
 }
@@ -1252,7 +1254,7 @@ body.drawer-open {
 .hero-card-visit-note > span { text-wrap: balance; }
 .hero-card-warning {
     display: grid;
-    grid-template-columns: max-content auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     justify-content: start;
     gap: 2px 12px;
     align-items: baseline;
@@ -1266,7 +1268,7 @@ body.drawer-open {
     grid-column: 1;
     grid-row: 2;
     margin-top: 0;
-    white-space: nowrap;
+    white-space: normal;
 }
 .hero-card-note-link {
     display: block;
@@ -2639,26 +2641,8 @@ html.is-popup-open body { overflow: hidden; }
     outline-offset: 4px;
 }
 
-/* --- Floating call button (mobile) --- */
-.fab-call {
-    position: fixed;
-    right: max(16px, env(safe-area-inset-right));
-    bottom: max(16px, env(safe-area-inset-bottom));
-    z-index: 900;
-    display: none;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 20px;
-    background: var(--primary);
-    color: #fff;
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
-    box-shadow: 0 12px 28px rgba(15, 75, 71, 0.4);
-}
-.fab-call .icon { width: 1.05em; height: 1.05em; }
+/* --- 来院時の常設ナビゲーション（スマートフォン） --- */
+.mobile-actions { display: none; }
 
 /* --- Page hero (sub pages) --- */
 .page-hero {
@@ -5624,7 +5608,7 @@ html {
     .principles-editorial h3 { min-height: 0; }
 
     .hero-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 0;
     }
     .hero-copy {
@@ -5870,7 +5854,7 @@ html {
     }
     .hero-card-hours > div {
         gap: 10px;
-        font-size: 0.84rem;
+        font-size: 0.9375rem;
         line-height: 1.65;
     }
     .hero-card-hours-note {
@@ -5881,14 +5865,16 @@ html {
     }
     .hero-card-visit-note {
         margin-top: 12px;
-        padding: 11px 12px;
-        font-size: 0.78rem;
+        padding: 14px;
+        font-size: 0.9375rem;
     }
     .hero-card-link {
-        font-size: 0.84rem;
+        min-height: 44px;
+        font-size: 0.9375rem;
     }
     .hero-card-links {
-        gap: 8px 16px;
+        display: grid;
+        gap: 0;
         margin-top: 12px;
     }
     .hero-actions {
@@ -6079,7 +6065,7 @@ html {
         gap: 3px;
     }
 
-    .fab-call { display: inline-flex; }
+
 
     .hours-panel-layout,
     .access-panel-layout {
@@ -6123,6 +6109,98 @@ html {
     .drawer-note { font-size: 0.74rem; }
 }
 
+/* --- 必要な情報へ迷わず進むためのページ内案内 --- */
+.page-links {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 24px;
+    margin-top: 32px;
+    border-top: 1px solid var(--line);
+}
+.page-links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 56px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--primary-dark);
+    font-weight: 700;
+    text-decoration: none;
+}
+.page-links a:hover { color: var(--primary); background: var(--primary-tint); }
+.map-open { margin-top: 20px; }
+.notice-band a { display: inline-flex; align-items: center; min-height: 44px; margin-inline-start: 16px; }
+.hero-card-hours dd { min-width: 0; }
+.hero-card-visit-note > span { text-wrap: initial; }
+
+/* 色に加えて文字でも、休診日・午前のみの日を見分けられるようにする。 */
+.cal-cell {
+    flex-direction: column;
+    gap: 2px;
+    min-height: 54px;
+    aspect-ratio: auto;
+    line-height: 1.4;
+}
+.cal-cell.is-oda { padding-bottom: 0; }
+.cal-session-label { font-size: 0.75rem; line-height: 1.2; }
+.cal-doctor-badge {
+    position: static;
+    transform: none;
+    font-size: 0.75rem;
+    padding: 1px 3px;
+}
+
+@media (max-width: 700px) {
+    html { scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+    body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .mobile-actions {
+        position: fixed;
+        inset: auto 0 0;
+        z-index: 900;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: 8px max(12px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        border-top: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+    }
+    .mobile-actions a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        min-height: 56px;
+        padding: 6px;
+        color: var(--primary-dark);
+        font-size: 0.875rem;
+        font-weight: 700;
+        line-height: 1.4;
+        text-decoration: none;
+    }
+    .mobile-actions a + a { border-left: 1px solid var(--line); }
+    .mobile-actions .icon { width: 21px; height: 21px; }
+    .mobile-actions .mobile-actions-call {
+        margin-left: 8px;
+        border: 0;
+        border-radius: var(--radius-sm);
+        background: var(--primary);
+        color: var(--white);
+    }
+    .mobile-actions a:hover { background: var(--primary-tint); }
+    .mobile-actions .mobile-actions-call:hover { background: var(--primary-dark); }
+    .drawer-open .mobile-actions { visibility: hidden; }
+    .page-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; margin-top: 24px; }
+    .hero-card-visit-note { gap: 12px; }
+    .hero-card-visit-note > span > strong { display: block; }
+    .hero-card-warning { grid-template-columns: minmax(0, 1fr); }
+    .hero-card-note-link { grid-column: 1; grid-row: 3; min-height: 44px; display: flex; align-items: center; }
+    .hero-card-links .hero-card-link { justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .hero-card-links .hero-card-link:last-child { border-bottom: 0; }
+}
+
 /* ==========================================================================
    Print
    患者さんが診療時間・住所・電話番号を紙に印刷して持ち帰る場面を想定する。
@@ -6147,7 +6225,8 @@ html {
     .drawer,
     .nav-toggle,
     .skip-link,
-    .fab-call,
+    .mobile-actions,
+    .page-links,
     .footer-nav,
     .footer-legal-nav,
     .service-index,
@@ -6167,6 +6246,7 @@ html {
 
     html,
     body {
+        padding-bottom: 0 !important;
         background: #fff !important;
         color: #000;
         font-size: 11pt;

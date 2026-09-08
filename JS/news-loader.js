@@ -75,7 +75,9 @@ function loadAllNews() {
         newsContainer.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
         // ハッシュ付きURL（news#news-9 など）で直接開かれた場合のスクロール
         if (window.location.hash) {
-            const target = document.querySelector(window.location.hash);
+            let id = window.location.hash.slice(1);
+            try { id = decodeURIComponent(id); } catch (error) { /* 不正な文字はそのまま検索する */ }
+            const target = document.getElementById(id);
             if (target) target.scrollIntoView();
         }
     } catch (error) {

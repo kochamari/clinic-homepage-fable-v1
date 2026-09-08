@@ -71,6 +71,13 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
     // サイト内の別ページから移動してきた場合は出さない
     if (cameFromInsideSite) return;
 
+    // 受付時間などへの直リンクを妨げず、同じタブでは初回だけにする。
+    if (window.location.hash) return;
+    try {
+        if (sessionStorage.getItem('hgc-intro-seen')) return;
+        sessionStorage.setItem('hgc-intro-seen', '1');
+    } catch (e) { /* ストレージが使えなくても表示は続ける */ }
+
     // 幕を出すことが決まった。お知らせのポップアップは、幕が消えてから出す
     window.hgcCurtainPending = true;
 
@@ -151,6 +158,8 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
             curtain.classList.add('is-pulling');
             pulled = Math.max(0, pulled + delta);
             if (render() <= 0.005) finish();   // 小数の誤差でわずかに残るのを防ぐ
+            // 小さくスクロールして止めても、幕とスクロール制限を残さない。
+            if (!done) autoTimer = setTimeout(function () { fadeOut(true); }, 300);
         }
 
         function onWheel(e) {
@@ -252,6 +261,13 @@ document.addEventListener('click', function (e) {
     // 紙色のレイヤーで画面をつなげてから移動する（修飾クリックはそのまま）
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (e.defaultPrevented) return;
+
+    // /#clinic-info のような同一ページのアンカーでは、暗転せず標準のスクロールを使う。
+    // ハッシュだけの移動ではページが再読込されず、暗転解除の処理が走らないため。
+    const destination = new URL(link.href, window.location.href);
+    if (destination.origin === window.location.origin &&
+        destination.pathname === window.location.pathname &&
+        destination.search === window.location.search && destination.hash) return;
 
     // 現在表示しているページへのリンクでは、Safariに不要な再読み込みをさせない。
     // とくにモバイルで拡大操作の直後に現在地リンクが反応すると、再読み込みが重なることがある。
@@ -772,23 +788,44 @@ document.addEventListener('DOMContentLoaded', function () {
     const drawer = document.getElementById('site-drawer');
 
     if (navToggle && drawer) {
+        const backgroundElements = document.querySelectorAll('main, .site-footer, .mobile-actions, .site-header .brand, .global-nav, .header-tel, .skip-link');
+        let savedInert = [];
+
         function openDrawer() {
             navToggle.setAttribute('aria-expanded', 'true');
             drawer.setAttribute('aria-hidden', 'false');
             drawer.classList.add('is-open');
             document.documentElement.classList.add('drawer-open');
             document.body.classList.add('drawer-open');
+            navToggle.setAttribute('aria-label', 'メニューを閉じる');
+            drawer.inert = false;
+            savedInert = Array.from(backgroundElements, function (element) {
+                const previous = element.inert;
+                element.inert = true;
+                return [element, previous];
+            });
+            requestAnimationFrame(function () {
+                if (drawer.classList.contains('is-open')) drawer.querySelector('a').focus({ preventScroll: true });
+            });
         }
 
         function closeDrawer() {
+            const focusWasInDrawer = drawer.contains(document.activeElement);
+            savedInert.forEach(function (entry) { entry[0].inert = entry[1]; });
+            savedInert = [];
+            if (focusWasInDrawer) navToggle.focus();
             navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.setAttribute('aria-label', 'メニューを開く');
             drawer.setAttribute('aria-hidden', 'true');
+            drawer.inert = true;
             drawer.classList.remove('is-open');
             document.documentElement.classList.remove('drawer-open');
             document.body.classList.remove('drawer-open');
         }
 
         drawer.setAttribute('aria-hidden', 'true');
+        drawer.inert = true;
+        navToggle.setAttribute('aria-label', 'メニューを開く');
 
         navToggle.addEventListener('click', function () {
             if (drawer.classList.contains('is-open')) {
@@ -803,6 +840,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         document.addEventListener('keydown', function (e) {
+            if (!drawer.classList.contains('is-open')) return;
+            if (e.key === 'Tab') {
+                const controls = [navToggle, ...drawer.querySelectorAll('a[href], button:not([disabled])')];
+                const first = controls[0];
+                const last = controls[controls.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
             if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
                 closeDrawer();
                 navToggle.focus();
