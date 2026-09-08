@@ -90,6 +90,12 @@
                 <p class="kicker">Access</p>
                 <h1 class="page-hero-title">アクセス・駐車場</h1>
                 <p class="page-hero-lead">当院へのアクセス方法と駐車場をご案内いたします。専用駐車場を5台分ご用意しています。</p>
+                <nav class="page-links" aria-label="このページのご案内">
+                    <a href="#location">所在地・地図<span aria-hidden="true">↓</span></a>
+                    <a href="#bus">バス<span aria-hidden="true">↓</span></a>
+                    <a href="#parking">専用駐車場<span aria-hidden="true">↓</span></a>
+                    <a href="#overflow-parking-title">満車の場合<span aria-hidden="true">↓</span></a>
+                </nav>
             </div>
         </section>
 
@@ -97,12 +103,13 @@
             <div class="container">
                 <div class="access-grid">
                     <div class="access-card" data-reveal>
-                        <h2><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>所在地</h2>
+                        <h2 id="location"><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>所在地</h2>
                         <p><strong>原口消化器内科</strong><br>
                            〒857-0052<br>
                            長崎県佐世保市松浦町5番28号<br>
                            アーバンパレス米春2F</p>
                         <p class="sub">アーケードから歩いてすぐ、松浦公園そばのビルです。佐世保市総合医療センターから徒歩約5分。受付・入口は2階です（エレベーターをご利用いただけます）。</p>
+                        <a class="btn btn-primary map-open" href="https://www.google.com/maps/search/?api=1&query=原口消化器内科+長崎県佐世保市松浦町5番28号+0956-37-3777" target="_blank" rel="noopener noreferrer">Googleマップで開く<span class="visually-hidden">（新しいタブ）</span><span aria-hidden="true">↗</span></a>
                         <div class="map-frame">
                             <iframe
                                 src="https://maps.google.com/maps?q=原口消化器内科+長崎県佐世保市松浦町5番28号+0956-37-3777&t=&z=16&ie=UTF8&iwloc=&output=embed"
@@ -110,17 +117,16 @@
                                 referrerpolicy="no-referrer-when-downgrade"
                                 title="原口消化器内科 地図"></iframe>
                         </div>
-                        <p class="map-fallback">地図が表示されない場合は、<a href="https://www.google.com/maps/search/?api=1&query=原口消化器内科+長崎県佐世保市松浦町5番28号+0956-37-3777" target="_blank" rel="noopener noreferrer">こちらからGoogle Mapで表示</a>してください。</p>
                     </div>
 
                     <div class="access-card" data-reveal="delay-1">
-                        <h2><svg class="icon" aria-hidden="true"><use href="#icon-bus"/></svg>バスでお越しの方</h2>
+                        <h2 id="bus"><svg class="icon" aria-hidden="true"><use href="#icon-bus"/></svg>バスでお越しの方</h2>
                         <p>西肥バス「松浦町中央公園口」「松浦町国際通り」バス停から徒歩約3〜5分です。</p>
                         <p class="sub">※所要時間は目安です。交通状況により異なります。</p>
                     </div>
 
                     <div class="access-card access-card--wide" data-reveal>
-                        <h2><svg class="icon" aria-hidden="true"><use href="#icon-car"/></svg>お車でお越しの方</h2>
+                        <h2 id="parking"><svg class="icon" aria-hidden="true"><use href="#icon-car"/></svg>お車でお越しの方</h2>
                         <p class="parking-lead">当院専用駐車場を5台分ご用意しています。</p>
                         <ul class="parking-summary">
                             <li><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>左側屋外駐車場 3台（0〜2番）</li>
@@ -223,10 +229,20 @@
         </div>
     </footer>
 
-    <a href="tel:0956-37-3777" class="fab-call" aria-label="電話をかける">
-        <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
-        お電話
-    </a>
+    <nav class="mobile-actions" aria-label="来院時によく使うメニュー">
+        <a href="/#clinic-info">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span>受付時間</span>
+        </a>
+        <a href="/access">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span>アクセス</span>
+        </a>
+        <a href="tel:0956-37-3777" class="mobile-actions-call" aria-label="電話する：0956-37-3777">
+            <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
+            <span>電話する</span>
+        </a>
+    </nav>
 
     <script src="./JS/site-config.js"></script>
     <script src="./JS/analytics-consent.js"></script>

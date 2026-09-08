@@ -278,6 +278,9 @@ const clinicSchedule = {
             if (ymd(date) === todayKey) classes.push('is-today');
 
             cells += '<span class="' + classes.join(' ') + '">' + day +
+                (!sessions.length ? '<span class="cal-session-label" aria-hidden="true">休</span>' :
+                    sessions.length === 1 && !classes.includes('is-oda')
+                        ? '<span class="cal-session-label" aria-hidden="true">午前</span>' : '') +
                 (classes.includes('is-oda')
                     ? '<span class="cal-doctor-badge" aria-hidden="true">小田</span>'
                     : '') +
@@ -351,6 +354,11 @@ const clinicSchedule = {
         const table = document.querySelector('[data-hours-table]');
         if (!table) return;
 
+        table.querySelectorAll('.is-today-col, .is-closed-today').forEach(function (cell) {
+            cell.classList.remove('is-today-col', 'is-closed-today');
+        });
+        table.querySelectorAll('.today-badge').forEach(function (badge) { badge.remove(); });
+
         const now = nowInTokyo();
         // 表の列は 0=見出し, 1=月 … 6=土, 7=日祝
         const col = now.getUTCDay() === 0 ? 7 : now.getUTCDay();
@@ -373,14 +381,23 @@ const clinicSchedule = {
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        renderStatus();
-        renderCalendar();
-        renderCalendarToday();
-        highlightToday();
-        // 時間の経過で表示が古くならないよう、1分ごとに更新する
-        setInterval(function () {
+        let renderedDate = '';
+        function refresh() {
+            const todayKey = ymd(nowInTokyo());
             renderStatus();
             renderCalendarToday();
-        }, 60000);
+            if (todayKey !== renderedDate) {
+                renderCalendar();
+                highlightToday();
+                renderedDate = todayKey;
+            }
+        }
+        refresh();
+        setInterval(refresh, 60000);
+        // スマホで翌日にタブを開き直した場合も、待たずに日本時間で更新する。
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) refresh();
+        });
+        window.addEventListener('pageshow', refresh);
     });
 })();
