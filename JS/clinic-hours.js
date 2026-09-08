@@ -279,7 +279,7 @@ const clinicSchedule = {
 
             cells += '<span class="' + classes.join(' ') + '">' + day +
                 (!sessions.length ? '<span class="cal-session-label" aria-hidden="true">休</span>' :
-                    sessions.length === 1 && !classes.includes('is-oda')
+                    sessions.length === 1
                         ? '<span class="cal-session-label" aria-hidden="true">午前</span>' : '') +
                 (classes.includes('is-oda')
                     ? '<span class="cal-doctor-badge" aria-hidden="true">小田</span>'

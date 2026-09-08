@@ -6137,15 +6137,19 @@ html {
 
 /* 色に加えて文字でも、休診日・午前のみの日を見分けられるようにする。 */
 .cal-cell {
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 1.4em 1.2em 1.4em;
+    align-content: center;
+    justify-items: center;
     gap: 2px;
-    min-height: 54px;
+    min-height: 64px;
     aspect-ratio: auto;
     line-height: 1.4;
 }
 .cal-cell.is-oda { padding-bottom: 0; }
-.cal-session-label { font-size: 0.75rem; line-height: 1.2; }
+.cal-session-label { grid-row: 2; font-size: 0.75rem; line-height: 1.2; }
 .cal-doctor-badge {
+    grid-row: 3;
     position: static;
     transform: none;
     font-size: 0.75rem;
