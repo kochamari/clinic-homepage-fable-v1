@@ -10,6 +10,32 @@ function formatDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
+// 日本時間の「YYYY-MM-DD」を返す（期間限定のお知らせ判定用）
+function newsTodayKeyInTokyo() {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Tokyo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(new Date());
+    const values = {};
+    parts.forEach(part => {
+        if (part.type !== 'literal') values[part.type] = part.value;
+    });
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
+// displayFrom / displayUntil が指定されたお知らせは、その期間だけ表示する。
+// 日付は両端を含むため、displayUntil の翌日 0:00（日本時間）から自動で非表示になる。
+function visibleNewsItems() {
+    const today = newsTodayKeyInTokyo();
+    return newsData.news.filter(item => {
+        if (item.displayFrom && today < item.displayFrom) return false;
+        if (item.displayUntil && today > item.displayUntil) return false;
+        return true;
+    });
+}
+
 // カテゴリに応じたラベルの色分けクラス
 function categoryClass(category) {
     if (category === '重要') return 'news-chip news-chip--important';
@@ -54,7 +80,7 @@ function loadNewsDigest() {
         if (typeof newsData === 'undefined') {
             throw new Error('お知らせデータが見つかりません');
         }
-        const latestNews = newsData.news.slice(0, 3);
+        const latestNews = visibleNewsItems().slice(0, 3);
         newsGrid.innerHTML = latestNews.map(createNewsItemHTML).join('');
     } catch (error) {
         console.error('お知らせの読み込みに失敗しました:', error);
@@ -70,7 +96,7 @@ function loadAllNews() {
         if (typeof newsData === 'undefined') {
             throw new Error('お知らせデータが見つかりません');
         }
-        newsContainer.innerHTML = newsData.news.map(createNewsDetailHTML).join('');
+        newsContainer.innerHTML = visibleNewsItems().map(createNewsDetailHTML).join('');
         // 動的に追加した要素にも表示アニメーションを適用
         newsContainer.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
         // ハッシュ付きURL（news#news-9 など）で直接開かれた場合のスクロール
