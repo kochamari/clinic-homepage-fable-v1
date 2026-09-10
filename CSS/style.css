@@ -4537,6 +4537,12 @@ html.is-lightbox-open body {
 .callout-block > p + ul { margin-top: 14px; }
 .callout-block > ul + p { margin-top: 18px; }
 .callout-block .visit-note { margin-top: 20px; }
+/* 枠の外の補足には、通常の .visit-note の負の余白を適用しない */
+.callout-block + .visit-note {
+    margin-top: clamp(24px, 3vw, 32px);
+}
+/* 金額と税込表記をひとまとまりにして読みやすくする */
+.fee-amount { white-space: nowrap; }
 
 /* 診療時間とアクセスは合わせて知りたい情報なので、2枚を並べて置く */
 .visit-links {
