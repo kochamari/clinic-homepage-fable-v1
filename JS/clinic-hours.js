@@ -207,7 +207,7 @@ const clinicSchedule = {
         return { state: 'after', label: '本日の受付終了', detail: nextOpeningText(now) };
     }
 
-    // 当日の担当医（診療日カレンダー上部の案内用）
+    // 指定日の担当医（診療日カレンダー上部の案内用）
     // news-data.js に臨時の担当医変更があれば最優先。
     // 第4土曜日は小田医師、それ以外の月・水・金・土曜は原口 紘医師。
     // 火・木曜は原口 紘医師と原口 増穂医師の2名体制です。
@@ -231,35 +231,79 @@ const clinicSchedule = {
         }).join(' / ');
     }
 
-    // カレンダー上部の「本日の診療案内」を描画する
+    function displayDate(date) {
+        return (date.getUTCMonth() + 1) + '月' + date.getUTCDate() + '日（' + WEEK[date.getUTCDay()] + '）';
+    }
+
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, function (character) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
+        });
+    }
+
+    // 受付終了後・休診日は、明日の予定と次に受診できる日の案内へ切り替える。
     function renderCalendarToday() {
         const host = document.querySelector('[data-calendar-today]');
         if (!host) return;
 
         const now = nowInTokyo();
-        const sessions = sessionsOf(now);
-        const doctors = doctorsOf(now, sessions);
-        const isClosed = sessions.length === 0;
-        const isMorningOnly = sessions.length === 1;
-        const status = isClosed
-            ? '本日は休診日です'
-            : isMorningOnly
-                ? '本日は午前のみの診察です'
-                : '本日は診療日です';
-        const doctorText = doctors.length
-            ? '本日は' + doctors.join('、') + 'の診察です'
-            : '本日の診察はありません';
+        const currentStatus = getStatus(now);
+        const showUpcoming = currentStatus.state === 'after' || currentStatus.state === 'closed';
+        const tomorrow = new Date(now);
+        tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+        tomorrow.setUTCHours(0, 0, 0, 0);
+        const guideSessions = sessionsOf(showUpcoming ? tomorrow : now);
+        const isClosed = guideSessions.length === 0;
+        const isMorningOnly = guideSessions.length === 1;
+        let kicker = '本日の診療案内';
+        let status = isMorningOnly ? '本日は午前のみの診療です' : 'ただいま診療中です';
+        let note = '';
+        let targetDate = now;
+        let dateLabel = '本日 ' + displayDate(now);
+
+        if (showUpcoming) {
+            kicker = currentStatus.state === 'after' ? '本日の受付は終了しました' : '本日は休診です';
+            status = isClosed ? '明日は休診です'
+                : isMorningOnly ? '明日は午前のみの診療です' : '明日は診療日です';
+            if (isClosed) {
+                const reason = closureReason(tomorrow);
+                note = displayDate(tomorrow) + (reason === '休診' ? '' : '・' + reason);
+            }
+            const next = nextOpening(now);
+            targetDate = next ? next.date : null;
+            dateLabel = targetDate
+                ? (ymd(targetDate) === ymd(tomorrow) ? '明日 ' : '次の診療：') + displayDate(targetDate)
+                : '';
+        } else if (currentStatus.state === 'before' || currentStatus.state === 'lunch') {
+            status = currentStatus.state === 'before' ? '受付開始前です' : 'ただいま昼休みです';
+            note = currentStatus.detail + (isMorningOnly ? '（本日は午前のみ）' : '');
+        }
+
+        const sessions = targetDate ? sessionsOf(targetDate) : [];
+        const doctors = targetDate ? doctorsOf(targetDate, sessions) : [];
+        const details = targetDate
+            ? '<div class="calendar-today-schedule">' +
+                '<p class="calendar-today-date">' + dateLabel + '</p>' +
+                '<dl class="calendar-today-details">' +
+                    '<div><dt>受付時間</dt><dd>' + sessions.map(function (session) {
+                        return '<span>' + sessionsText([session]) + '</span>';
+                    }).join('') + '</dd></div>' +
+                    '<div><dt>担当医</dt><dd>' + doctors.map(function (doctor) {
+                        return '<span>' + escapeHTML(doctor) + '</span>';
+                    }).join('') + '</dd></div>' +
+                '</dl>' +
+              '</div>'
+            : '<p class="calendar-today-note">次の診療予定は、お知らせをご確認ください。</p>';
 
         host.className = 'calendar-today' + (isClosed ? ' is-closed' : isMorningOnly ? ' is-morning-only' : ' is-open');
-        host.innerHTML =
+        const html =
             '<div class="calendar-today-heading">' +
-                '<p class="calendar-today-kicker">本日の診療案内</p>' +
+                '<p class="calendar-today-kicker">' + kicker + '</p>' +
                 '<p class="calendar-today-status">' + status + '</p>' +
-            '</div>' +
-            '<dl class="calendar-today-details">' +
-                '<div><dt>受付時間</dt><dd>' + (isClosed ? '休診' : sessionsText(sessions)) + '</dd></div>' +
-                '<div><dt>担当医</dt><dd>' + doctorText + '</dd></div>' +
-            '</dl>';
+                (note ? '<p class="calendar-today-note">' + escapeHTML(note) + '</p>' : '') +
+            '</div>' + details;
+        // 同じ案内を毎分読み上げ直さないよう、内容が変わるときだけ更新する。
+        if (host.innerHTML !== html) host.innerHTML = html;
     }
 
     // 「今の診療状況」を描画する
@@ -420,7 +464,9 @@ const clinicSchedule = {
 
     document.addEventListener('DOMContentLoaded', function () {
         let renderedDate = '';
+        let refreshTimer;
         function refresh() {
+            clearTimeout(refreshTimer);
             const todayKey = ymd(nowInTokyo());
             renderStatus();
             renderCalendarToday();
@@ -429,9 +475,10 @@ const clinicSchedule = {
                 highlightToday();
                 renderedDate = todayKey;
             }
+            // ページを開いた時刻に左右されず、受付終了・日付変更の境目で切り替える。
+            refreshTimer = setTimeout(refresh, 60000 - Date.now() % 60000);
         }
         refresh();
-        setInterval(refresh, 60000);
         // スマホで翌日にタブを開き直した場合も、待たずに日本時間で更新する。
         document.addEventListener('visibilitychange', function () {
             if (!document.hidden) refresh();

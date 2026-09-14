@@ -27,7 +27,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./CSS/style.css?v=d3156c9">
+    <link rel="stylesheet" href="./CSS/style.css?v=calendar-next-day-1">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -440,14 +440,14 @@
                         </div>
                     </div>
 
-                    <div class="closure-calendar-wrap" data-reveal="delay-1">
+                    <div class="closure-calendar-wrap" id="clinic-calendar" data-reveal="delay-1">
                     <h3 class="info-panel-title">
                         <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
                         カレンダー
                     </h3>
-                    <div class="calendar-today" data-calendar-today aria-live="polite">
-                        <p class="calendar-today-kicker">本日の診療案内</p>
-                        <p class="calendar-today-status">本日の診療状況を確認中です</p>
+                    <div class="calendar-today" data-calendar-today aria-live="polite" aria-atomic="true">
+                        <p class="calendar-today-kicker">診療案内</p>
+                        <p class="calendar-today-status">診療予定を確認中です</p>
                     </div>
                     <div class="closure-calendar" data-closure-calendar></div>
                     <ul class="calendar-legend">
@@ -573,7 +573,7 @@
     <script src="./JS/script.js"></script>
     <script src="./JS/holidays-data.js"></script>
     <script src="./JS/news-data.js"></script>
-    <script src="./JS/clinic-hours.js?v=d3156c9"></script>
+    <script src="./JS/clinic-hours.js?v=calendar-next-day-1"></script>
     <script src="./JS/news-loader.js"></script>
     <script src="./JS/news-popup.js"></script>
 </body>
