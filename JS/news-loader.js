@@ -1,39 +1,16 @@
 // お知らせデータを読み込んで表示する機能
 // データは JS/news-data.js の newsData から読み込みます（編集方法は「お知らせ編集方法.txt」参照）
 
-// 日付を「2025.06.06」形式に変換
+// 表示日と掲載期間はポップアップと同じ判定を使う。
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}.${month}.${day}`;
+    return window.HGCDate ? window.HGCDate.formatDate(dateString) : '';
 }
 
-// 日本時間の「YYYY-MM-DD」を返す（期間限定のお知らせ判定用）
-function newsTodayKeyInTokyo() {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Tokyo',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).formatToParts(new Date());
-    const values = {};
-    parts.forEach(part => {
-        if (part.type !== 'literal') values[part.type] = part.value;
-    });
-    return `${values.year}-${values.month}-${values.day}`;
-}
-
-// displayFrom / displayUntil が指定されたお知らせは、その期間だけ表示する。
-// 日付は両端を含むため、displayUntil の翌日 0:00（日本時間）から自動で非表示になる。
 function visibleNewsItems() {
-    const today = newsTodayKeyInTokyo();
-    return newsData.news.filter(item => {
-        if (item.displayFrom && today < item.displayFrom) return false;
-        if (item.displayUntil && today > item.displayUntil) return false;
-        return true;
-    });
+    if (!window.HGCDate || typeof newsData === 'undefined' || !newsData || !Array.isArray(newsData.news)) {
+        throw new Error('お知らせの判定データが見つかりません');
+    }
+    return newsData.news.filter(item => window.HGCDate.visible(item));
 }
 
 // カテゴリに応じたラベルの色分けクラス
@@ -72,59 +49,58 @@ function createNewsDetailHTML(item) {
     `;
 }
 
-// ホームページのお知らせダイジェストを更新（最新3件）
-function loadNewsDigest() {
-    const newsGrid = document.querySelector('.news-list[data-news-digest]');
-    if (!newsGrid) return;
-    try {
-        if (typeof newsData === 'undefined') {
-            throw new Error('お知らせデータが見つかりません');
+// 同じ記事のDOMは残す。期限が変わらない更新でフォーカス・スクロールを動かさない。
+const newsRenderState = new WeakMap();
+function renderNews(host, items, createHTML) {
+    const signature = JSON.stringify(items);
+    if (newsRenderState.get(host) === signature) return;
+    const previous = new Map([...host.children].map(node => [node.dataset.newsId, node]));
+    const desired = items.map(item => {
+        const key = String(item.id);
+        const html = createHTML(item);
+        let node = previous.get(key);
+        if (!node || node.dataset.newsContent !== JSON.stringify(item)) {
+            const template = document.createElement('template');
+            template.innerHTML = html.trim();
+            node = template.content.firstElementChild;
+            node.dataset.newsId = key;
+            node.dataset.newsContent = JSON.stringify(item);
+            if (node.hasAttribute('data-reveal')) node.classList.add('is-visible');
         }
-        const latestNews = visibleNewsItems().slice(0, 3);
-        newsGrid.innerHTML = latestNews.map(createNewsItemHTML).join('');
+        return node;
+    });
+    [...host.children].forEach(node => { if (!desired.includes(node)) node.remove(); });
+    desired.forEach((node, index) => {
+        if (host.children[index] !== node) host.insertBefore(node, host.children[index] || null);
+    });
+    newsRenderState.set(host, signature);
+}
+
+function loadNews(host, digest) {
+    try {
+        const items = visibleNewsItems();
+        renderNews(host, digest ? items.slice(0, 3) : items, digest ? createNewsItemHTML : createNewsDetailHTML);
     } catch (error) {
-        console.error('お知らせの読み込みに失敗しました:', error);
-        newsGrid.innerHTML = '<div class="error-message">お知らせを読み込めませんでした。</div>';
+        const message = '<p class="error-message">お知らせを読み込めませんでした。</p>';
+        if (host.innerHTML !== message) host.innerHTML = message;
+        newsRenderState.delete(host);
     }
 }
 
-// お知らせページの全件表示を更新
-function loadAllNews() {
-    const newsContainer = document.querySelector('[data-news-all]');
-    if (!newsContainer) return;
-    try {
-        if (typeof newsData === 'undefined') {
-            throw new Error('お知らせデータが見つかりません');
-        }
-        newsContainer.innerHTML = visibleNewsItems().map(createNewsDetailHTML).join('');
-        // 動的に追加した要素にも表示アニメーションを適用
-        newsContainer.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
-        // ハッシュ付きURL（news#news-9 など）で直接開かれた場合のスクロール
-        if (window.location.hash) {
-            let id = window.location.hash.slice(1);
-            try { id = decodeURIComponent(id); } catch (error) { /* 不正な文字はそのまま検索する */ }
-            const target = document.getElementById(id);
-            if (target) target.scrollIntoView();
-        }
-    } catch (error) {
-        console.error('お知らせの読み込みに失敗しました:', error);
-        newsContainer.innerHTML = '<div class="error-message">お知らせを読み込めませんでした。</div>';
-    }
-}
-
-// ページ読み込み時に実行
 document.addEventListener('DOMContentLoaded', function () {
-    // 公開環境では /news.html が /news にリダイレクトされるため、
-    // 最後のパス名から .html を除いてページを判定する
-    const pageName = window.location.pathname
-        .replace(/\/$/, '')
-        .split('/')
-        .pop()
-        .replace(/\.html$/, '');
-
-    if (pageName === '' || pageName === 'index') {
-        loadNewsDigest();
-    } else if (pageName === 'news') {
-        loadAllNews();
+    const digest = document.querySelector('[data-news-digest]');
+    const all = document.querySelector('[data-news-all]');
+    function refresh() {
+        if (digest) loadNews(digest, true);
+        if (all) loadNews(all, false);
+    }
+    if (window.HGCDate) window.HGCDate.watchDay(refresh);
+    else refresh();
+    // 初回の深いリンクだけ移動する。日付更新やタブ復帰ではスクロールし直さない。
+    if (all && window.location.hash) {
+        let id = window.location.hash.slice(1);
+        try { id = decodeURIComponent(id); } catch (error) { /* そのまま検索する */ }
+        const target = document.getElementById(id);
+        if (target) target.scrollIntoView();
     }
 });

@@ -5,7 +5,12 @@
 // 4. ヘッダーのスクロール状態
 // 5. スクロール連動の表示アニメーション（IntersectionObserver）
 
-document.documentElement.classList.add('js');
+if (!window.hgcMotionFallback) document.documentElement.classList.add('js');
+
+// 来院に必要なページ・受付時間への移動は、到着側も待機させない。
+function isPracticalDestination(url) {
+    return /\/access(?:\.html)?$/.test(url.pathname) || /^#clinic-(info|calendar)$/.test(url.hash);
+}
 
 // --- サイト内リンクをたどったかどうかの印 ---
 // ファイルを直接開いた場合（file://）ブラウザは参照元を教えてくれないので、
@@ -42,7 +47,7 @@ window.hgcFreshVisit = !cameFromInsideSite;
 
 // サイト内遷移で到着したページは、出発側と同じ紙色レイヤーから表示する。
 // transition-init.js が描画前に付けたクラスを、描画後にゆっくり解除する。
-if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+if (cameFromInsideSite && !window.hgcMotionFallback && !isPracticalDestination(window.location) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.documentElement.classList.add('is-entering');
     window.hgcPageEntering = true;
     requestAnimationFrame(function () {
@@ -65,8 +70,8 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     // トップページ以外では出さない
-    const file = window.location.pathname.split('/').pop().replace(/\.html$/, '');
-    if (file !== '' && file !== 'index') return;
+    if (!['/', '/index', '/index.html'].includes(window.location.pathname)) return;
+    if (window.hgcMotionFallback) return;
 
     // サイト内の別ページから移動してきた場合は出さない
     if (cameFromInsideSite) return;
@@ -86,7 +91,7 @@ if (cameFromInsideSite && !window.matchMedia('(prefers-reduced-motion: reduce)')
     curtain.setAttribute('aria-hidden', 'true');
     curtain.innerHTML =
         '<div class="curtain-inner">' +
-            '<img class="curtain-mark" src="images/logo.PNG" alt="">' +
+            '<img class="curtain-mark" src="/images/logo.PNG" alt="">' +
             '<span class="curtain-name">原口消化器内科</span>' +
         '</div>';
 
@@ -277,6 +282,7 @@ document.addEventListener('click', function (e) {
     }
 
     markInternalNav();
+    if (isPracticalDestination(destination)) return;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     e.preventDefault();
@@ -296,6 +302,37 @@ window.addEventListener('pageshow', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    // タッチでも押した感触を返す。標準のスクロール・リンク移動は妨げない。
+    const heroNav = document.querySelector('.hero-nav');
+    if (heroNav) {
+        let pressedLink = null;
+        let pressedPointer = null;
+        function clearHeroPress() {
+            if (pressedLink) pressedLink.classList.remove('is-pressed');
+            pressedLink = null;
+            pressedPointer = null;
+        }
+        heroNav.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('pointerdown', function (event) {
+                if (!event.isPrimary || event.button !== 0) return;
+                clearHeroPress();
+                pressedLink = link;
+                pressedPointer = event.pointerId;
+                link.classList.add('is-pressed');
+            }, { passive: true });
+            link.addEventListener('pointerleave', function (event) {
+                if (event.pointerId === pressedPointer) clearHeroPress();
+            }, { passive: true });
+        });
+        ['pointerup', 'pointercancel'].forEach(function (type) {
+            document.addEventListener(type, function (event) {
+                if (event.pointerId === pressedPointer) clearHeroPress();
+            }, { passive: true, capture: true });
+        });
+        window.addEventListener('blur', clearHeroPress);
+        window.addEventListener('pagehide', clearHeroPress);
+    }
+
     // --- 和紙の質感（画面全体にごく薄いノイズを重ねる。動かない） ---
     const grain = document.createElement('div');
     grain.className = 'grain';
@@ -1198,7 +1235,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const answer = item.querySelector('.faq-a');
         if (!question || !answer) return;
 
-        const answerId = 'faq-answer-' + (index + 1);
+        const answerId = answer.id || 'faq-answer-' + (index + 1);
         question.classList.add('faq-toggle');
         question.setAttribute('role', 'button');
         question.setAttribute('tabindex', '0');
@@ -1222,4 +1259,39 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    function openHashAnswer(hash, scroll) {
+        let id;
+        try { id = decodeURIComponent(hash.slice(1)); } catch (error) { return false; }
+        const target = id && document.getElementById(id);
+        const item = target && target.closest('.faq-item');
+        if (!item) return false;
+        const question = item.querySelector('.faq-q');
+        const answer = item.querySelector('.faq-a');
+        if (!question || !answer) return false;
+        question.setAttribute('aria-expanded', 'true');
+        item.classList.add('is-open');
+        answer.hidden = false;
+        if (scroll) {
+            question.focus({ preventScroll: true });
+            item.scrollIntoView({ block: 'start' });
+        }
+        return true;
+    }
+    window.addEventListener('hashchange', () => openHashAnswer(window.location.hash, true));
+    window.addEventListener('pageshow', () => openHashAnswer(window.location.hash, false));
+    document.addEventListener('click', function (event) {
+        const link = event.target.closest && event.target.closest('a[href]');
+        if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
+            (link.target && link.target !== '_self') || link.hasAttribute('download')) return;
+        const target = new URL(link.href, window.location.href);
+        if (target.origin !== window.location.origin || target.pathname !== window.location.pathname || target.search !== window.location.search) return;
+        if (!openHashAnswer(target.hash, false)) return;
+        event.preventDefault();
+        if (window.location.hash !== target.hash) window.history.pushState(null, '', target.hash);
+        openHashAnswer(target.hash, true);
+    });
+    openHashAnswer(window.location.hash, true);
+    window.hgcScriptReady = true;
+    document.dispatchEvent(new CustomEvent('hgc:script-ready'));
 });

@@ -29,6 +29,7 @@ const requiredFiles = [
   "JS/site-config.js",
   "JS/analytics-consent.js",
   "JS/transition-init.js",
+  "JS/date-utils.js",
   "JS/holidays-data.js",
   "JS/news-data.js",
   "JS/news-loader.js",
@@ -128,6 +129,11 @@ function validateHtml(relativePath, source) {
   const { duplicates } = idsIn(html);
   for (const id of duplicates) {
     addError(`[HTML] ${label}: id="${id}" が重複しています`);
+  }
+
+  for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try { JSON.parse(match[1]); }
+    catch (error) { addError(`[JSON-LD] ${label}: ${error.message}`); }
   }
 
   const imageTags = [...html.matchAll(/<img\b[^>]*>/gi)];
@@ -293,7 +299,7 @@ async function checkJavaScriptSyntax() {
   }
 }
 
-console.log("GitHub Pages公開用ファイルを検証しています...");
+console.log("公開用の静的ファイルを検証しています...");
 
 for (const relativePath of requiredFiles) {
   if (!(await isFile(relativePath))) {

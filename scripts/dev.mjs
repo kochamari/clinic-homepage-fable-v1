@@ -38,8 +38,8 @@ createServer(async (request, response) => {
     });
     createReadStream(filePath).pipe(response);
   } catch {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end("ページが見つかりません");
+    response.writeHead(404, { "Content-Type": "text/html; charset=utf-8", "X-Content-Type-Options": "nosniff" });
+    createReadStream(path.join(root, "404.html")).pipe(response);
   }
 }).listen(port, "127.0.0.1", () => {
   console.log(`Local URL: http://127.0.0.1:${port}`);

@@ -21,7 +21,7 @@ Claude Code は `CLAUDE.md`、Codex は本ファイル（`AGENTS.md`）を入口
 
 - **ビルドツールなしの静的サイト**（プレーンな HTML / CSS / JavaScript）。
 - フレームワーク・トランスパイラ・バンドラは使っていない。
-- Node.js スクリプト 2 本のみ（開発サーバーとビルド）。Node.js **22 以上**。
+- Node.js **22 以上**。開発サーバー・ビルド検証・祝日更新・標準機能による回帰テスト。
 - npm の依存パッケージは**現状ゼロ**（`package.json` に dependencies なし）。
 
 ### ディレクトリ構成
@@ -32,6 +32,7 @@ Claude Code は `CLAUDE.md`、Codex は本ファイル（`AGENTS.md`）を入口
 CSS/style.css         サイト全体のスタイル（デザイントークンは :root）
 JS/                   サイトの JavaScript
   script.js           共通スクリプト（演出・メニュー・スクロール連動など）
+  date-utils.js       日本時間の日付・お知らせ掲載判定の共通処理
   news-data.js        お知らせデータ（ここを編集して更新）
   news-loader.js      お知らせの読み込み・表示
   news-popup.js       重要なお知らせのポップアップ
@@ -60,11 +61,12 @@ sitemap.xml           公開ページのサイトマップ
 |---|---|---|
 | 依存インストール | `npm install` | 依存はゼロ。実行しても何も入らないが害はない |
 | 開発サーバー起動 | `npm run dev` | `http://127.0.0.1:4173`（`PORT` 環境変数で変更可） |
+| 回帰テスト | `npm test` | Node.js標準機能、本体コードを検証、追加依存なし |
 | 公開前検証 | `npm run build` | 必須ファイル・HTMLリンク・画像・JS構文・HTML基本構造を確認 |
 | JS 構文チェック | `node -c JS/script.js` | 個別ファイルの構文確認に使える簡易手段 |
 
-- **テスト・lint・型チェックのフレームワークは未設定**（存在しない）。
-  勝手に導入せず、必要な場合はユーザーに提案する。
+- 回帰テストはNode.js標準の `node:test` / `node:assert` を使用する。lint・型チェックのフレームワークは未設定。
+  新しい依存を勝手に導入せず、必要な場合はユーザーに提案する。
 - 公開（デプロイ）は **Cloudflare Pages**。GitHub リポジトリと連携し、Production branch は **`main`**。
   `main` への push は Cloudflare Pages の本番デプロイを自動的にトリガーする。
 - GitHub Pages は使用しない。勝手に再有効化しない。
