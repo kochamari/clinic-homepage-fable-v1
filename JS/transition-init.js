@@ -6,7 +6,20 @@
     // 本文が一度表示された後にスクロール演出の初期状態へ戻ってしまう。
     document.documentElement.classList.add('js');
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    function restoreReadablePage() {
+        if (window.hgcScriptReady) return;
+        window.hgcMotionFallback = true;
+        document.documentElement.classList.remove('js', 'is-entering', 'is-entered', 'is-leaving');
+        window.hgcPageEntering = false;
+        document.querySelectorAll('.faq-a[hidden]').forEach(answer => { answer.hidden = false; });
+    }
+    const fallback = setTimeout(restoreReadablePage, 2500);
+    document.addEventListener('DOMContentLoaded', () => setTimeout(restoreReadablePage, 0));
+    document.addEventListener('hgc:script-ready', () => clearTimeout(fallback), { once: true });
+    window.addEventListener('pageshow', restoreReadablePage);
+
+    const quickArrival = /\/access(?:\.html)?$/.test(window.location.pathname) || /^#clinic-(info|calendar)$/.test(window.location.hash);
+    if (quickArrival || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     try {
         if (sessionStorage.getItem('hgc-internal-nav')) {

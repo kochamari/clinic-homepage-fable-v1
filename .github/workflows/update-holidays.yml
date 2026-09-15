@@ -18,6 +18,8 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/update-holidays.mjs
+      - run: npm test
+      - run: npm run build
       - name: 更新があれば反映
         run: |
           if git diff --quiet -- JS/holidays-data.js; then

@@ -59,13 +59,52 @@ const clinicSchedule = {
     'use strict';
 
     const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
-    const holidaySet = new Set(
-        typeof nationalHolidays === 'undefined' ? [] : nationalHolidays
-    );
+    const dateTools = window.HGCDate;
+    const holidayDates = typeof nationalHolidays === 'undefined' ? null : nationalHolidays;
+    const coverage = typeof nationalHolidayCoverage === 'undefined' ? null : nationalHolidayCoverage;
+    const notices = typeof newsData === 'undefined' ? null : newsData;
+
+    function validScheduleData() {
+        if (!dateTools || !Array.isArray(holidayDates) || !holidayDates.length || !coverage ||
+            !Number.isInteger(coverage.startYear) || !Number.isInteger(coverage.endYear) ||
+            coverage.startYear < 1000 || coverage.endYear > 9999 || coverage.startYear > coverage.endYear ||
+            !coverage.counts || typeof coverage.counts !== 'object' ||
+            !notices || !Array.isArray(notices.news)) return false;
+        const counts = {};
+        const seen = new Set();
+        for (const date of holidayDates) {
+            if (!dateTools.validDate(date) || seen.has(date)) return false;
+            seen.add(date);
+            const year = Number(date.slice(0, 4));
+            if (year < coverage.startYear || year > coverage.endYear) return false;
+            counts[year] = (counts[year] || 0) + 1;
+        }
+        for (let year = coverage.startYear; year <= coverage.endYear; year++) {
+            if (!Number.isInteger(coverage.counts[year]) || coverage.counts[year] < 1 || counts[year] !== coverage.counts[year]) return false;
+        }
+        return Array.from(notices.news).every(item => {
+            if (!item || typeof item !== 'object' || !dateTools.validDate(item.date)) return false;
+            if (item.closures !== undefined && (!Array.isArray(item.closures) || !Array.from(item.closures).every(closure =>
+                closure && dateTools.validDate(closure.date) && (closure.label === undefined || typeof closure.label === 'string')))) return false;
+            if (item.doctorChanges !== undefined && (!Array.isArray(item.doctorChanges) || !Array.from(item.doctorChanges).every(change =>
+                change && dateTools.validDate(change.date) && Array.isArray(change.doctors) && change.doctors.length > 0 &&
+                Array.from(change.doctors).every(doctor => typeof doctor === 'string' && doctor.trim()) &&
+                (change.badge === undefined || typeof change.badge === 'string') &&
+                (change.label === undefined || typeof change.label === 'string')))) return false;
+            return true;
+        });
+    }
+
+    const hasScheduleData = validScheduleData();
+    const holidaySet = new Set(hasScheduleData ? holidayDates : []);
+    function dateIsCovered(date) {
+        const year = date.getUTCFullYear();
+        return hasScheduleData && year >= coverage.startYear && year <= coverage.endYear;
+    }
 
     function closureMapFromNews() {
         const closures = new Map();
-        if (typeof newsData === 'undefined' || !Array.isArray(newsData.news)) return closures;
+        if (!hasScheduleData) return closures;
 
         newsData.news.forEach(function (item) {
             if (!item || !Array.isArray(item.closures)) return;
@@ -81,7 +120,7 @@ const clinicSchedule = {
 
     function doctorChangeMapFromNews() {
         const changes = new Map();
-        if (typeof newsData === 'undefined' || !Array.isArray(newsData.news)) return changes;
+        if (!hasScheduleData) return changes;
 
         newsData.news.forEach(function (item) {
             if (!item || !Array.isArray(item.doctorChanges)) return;
@@ -121,8 +160,9 @@ const clinicSchedule = {
         return date.getUTCDay() === 6 && day >= 22 && day <= 28;
     }
 
-    // その日の受付時間帯を返す（休診日は空配列）
+    // その日の受付時間帯。[]は確認済みの休診、nullは判定不能。
     function sessionsOf(date) {
+        if (!dateIsCovered(date)) return null;
         const key = ymd(date);
         if (closureMap.has(key) || holidaySet.has(key)) return [];
         return clinicSchedule.weekly[date.getUTCDay()] || [];
@@ -141,6 +181,7 @@ const clinicSchedule = {
         const cursor = new Date(from);
         for (let i = 0; i < 60; i++) {
             const sessions = sessionsOf(cursor);
+            if (!sessions) return null;
             const limit = (i === 0) ? from.getUTCHours() * 60 + from.getUTCMinutes() : -1;
             for (let s = 0; s < sessions.length; s++) {
                 if (toMinutes(sessions[s][0]) > limit) {
@@ -155,7 +196,7 @@ const clinicSchedule = {
 
     function nextOpeningText(now) {
         const next = nextOpening(now);
-        if (!next) return '';
+        if (!next) return '次の受付はお電話でご確認ください';
         const today = new Date(now);
         today.setUTCHours(0, 0, 0, 0);
         const target = new Date(next.date);
@@ -172,6 +213,8 @@ const clinicSchedule = {
     function getStatus(now) {
         const sessions = sessionsOf(now);
         const nowMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+
+        if (!sessions) return { state: 'unknown', label: '診療状況を確認できません', detail: 'お電話でご確認ください' };
 
         if (!sessions.length) {
             const reason = closureReason(now);
@@ -212,7 +255,7 @@ const clinicSchedule = {
     // 第4土曜日は小田医師、それ以外の月・水・金・土曜は原口 紘医師。
     // 火・木曜は原口 紘医師と原口 増穂医師の2名体制です。
     function doctorsOf(date, sessions) {
-        if (!sessions.length) return [];
+        if (!sessions || !sessions.length) return [];
         const change = doctorChangeMap.get(ymd(date));
         if (change) return change.doctors;
         const day = date.getUTCDay();
@@ -248,13 +291,20 @@ const clinicSchedule = {
 
         const now = nowInTokyo();
         const currentStatus = getStatus(now);
+        if (currentStatus.state === 'unknown') {
+            host.className = 'calendar-today is-unknown';
+            const html = '<p>本日の診療状況を確認できません。お電話でご確認ください。</p>';
+            if (host.innerHTML !== html) host.innerHTML = html;
+            return;
+        }
         const showUpcoming = currentStatus.state === 'after' || currentStatus.state === 'closed';
         const tomorrow = new Date(now);
         tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
         tomorrow.setUTCHours(0, 0, 0, 0);
         const guideSessions = sessionsOf(showUpcoming ? tomorrow : now);
-        const isClosed = guideSessions.length === 0;
-        const isMorningOnly = guideSessions.length === 1;
+        const isUnknown = guideSessions === null;
+        const isClosed = !isUnknown && guideSessions.length === 0;
+        const isMorningOnly = !isUnknown && guideSessions.length === 1;
         let kicker = '本日の診療案内';
         let status = isMorningOnly ? '本日は午前のみの診療です' : 'ただいま診療中です';
         let note = '';
@@ -263,7 +313,7 @@ const clinicSchedule = {
 
         if (showUpcoming) {
             kicker = currentStatus.state === 'after' ? '本日の受付は終了しました' : '本日は休診です';
-            status = isClosed ? '明日は休診です'
+            status = isUnknown ? '明日の診療予定を確認できません' : isClosed ? '明日は休診です'
                 : isMorningOnly ? '明日は午前のみの診療です' : '明日は診療日です';
             if (isClosed) {
                 const reason = closureReason(tomorrow);
@@ -293,9 +343,9 @@ const clinicSchedule = {
                     }).join('') + '</dd></div>' +
                 '</dl>' +
               '</div>'
-            : '<p class="calendar-today-note">次の診療予定は、お知らせをご確認ください。</p>';
+            : '<p class="calendar-today-note">次の診療予定は、お電話でご確認ください。</p>';
 
-        host.className = 'calendar-today' + (isClosed ? ' is-closed' : isMorningOnly ? ' is-morning-only' : ' is-open');
+        host.className = 'calendar-today' + (isUnknown ? ' is-unknown' : isClosed ? ' is-closed' : isMorningOnly ? ' is-morning-only' : ' is-open');
         const html =
             '<div class="calendar-today-heading">' +
                 '<p class="calendar-today-kicker">' + kicker + '</p>' +
@@ -313,16 +363,21 @@ const clinicSchedule = {
         const status = getStatus(nowInTokyo());
         nodes.forEach(function (node) {
             node.className = 'clinic-status is-' + status.state;
-            node.innerHTML =
+            const html =
                 '<span class="clinic-status-dot"></span>' +
                 '<span class="clinic-status-label">' + status.label + '</span>' +
                 (status.detail ? '<span class="clinic-status-detail">' + status.detail + '</span>' : '');
+            if (node.innerHTML !== html) node.innerHTML = html;
         });
     }
 
     // 1か月分のカレンダーHTMLをつくる
     function monthHTML(year, month, todayKey) {
         const first = new Date(Date.UTC(year, month, 1));
+        if (!dateIsCovered(first)) {
+            return '<div class="cal-month"><p class="cal-title">' + year + '年' + (month + 1) + '月</p>' +
+                '<p class="calendar-data-warning">この月の診療予定を確認できません。お電話でご確認ください。</p></div>';
+        }
         const days = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
         let cells = '';
 
@@ -442,6 +497,7 @@ const clinicSchedule = {
         table.querySelectorAll('.today-badge').forEach(function (badge) { badge.remove(); });
 
         const now = nowInTokyo();
+        if (!dateIsCovered(now)) return;
         // 表の列は 0=見出し, 1=月 … 6=土, 7=日祝
         const col = now.getUTCDay() === 0 ? 7 : now.getUTCDay();
         const isClosed = sessionsOf(now).length === 0;

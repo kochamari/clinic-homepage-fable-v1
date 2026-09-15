@@ -9,34 +9,16 @@
 (function () {
     'use strict';
 
-    // --- 出すお知らせを1件選ぶ ---
+    const dismissed = new Set();
+    let activePopup = null;
+    let pendingTimer = null;
+    let curtainTimer = null;
+    let curtainListener = null;
+    let started = false;
+
     function pickPopupNews() {
-        if (typeof newsData === 'undefined' || !newsData || !Array.isArray(newsData.news)) return null;
-
-        // 「今日」を 0時ちょうどにそろえて、日付だけで比べられるようにする
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        for (let i = 0; i < newsData.news.length; i++) {
-            const item = newsData.news[i];
-            if (!item || item.popup !== true) continue;
-
-            // 掲載期限が指定されていれば、その日を過ぎていないか確かめる
-            if (item.popupUntil) {
-                // 「2026-08-15」を、その土地の時刻としてそのまま読む。
-                // new Date('2026-08-15') は世界標準時と見なされ、日付が1日ずれることがあるため。
-                const parts = String(item.popupUntil).split('-');
-                if (parts.length !== 3) continue;          // 日付の書き方が違う時は出さない
-                const until = new Date(
-                    Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]),
-                    23, 59, 59, 999                        // 指定日の終わりまでは出す
-                );
-                if (isNaN(until.getTime())) continue;
-                if (today > until) continue;
-            }
-            return item;
-        }
-        return null;
+        if (!window.HGCDate || typeof newsData === 'undefined' || !newsData || !Array.isArray(newsData.news)) return null;
+        return newsData.news.find(item => window.HGCDate.popupVisible(item) && !dismissed.has(String(item.id))) || null;
     }
 
     // --- 表示 ---
@@ -49,11 +31,7 @@
     }
 
     function formatDateJP(dateString) {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return '';
-        return date.getFullYear() + '.' +
-            String(date.getMonth() + 1).padStart(2, '0') + '.' +
-            String(date.getDate()).padStart(2, '0');
+        return window.HGCDate.formatDate(dateString);
     }
 
     // 本文を段落に組み直す（空行で段落、単独の改行は <br>）
@@ -92,15 +70,17 @@
         const lastFocused = document.activeElement;
         let closed = false;
 
-        function close() {
+        function close(remember = true) {
             if (closed) return;
             closed = true;
+            if (remember) dismissed.add(String(item.id));
+            activePopup = null;
             overlay.classList.remove('is-open');
             document.documentElement.classList.remove('is-popup-open');
             document.removeEventListener('keydown', onKeydown);
             setTimeout(function () { overlay.remove(); }, 400);
             // 元々フォーカスがあった場所へ戻す
-            if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+            if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.isConnected && lastFocused.focus({ preventScroll: true });
         }
 
         function onKeydown(e) {
@@ -135,44 +115,49 @@
         void overlay.offsetWidth;
         overlay.classList.add('is-open');
         const closeBtn = overlay.querySelector('.news-popup-close');
-        if (closeBtn) closeBtn.focus();
+        if (closeBtn) closeBtn.focus({ preventScroll: true });
+        activePopup = { item, close };
     }
 
-    // --- いつ出すか ---
-    function start() {
-        // トップページ以外では出さない
-        const page = window.location.pathname.replace(/\/$/, '').split('/').pop().replace(/\.html$/, '');
-        if (page !== '' && page !== 'index') return;
+    function cancelPending() {
+        clearTimeout(pendingTimer);
+        clearTimeout(curtainTimer);
+        if (curtainListener) document.removeEventListener('hgc:curtain-end', curtainListener);
+        pendingTimer = curtainTimer = curtainListener = null;
+    }
 
-        // トップページを直接開いた時だけ出す。
-        // サイト内の他ページから戻ってきた時に毎回出ると、わずらわしいため。
-        if (window.hgcFreshVisit === false) return;
-
+    // 遅延中に深夜を越えた場合も、表示直前の条件で選び直す。
+    function showCurrent() {
+        cancelPending();
+        if (document.hidden || activePopup) return;
         const item = pickPopupNews();
-        if (!item) return;
+        if (item) show(item);
+    }
 
-        // 幕が出ている間は待って、消えてから少し間をおいて出す
+    function refresh() {
+        if (activePopup && !window.HGCDate.popupVisible(activePopup.item)) activePopup.close(false);
+        cancelPending();
+        if (activePopup || document.hidden || !pickPopupNews()) return;
         if (window.hgcCurtainPending) {
-            let fired = false;
-            const open = function () {
-                if (fired) return;
-                fired = true;
-                document.removeEventListener('hgc:curtain-end', open);
-                setTimeout(function () { show(item); }, 320);
+            curtainListener = function () {
+                cancelPending();
+                pendingTimer = setTimeout(showCurrent, 320);
             };
-            document.addEventListener('hgc:curtain-end', open);
-            // 万一、幕の終わりを受け取れなかった時の保険
-            setTimeout(open, 15000);
-            return;
+            document.addEventListener('hgc:curtain-end', curtainListener);
+            curtainTimer = setTimeout(curtainListener, 15000);
+        } else {
+            pendingTimer = setTimeout(showCurrent, 600);
         }
-
-        // 幕が出ない時（動きを減らす設定など）は、そのまま少し待って出す
-        setTimeout(function () { show(item); }, 600);
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start);
-    } else {
-        start();
+    function start() {
+        if (started || !window.HGCDate) return;
+        if (!['/', '/index', '/index.html'].includes(window.location.pathname)) return;
+        if (window.hgcFreshVisit === false) return;
+        started = true;
+        window.HGCDate.watchDay(refresh);
     }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
 })();

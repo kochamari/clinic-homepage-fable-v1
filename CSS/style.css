@@ -291,6 +291,7 @@ html.is-page-zoomed *::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     .parallax-glow { display: none; }
 }
 
@@ -907,7 +908,7 @@ main li {
     background: var(--paper);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.35s var(--ease), visibility 0.35s;
+    transition: opacity 0.35s var(--ease), visibility 0s linear 0.35s;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -915,6 +916,7 @@ main li {
 .drawer.is-open {
     opacity: 1;
     visibility: visible;
+    transition-delay: 0s;
 }
 
 .drawer-nav {
@@ -1010,6 +1012,8 @@ body.drawer-open {
 /* --- Hero (home) --- */
 .hero {
     position: relative;
+    /* 背景写真が次の発熱案内を覆わないよう、ヒーロー内で描画する。 */
+    overflow: clip;
     padding: clamp(64px, 9vw, 120px) 0 clamp(72px, 10vw, 130px);
 }
 
@@ -1087,8 +1091,10 @@ body.drawer-open {
     content: '';
     width: 28px;
     height: 1px;
+    flex-shrink: 0;
     background: var(--primary);
 }
+.hero-kicker > span { text-wrap: balance; }
 
 .hero-title {
     margin-top: 22px;
@@ -1114,6 +1120,94 @@ body.drawer-open {
     align-items: center;
     gap: 14px;
     margin-top: 36px;
+}
+
+/* 受診前によく使う4つの行き先を、本文の下で一度に選べるようにする。 */
+.hero-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 560px;
+    margin-top: 32px;
+}
+.hero-nav a {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 72px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(145deg, var(--surface), var(--surface-tint));
+    box-shadow: var(--shadow-soft);
+    color: var(--primary-dark);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.65;
+    text-decoration: none;
+    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+/* 左から色が広がる面を文字の背後に置き、文字自体は動かさない。 */
+.hero-nav a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--primary-tint);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease);
+    pointer-events: none;
+}
+.hero-nav a > span { min-width: 0; text-wrap: balance; }
+.hero-nav .icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 7px;
+    border: 1px solid rgba(24, 106, 100, 0.18);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--primary);
+    transition: transform 0.35s var(--ease), background-color 0.35s var(--ease), color 0.35s var(--ease);
+}
+.hero-nav a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+    box-shadow: var(--shadow);
+}
+.hero-nav a:focus-visible::before { transform: scaleX(1); }
+.hero-nav a:focus-visible .icon {
+    transform: translateX(3px);
+    background: var(--primary);
+    color: var(--white);
+}
+@media (hover: hover) and (pointer: fine) {
+    .hero-nav a:hover {
+        transform: translateY(-4px);
+        border-color: var(--primary);
+        box-shadow: var(--shadow);
+    }
+    .hero-nav a:hover::before { transform: scaleX(1); }
+    .hero-nav a:hover .icon {
+        transform: translateX(3px);
+        background: var(--primary);
+        color: var(--white);
+    }
+}
+.hero-nav a:is(:active, .is-pressed) {
+    transform: translateY(0) scale(0.98);
+    box-shadow: var(--shadow-soft);
+}
+.hero-nav a:is(:active, .is-pressed)::before { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) {
+    .hero-nav a, .hero-nav a::before, .hero-nav .icon { transition: none; }
+    .hero-nav a:is(:hover, :focus-visible, :active, .is-pressed),
+    .hero-nav a:is(:hover, :focus-visible, :active, .is-pressed) .icon { transform: none; }
 }
 
 .hero-info-link {
@@ -1247,81 +1341,18 @@ body.drawer-open {
     /* 淡い緑の上に --ink-soft を置くとコントラスト比が 4.49 で AA(4.5) にわずかに届かないため、
        この枠の中だけ少し濃くする */
     color: #5a686e;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     line-height: 1.65;
 }
-/* スマホ幅で最後の1文字だけが次の行に落ちるため、行の長さを揃える */
-.hero-card-visit-note > span { text-wrap: balance; }
-.hero-card-warning {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    justify-content: start;
-    gap: 2px 12px;
-    align-items: baseline;
-    text-wrap: initial;
-}
-.hero-card-warning > strong {
-    grid-column: 1 / -1;
-}
-.hero-card-warning-text {
-    display: block;
-    grid-column: 1;
-    grid-row: 2;
-    margin-top: 0;
-    white-space: normal;
-}
-.hero-card-note-link {
-    display: block;
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: start;
-    margin-top: 0;
-    white-space: nowrap;
-    color: var(--primary);
-    font-weight: 700;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-}
-.hero-card-note-link:hover { color: var(--primary-dark); }
+/* 案内文の末尾だけが次の行に残らないよう、折り返しを調整する。 */
+.hero-card-visit-note > span { text-wrap: pretty; }
 @media (max-width: 380px) {
-    .hero-card-warning {
-        grid-template-columns: 1fr;
-    }
-    .hero-card-warning-text {
-        grid-column: 1;
-        white-space: normal;
-    }
-    .hero-card-note-link {
-        grid-column: 1;
-        grid-row: 3;
-    }
+    .hero-card .hero-card-hours-note { display: block; }
 }
 .hero-card-visit-note strong {
     color: var(--primary-dark);
     font-weight: 700;
 }
-
-.hero-card-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--primary);
-    text-decoration: none;
-}
-.hero-card-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 22px;
-    margin-top: 20px;
-}
-.hero-card-link .icon {
-    width: 0.9em; height: 0.9em;
-    transition: transform 0.25s var(--ease);
-}
-.hero-card-link:hover .icon { transform: translateX(4px); }
 
 /* --- Notice band (発熱・かぜ症状の事前連絡のお願い) --- */
 .notice-band {
@@ -1462,6 +1493,56 @@ body.drawer-open {
     font-variant-numeric: tabular-nums;
 }
 
+.screening-fees { margin-top: clamp(32px, 4vw, 48px); }
+.screening-fee-table {
+    table-layout: fixed;
+    margin: 0;
+    font-size: 1rem;
+}
+.screening-fee-table caption {
+    padding-bottom: 18px;
+    text-align: left;
+    color: var(--primary-dark);
+    line-height: 1.7;
+}
+.screening-fee-title {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    font-weight: 600;
+}
+.screening-fee-period {
+    display: block;
+    margin-top: 6px;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.screening-fee-table th, .screening-fee-table td {
+    padding: 18px 12px;
+    vertical-align: middle;
+}
+.screening-fee-table th:first-child { width: 52%; }
+.screening-fee-table thead th { font-size: 0.88rem; white-space: normal; }
+.screening-fee-table th:not(:first-child), .screening-fee-table td { text-align: right; }
+.screening-fee-table tbody th { font-weight: 600; text-wrap: balance; }
+.screening-fee-table .exam-desc { margin-top: 4px; }
+.screening-fee-table td.price {
+    font-family: var(--font-sans);
+    font-size: 1.06rem;
+    font-weight: 600;
+}
+.checkup-price-table { margin: 24px 0 6px; }
+.checkup-price-table .exam-name { white-space: normal; }
+/* この節の補足は独立した段落。手順説明用の負の余白を引き継がない。 */
+#gastro-checkup .visit-note { margin-top: 24px; }
+@media (max-width: 600px) {
+    .screening-fee-table { font-size: 0.94rem; }
+    .screening-fee-table th, .screening-fee-table td { padding: 16px 6px; }
+    .screening-fee-table th:first-child { width: 48%; }
+    .screening-fee-table td.price { font-size: 0.98rem; }
+}
+
 /* --- Info box (セクション内の強調ボックス) --- */
 .info-box {
     margin-top: 22px;
@@ -1576,6 +1657,16 @@ body.drawer-open {
     background: var(--danger-tint);
     color: var(--danger);
 }
+
+.clinic-status.is-unknown, .calendar-today.is-unknown {
+    color: var(--ink);
+    border-color: var(--line);
+    background: var(--surface-tint);
+}
+.calendar-today.is-unknown .calendar-today-status { color: var(--ink); }
+.calendar-data-warning { padding: 20px; background: var(--surface-tint); line-height: 1.8; }
+
+.cta-note a { color: inherit; text-underline-offset: 0.2em; }
 
 /* --- 診療日カレンダー --- */
 .closure-calendar-wrap {
@@ -2361,6 +2452,7 @@ html.is-popup-open body { overflow: hidden; }
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.04em;
+    white-space: nowrap;
 }
 .today-badge.is-closed {
     background: var(--danger);
@@ -2674,6 +2766,11 @@ html.is-popup-open body { overflow: hidden; }
     font-weight: 600;
     letter-spacing: 0.1em;
     line-height: 1.4;
+}
+/* 地名や項目名の途中で切らず、意味のまとまりで折り返す。 */
+.title-phrase { display: inline-block; }
+@media (max-width: 760px) {
+    .title-divider { display: none; }
 }
 
 .page-hero-lead {
@@ -3870,11 +3967,12 @@ html.is-popup-open body { overflow: hidden; }
     color: #fff;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.28s var(--ease), visibility 0.28s;
+    transition: opacity 0.28s var(--ease), visibility 0s linear 0.28s;
 }
 .image-lightbox.is-open {
     opacity: 1;
     visibility: visible;
+    transition-delay: 0s;
 }
 .image-lightbox-panel {
     width: 100%;
@@ -4236,14 +4334,17 @@ html.is-lightbox-open body {
     font-weight: 700;
 }
 
-/* 結論のあとに続ける補足。控えめに置いて、結論の邪魔をしない */
+/* 補足文は前の本文・リストから離す。結論の直後だけ余白を少し詰める。 */
 .visit-note {
-    margin-top: calc(clamp(24px, 3.4vw, 34px) * -0.4);
+    margin-top: clamp(16px, 2vw, 24px);
     color: var(--ink-soft);
     font-size: 0.94rem;
     line-height: 1.9;
 }
-/* 補足が続くときは、結論に寄せるための負の余白を打ち消して読みやすく離す */
+.visit-answer + .visit-note {
+    margin-top: calc(clamp(24px, 3.4vw, 34px) * -0.4);
+}
+/* 補足が続くときにも、段落どうしの余白を保つ。 */
 .visit-note + .visit-note {
     margin-top: clamp(14px, 1.8vw, 22px);
 }
@@ -4553,7 +4654,7 @@ html.is-lightbox-open body {
 .callout-block > p + ul { margin-top: 14px; }
 .callout-block > ul + p { margin-top: 18px; }
 .callout-block .visit-note { margin-top: 20px; }
-/* 枠の外の補足には、通常の .visit-note の負の余白を適用しない */
+/* 枠の外の補足は、独立した段落として離す。 */
 .callout-block + .visit-note {
     margin-top: clamp(24px, 3vw, 32px);
 }
@@ -5562,7 +5663,6 @@ html {
    高齢の方が押し間違えないための余裕（WCAG 2.5.8）。
    文章の途中にあるリンクは行の流れが崩れるため対象外にする。 */
 @media (pointer: coarse) {
-    .hero-card-link,
     .hero-info-link {
         min-height: 44px;
     }
@@ -5890,15 +5990,9 @@ html {
         padding: 14px;
         font-size: 0.9375rem;
     }
-    .hero-card-link {
-        min-height: 44px;
-        font-size: 0.9375rem;
-    }
-    .hero-card-links {
-        display: grid;
-        gap: 0;
-        margin-top: 12px;
-    }
+    .hero-nav { gap: 10px; margin-top: 24px; }
+    .hero-nav a { gap: 8px; padding: 12px; }
+    .hero-nav .icon { width: 28px; height: 28px; padding: 6px; }
     .hero-actions {
         gap: 12px 18px;
         margin-top: 18px;
@@ -6103,6 +6197,8 @@ html {
 
     .hours-table { font-size: 0.85rem; }
     .hours-table th, .hours-table td { padding: 10px 3px; }
+    .hours-table .hours-time { display: block; font-size: 0.75rem; }
+    .today-badge { padding-inline: 3px; }
 }
 
 @media (max-width: 350px) {
@@ -6139,6 +6235,7 @@ html {
     margin-top: 32px;
     border-top: 1px solid var(--line);
 }
+.page-links--six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .page-links a {
     display: flex;
     align-items: center;
@@ -6155,7 +6252,6 @@ html {
 .map-open { margin-block: 20px; }
 .notice-band a { display: inline-flex; align-items: center; min-height: 44px; margin-inline-start: 16px; }
 .hero-card-hours dd { min-width: 0; }
-.hero-card-visit-note > span { text-wrap: initial; }
 
 /* 色に加えて文字でも、休診日・午前のみの日を見分けられるようにする。 */
 .cal-cell {
@@ -6219,12 +6315,19 @@ html {
     .mobile-actions .mobile-actions-call:hover { background: var(--primary-dark); }
     .drawer-open .mobile-actions { visibility: hidden; }
     .page-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; margin-top: 24px; }
+    /* 長い診療項目も途中で細切れにならず、一行で見渡せる幅を確保する。 */
+    .service-index-list { grid-template-columns: minmax(0, 1fr); }
+    .service-index-list li + li a { border-top: 1px solid var(--line); }
+    .service-index-list a {
+        grid-template-columns: 1.6em minmax(0, 1fr) auto;
+        min-height: 56px;
+        gap: 10px;
+        font-family: var(--font-sans);
+        font-size: 0.9375rem;
+        line-height: 1.65;
+    }
     .hero-card-visit-note { gap: 12px; }
     .hero-card-visit-note > span > strong { display: block; }
-    .hero-card-warning { grid-template-columns: minmax(0, 1fr); }
-    .hero-card-note-link { grid-column: 1; grid-row: 3; min-height: 44px; display: flex; align-items: center; }
-    .hero-card-links .hero-card-link { justify-content: space-between; border-bottom: 1px solid var(--line); }
-    .hero-card-links .hero-card-link:last-child { border-bottom: 0; }
 }
 
 /* ==========================================================================
@@ -6258,6 +6361,7 @@ html {
     .service-index,
     .news-more,
     .hero-actions,
+    .hero-nav,
     .segment-card-link,
     .examinations-summary-action {
         display: none !important;

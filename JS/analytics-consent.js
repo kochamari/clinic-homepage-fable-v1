@@ -1,6 +1,9 @@
 'use strict';
 
 (() => {
+    const allowedHosts = window.HGC_SITE_CONFIG?.analyticsHosts;
+    if (window.location.protocol !== 'https:' || !Array.isArray(allowedHosts) ||
+        !allowedHosts.includes(window.location.hostname)) return;
     const measurementId = window.HGC_SITE_CONFIG?.gaMeasurementId?.trim() || '';
     if (!/^G-[A-Z0-9]+$/i.test(measurementId)) return;
 
