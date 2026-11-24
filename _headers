@@ -1,0 +1,9 @@
+/clinic-extensions/staff/updates.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex
+
+/clinic-extensions/staff/digikar-staff-tools-*
+  Content-Type: application/x-chrome-extension
+  Cache-Control: public, max-age=31536000, immutable
+  X-Robots-Tag: noindex
